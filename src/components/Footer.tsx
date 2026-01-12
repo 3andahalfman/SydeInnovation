@@ -11,12 +11,16 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gradient-to-br from-slate-900 to-slate-800 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <footer className="relative bg-gradient-to-br from-slate-950 to-slate-900 text-white overflow-hidden">
+      {/* Liquid blobs */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl liquid-blob"></div>
+      <div className="absolute bottom-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl liquid-blob" style={{ animationDelay: '-3s' }}></div>
+      
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid md:grid-cols-4 gap-12 mb-12">
           <div className="col-span-2">
             <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
-              sydeingenis
+              SydeIngenis
             </h3>
             <p className="text-gray-400 mb-6 leading-relaxed">
               Leading the way in innovative design engineering solutions. Transforming ideas into
@@ -25,19 +29,19 @@ export default function Footer() {
             <div className="flex space-x-4">
               <a
                 href="#"
-                className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-orange-500 transition-colors"
+                className="w-10 h-10 glass rounded-xl flex items-center justify-center hover:bg-orange-500/80 transition-all duration-300 hover:scale-110"
               >
                 <Linkedin className="w-5 h-5" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-orange-500 transition-colors"
+                className="w-10 h-10 glass rounded-xl flex items-center justify-center hover:bg-orange-500/80 transition-all duration-300 hover:scale-110"
               >
                 <Twitter className="w-5 h-5" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-orange-500 transition-colors"
+                className="w-10 h-10 glass rounded-xl flex items-center justify-center hover:bg-orange-500/80 transition-all duration-300 hover:scale-110"
               >
                 <Github className="w-5 h-5" />
               </a>
@@ -79,8 +83,8 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-700 pt-8 text-center text-gray-400">
-          <p>&copy; {currentYear} Sydeingenis. All rights reserved.</p>
+        <div className="border-t border-white/10 pt-8 text-center text-gray-400">
+          <p>&copy; {currentYear} SydeIngenis. All rights reserved.</p>
         </div>
       </div>
     </footer>

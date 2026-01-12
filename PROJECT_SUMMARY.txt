@@ -1,0 +1,141 @@
+================================================================================
+        APS DESIGN AUTOMATION - PROJECT SUMMARY
+================================================================================
+
+PURPOSE
+-------
+A Node.js web application using Autodesk Platform Services (APS) Design 
+Automation API to modify CAD files (AutoCAD DWG, Inventor IPT, Revit RVT, 
+3ds Max) by updating parameters through server-side automation.
+
+
+================================================================================
+                           PROJECT STRUCTURE
+================================================================================
+
+CORE SERVER FILES
+-----------------
+start.js          - Entry point - loads .env, initializes Socket.IO, starts Express
+server.js         - Express app setup, routes registration, static file serving
+socket.io.js      - Socket.IO initialization for real-time workitem status updates
+config.js         - APS credentials, scopes, retry policies
+database.js       - MongoDB connection setup
+.env              - Environment variables (APS_CLIENT_ID, APS_CLIENT_SECRET, APS_PORT)
+
+
+ROUTES (routes/)
+----------------
+DesignAutomation.js   - Main DA API - AppBundles, Activities, Workitems
+DataManagement.js     - 3-legged OAuth, Hubs, Projects, Folders browsing
+OAuth.js              - OAuth token endpoints
+OSS.js                - Object Storage Service operations
+ModelDerivative.js    - Translation & viewing
+Products.js           - Product catalog CRUD API
+common/oauth.js       - 2-legged & 3-legged OAuth client factory
+
+
+APPBUNDLES (bundles/)
+---------------------
+UpdateDWGParam.zip    - AutoCAD    - Modify DWG parameters
+UpdateIPTParam.zip    - Inventor   - Modify IPT parameters
+UpdateRVTParam.zip    - Revit      - Modify RVT parameters
+
+
+FRONTEND (public/)
+------------------
+index.html            - Landing page (copied from landing.html)
+landing.html          - Planique furniture landing page
+configurator.html     - Product configurator with APS Viewer
+index-react.html      - React app entry (Vite)
+index-legacy.html     - Original Design Automation UI
+js/ApsDesignAutomation.js - Frontend DA logic, Socket.IO client
+src/                  - React/Vite source (from planique clone)
+
+
+DATA MODELS (models/)
+---------------------
+Product.js            - Mongoose schema for configurable products
+
+
+DOCUMENTATION
+-------------
+README.md                      - Project setup instructions
+ADDING_PARAMETERS_GUIDE.md     - How to add new parameters
+MONGODB_SETUP.md               - MongoDB configuration guide
+PRODUCT_CATALOG_COMPLETE.md    - Product catalog documentation
+.github/copilot-instructions.md - AI assistant guidelines
+
+
+CONFIGURATION FILES
+-------------------
+package.json          - Dependencies & scripts
+tailwind.config.js    - Tailwind CSS config
+postcss.config.js     - PostCSS config
+vite.config.ts        - Vite bundler config
+tsconfig.app.json     - TypeScript config
+.jshintrc             - JSHint linting rules
+
+
+================================================================================
+                           KEY DEPENDENCIES
+================================================================================
+
+express                           - Web server
+socket.io                         - Real-time communication
+forge-apis                        - APS OAuth & OSS
+autodesk.forge.designautomation   - Design Automation SDK
+multer                            - File uploads
+dotenv                            - Environment variables
+
+
+================================================================================
+                              HOW TO RUN
+================================================================================
+
+1. Ensure .env file has valid APS credentials:
+   APS_CLIENT_ID=your_client_id
+   APS_CLIENT_SECRET=your_client_secret
+   APS_PORT=8080
+
+2. Install dependencies:
+   npm install
+
+3. Start the server:
+   npm start
+
+4. Access at: http://localhost:8080
+
+
+================================================================================
+                           API ENDPOINTS
+================================================================================
+
+Design Automation:
+  GET  /api/appbundles                      - List local bundle ZIPs
+  GET  /api/aps/designautomation/engines    - Fetch available APS engines
+  POST /api/aps/designautomation/appbundles - Upload/version bundle
+  POST /api/aps/designautomation/activities - Create/define activity
+  GET  /api/aps/designautomation/activities - List user's activities
+  POST /api/aps/designautomation/workitems  - Start workitem (multipart upload)
+  DELETE /api/aps/designautomation/account  - Clear all bundles/activities
+
+Data Management (3-legged):
+  GET  /api/aps/login                       - Redirect to Autodesk login
+  GET  /api/aps/callback/oauth              - OAuth callback
+  POST /api/aps/logout                      - Logout user
+  GET  /api/aps/user/profile                - Get user profile
+  GET  /api/aps/datamanagement/hubs         - Get user's hubs
+  GET  /api/aps/datamanagement/hubs/:hubId/projects - Get projects
+
+Products:
+  GET  /api/products                        - Get all products
+  GET  /api/products/:id                    - Get single product
+  POST /api/products/:id/calculate-price    - Calculate configured price
+  POST /api/products                        - Create product
+  PUT  /api/products/:id                    - Update product
+  DELETE /api/products/:id                  - Delete product
+
+
+================================================================================
+                        Generated: January 11, 2026
+================================================================================

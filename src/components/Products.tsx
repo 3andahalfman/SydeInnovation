@@ -1,84 +1,64 @@
-import { Box, Cpu, Settings, Wrench } from 'lucide-react';
-
-const products = [
-  {
-    icon: Cpu,
-    title: 'Smart Automation Systems',
-    description: 'AI-powered automation solutions for modern manufacturing environments',
-    features: ['IoT Integration', 'Real-time Monitoring', 'Predictive Maintenance'],
-  },
-  {
-    icon: Settings,
-    title: 'Industrial Control Units',
-    description: 'Advanced control systems designed for precision and reliability',
-    features: ['High Performance', 'Scalable Design', 'Custom Configuration'],
-  },
-  {
-    icon: Wrench,
-    title: 'Engineering Tools Suite',
-    description: 'Professional-grade tools for design and analysis workflows',
-    features: ['CAD Integration', 'Simulation Tools', 'Data Analytics'],
-  },
-  {
-    icon: Box,
-    title: 'Modular Components',
-    description: 'Flexible, standardized components for rapid prototyping',
-    features: ['Quick Assembly', 'Versatile Design', 'Quality Assured'],
-  },
-];
+import { Boxes } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Products() {
   return (
-    <section id="products" className="py-24 bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="products" className="py-24 bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-1/4 right-0 w-72 h-72 bg-orange-300/20 rounded-full blur-3xl liquid-blob"></div>
+      <div className="absolute bottom-1/4 left-0 w-72 h-72 bg-blue-300/20 rounded-full blur-3xl liquid-blob" style={{ animationDelay: '-4s' }}></div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
           <span className="text-orange-500 font-semibold text-sm uppercase tracking-wider">
-            Our Portfolio
+            Our Product
           </span>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-2 mb-4">
-            Featured Products
+            Featured Product
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Cutting-edge engineering products designed for performance and reliability
+            Streamline your design workflow with our flagship solution
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          {products.map((product, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 group"
-            >
-              <div className="flex items-start space-x-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                  <product.icon className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                    {product.title}
-                  </h3>
-                  <p className="text-gray-600">{product.description}</p>
-                </div>
+        <div className="max-w-3xl mx-auto">
+          <div className="glass-light rounded-3xl p-8 hover:shadow-2xl transition-all duration-500 group glass-shine">
+            <div className="flex items-start space-x-4 mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform shadow-lg">
+                <Boxes className="w-8 h-8 text-white" />
               </div>
-
-              <div className="border-t border-gray-200 pt-6">
-                <div className="flex flex-wrap gap-2">
-                  {product.features.map((feature, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3 py-1 bg-blue-50 text-blue-900 text-sm font-medium rounded-full"
-                    >
-                      {feature}
-                    </span>
-                  ))}
-                </div>
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  SydeFlow: 3D Design Planner
+                </h3>
+                <p className="text-gray-600">
+                  An intelligent 3D design planning tool that streamlines your CAD workflow, 
+                  from concept to production-ready models. Powered by Autodesk Platform Services.
+                </p>
               </div>
-
-              <button className="mt-6 w-full py-3 bg-gradient-to-r from-blue-900 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-800 hover:to-blue-600 transition-all duration-300 hover:shadow-lg">
-                Learn More
-              </button>
             </div>
-          ))}
+
+            <div className="border-t border-white/50 pt-6">
+              <div className="flex flex-wrap gap-2">
+                {['APS Integration', '3D Visualization', 'Design Automation', 'iLogic Support', 'Real-time Updates'].map((feature, idx) => (
+                  <span
+                    key={idx}
+                    className="px-4 py-1.5 bg-blue-100 text-blue-900 text-sm font-medium rounded-full border border-blue-200"
+                  >
+                    {feature}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <Link 
+              to="/sydeflow"
+              className="mt-6 w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2"
+            >
+              <Boxes className="w-5 h-5" />
+              Launch SydeFlow
+            </Link>
+          </div>
         </div>
       </div>
     </section>
