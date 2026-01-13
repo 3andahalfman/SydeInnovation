@@ -1,28 +1,15 @@
 {
-  "configurations": [
-    {
-      "id": "1768269089638",
-      "name": "testsyn",
-      "sourceProjectId": "a.YnVzaW5lc3M6c3R1ZGVudDE1MDg5MCMyMDI2MDExMzEwMzY1MjAwMjY",
-      "sourceFolderId": "urn:adsk.wipprod:fs.folder:co.cpuy7K1RTh6WJI27_N_UBg",
-      "sourcePath": "SydeIngenis/Test Folder",
-      "targetBucket": "syde-sample2",
-      "targetPrefix": "",
-      "autoTranslate": true,
-      "enabled": true,
-      "createdAt": "2026-01-13T01:51:29.638Z"
-    }
-  ],
+  "configurations": [],
   "webhooks": [],
   "syncedFiles": {
     "syde-sample2/fusion test": {
-      "syncedAt": "2026-01-13T03:16:14.938Z",
+      "syncedAt": "2026-01-13T12:16:41.747Z",
       "sourceFolder": "urn:adsk.wipprod:fs.folder:co.cpuy7K1RTh6WJI27_N_UBg",
       "sourceFile": "urn:adsk.wipprod:dm.lineage:CesXtSlgR5GCqljc14jXtA",
       "fileName": "fusion test"
     },
     "syde-sample2/inventor_sample_file.ipt": {
-      "syncedAt": "2026-01-13T03:16:18.672Z",
+      "syncedAt": "2026-01-13T12:16:45.699Z",
       "sourceFolder": "urn:adsk.wipprod:fs.folder:co.cpuy7K1RTh6WJI27_N_UBg",
       "sourceFile": "urn:adsk.wipprod:dm.lineage:xC6cDfS6QTu_UbLASDs9Fw",
       "fileName": "inventor_sample_file.ipt"

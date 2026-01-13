@@ -1,11 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Server, Database, Zap, Activity, Upload, 
   FileCode, CheckCircle, XCircle, Clock, RefreshCw,
-  ArrowUpRight, Box, Layers, Package
+  ArrowUpRight, Box, Layers, Package, FolderSync,
+  Edit, Trash2, Plus, Play, LogIn, LogOut, AlertCircle,
+  FolderPlus, ChevronRight
 } from 'lucide-react';
+import { io, Socket } from 'socket.io-client';
 
 interface DashboardViewProps {
   serverStatus: 'online' | 'offline' | 'checking';
@@ -19,6 +22,16 @@ interface ServerStats {
   buckets: number;
 }
 
+interface ActivityEntry {
+  id: string;
+  type: string;
+  category: string;
+  timestamp: string;
+  title?: string;
+  message?: string;
+  details?: Record<string, any>;
+}
+
 export default function DashboardView({ serverStatus, onRefresh }: DashboardViewProps) {
   const [stats, setStats] = useState<ServerStats>({
     appBundles: 0,
@@ -27,11 +40,86 @@ export default function DashboardView({ serverStatus, onRefresh }: DashboardView
     buckets: 0
   });
   const [loading, setLoading] = useState(true);
-  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [activityLog, setActivityLog] = useState<ActivityEntry[]>([]);
+  const [activityLoading, setActivityLoading] = useState(true);
+  const socketRef = useRef<Socket | null>(null);
+
+  // Socket connection for real-time activity updates
+  useEffect(() => {
+    const socket = io('http://localhost:8080', {
+      transports: ['polling', 'websocket'],
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000
+    });
+    socketRef.current = socket;
+
+    socket.on('connect', () => {
+      console.log('Dashboard socket connected');
+    });
+
+    socket.on('activity:new', (activity: ActivityEntry) => {
+      console.log('New activity received:', activity);
+      setActivityLog(prev => [activity, ...prev].slice(0, 50));
+    });
+
+    socket.on('activity:cleared', () => {
+      setActivityLog([]);
+    });
+
+    // Also listen for sync events to show in activity
+    socket.on('sync:completed', (data: any) => {
+      const activity: ActivityEntry = {
+        id: data.id || `sync_${Date.now()}`,
+        type: 'sync:completed',
+        category: 'File Sync',
+        timestamp: data.timestamp || new Date().toISOString(),
+        title: 'File Synced',
+        message: data.message || 'File synchronized successfully'
+      };
+      setActivityLog(prev => [activity, ...prev].slice(0, 50));
+    });
+
+    socket.on('sync:error', (data: any) => {
+      const activity: ActivityEntry = {
+        id: data.id || `sync_${Date.now()}`,
+        type: 'sync:error',
+        category: 'File Sync',
+        timestamp: data.timestamp || new Date().toISOString(),
+        title: 'Sync Error',
+        message: data.message || 'File sync failed'
+      };
+      setActivityLog(prev => [activity, ...prev].slice(0, 50));
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     fetchStats();
+    fetchActivityLog();
   }, [serverStatus]);
+
+  const fetchActivityLog = async () => {
+    if (serverStatus !== 'online') {
+      setActivityLoading(false);
+      return;
+    }
+
+    setActivityLoading(true);
+    try {
+      const res = await fetch('/api/activity?limit=20');
+      if (res.ok) {
+        const data = await res.json();
+        setActivityLog(data.activities || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch activity log:', error);
+    }
+    setActivityLoading(false);
+  };
 
   const fetchStats = async () => {
     if (serverStatus !== 'online') {
@@ -60,17 +148,87 @@ export default function DashboardView({ serverStatus, onRefresh }: DashboardView
           activitiesData = JSON.parse(text);
         } catch { /* not JSON */ }
       }
+      
+      // Fetch buckets count
+      let bucketsCount = 0;
+      try {
+        const bucketsRes = await fetch('/api/filesync/oss/buckets');
+        if (bucketsRes.ok) {
+          const bucketsData = await bucketsRes.json();
+          bucketsCount = Array.isArray(bucketsData) ? bucketsData.length : 0;
+        }
+      } catch { /* ignore */ }
 
       setStats({
         appBundles: bundlesData.data?.length || 0,
         activities: activitiesData.data?.length || 0,
         workItems: 0,
-        buckets: 0
+        buckets: bucketsCount
       });
     } catch (error) {
       console.error('Failed to fetch stats:', error);
     }
     setLoading(false);
+  };
+
+  // Get icon component for activity type
+  const getActivityIcon = (type: string) => {
+    const iconMap: Record<string, React.ElementType> = {
+      'sync:started': RefreshCw,
+      'sync:completed': CheckCircle,
+      'sync:error': XCircle,
+      'sync:config:created': Plus,
+      'sync:config:updated': Edit,
+      'sync:config:deleted': Trash2,
+      'oss:bucket:created': FolderPlus,
+      'oss:bucket:deleted': Trash2,
+      'oss:object:uploaded': Upload,
+      'oss:object:deleted': Trash2,
+      'oss:object:translated': Layers,
+      'da:bundle:created': Package,
+      'da:bundle:deleted': Package,
+      'da:activity:created': Zap,
+      'da:activity:deleted': Zap,
+      'da:workitem:started': Play,
+      'da:workitem:completed': CheckCircle,
+      'da:workitem:failed': XCircle,
+      'product:created': Box,
+      'product:updated': Edit,
+      'product:deleted': Trash2,
+      'system:started': Server,
+      'auth:login': LogIn,
+      'auth:logout': LogOut
+    };
+    return iconMap[type] || Activity;
+  };
+
+  // Get color for activity type
+  const getActivityColor = (type: string) => {
+    if (type.includes('error') || type.includes('failed') || type.includes('deleted')) {
+      return 'text-red-400 bg-red-500/20';
+    }
+    if (type.includes('completed') || type.includes('created')) {
+      return 'text-green-400 bg-green-500/20';
+    }
+    if (type.includes('started') || type.includes('processing')) {
+      return 'text-yellow-400 bg-yellow-500/20';
+    }
+    if (type.includes('updated')) {
+      return 'text-blue-400 bg-blue-500/20';
+    }
+    return 'text-gray-400 bg-gray-500/20';
+  };
+
+  // Format timestamp for display
+  const formatTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    
+    if (diff < 60000) return 'Just now';
+    if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+    if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+    return date.toLocaleDateString();
   };
 
   const statCards = [
@@ -161,7 +319,7 @@ export default function DashboardView({ serverStatus, onRefresh }: DashboardView
         })}
       </div>
 
-      {/* Quick Actions & Info */}
+      {/* Quick Actions & Server Info */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Quick Actions */}
         <div className="bg-slate-800/30 backdrop-blur-lg rounded-xl border border-slate-700/50 p-6">
@@ -189,10 +347,10 @@ export default function DashboardView({ serverStatus, onRefresh }: DashboardView
               disabled={serverStatus !== 'online'}
             />
             <QuickActionButton
-              icon={Activity}
-              label="View Logs"
-              description="Check activity logs"
-              disabled={false}
+              icon={FolderSync}
+              label="File Sync"
+              description="Sync from Autodesk Cloud"
+              disabled={serverStatus !== 'online'}
             />
           </div>
         </div>
@@ -215,6 +373,79 @@ export default function DashboardView({ serverStatus, onRefresh }: DashboardView
             <InfoRow label="Viewer Version" value="v7" />
           </div>
         </div>
+      </div>
+
+      {/* Activity Log */}
+      <div className="bg-slate-800/30 backdrop-blur-lg rounded-xl border border-slate-700/50 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+            <Activity className="w-5 h-5 text-orange-400" />
+            Activity Log
+          </h2>
+          <button
+            onClick={fetchActivityLog}
+            disabled={serverStatus !== 'online'}
+            className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors disabled:opacity-50"
+            title="Refresh"
+          >
+            <RefreshCw className={`w-4 h-4 text-gray-400 ${activityLoading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
+        
+        {serverStatus !== 'online' ? (
+          <div className="text-center py-8">
+            <AlertCircle className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+            <p className="text-gray-400">Server offline - activity log unavailable</p>
+          </div>
+        ) : activityLoading && activityLog.length === 0 ? (
+          <div className="text-center py-8">
+            <RefreshCw className="w-8 h-8 text-slate-600 mx-auto mb-3 animate-spin" />
+            <p className="text-gray-400">Loading activity...</p>
+          </div>
+        ) : activityLog.length === 0 ? (
+          <div className="text-center py-8">
+            <Clock className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+            <p className="text-gray-400">No recent activity</p>
+            <p className="text-sm text-gray-500 mt-1">Activities will appear here as they happen</p>
+          </div>
+        ) : (
+          <div className="space-y-2 max-h-80 overflow-auto">
+            {activityLog.map((activity) => {
+              const Icon = getActivityIcon(activity.type);
+              const colorClass = getActivityColor(activity.type);
+              
+              return (
+                <div
+                  key={activity.id}
+                  className="flex items-start gap-3 p-3 rounded-lg bg-slate-900/30 hover:bg-slate-900/50 transition-colors group"
+                >
+                  <div className={`p-2 rounded-lg ${colorClass} flex-shrink-0`}>
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="font-medium text-white truncate">
+                        {activity.title || activity.type}
+                      </h4>
+                      <span className="text-xs text-gray-500 flex-shrink-0">
+                        {formatTime(activity.timestamp)}
+                      </span>
+                    </div>
+                    {activity.message && (
+                      <p className="text-sm text-gray-400 truncate">{activity.message}</p>
+                    )}
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-gray-400">
+                        {activity.category}
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-gray-400 flex-shrink-0 mt-1" />
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Getting Started Guide */}

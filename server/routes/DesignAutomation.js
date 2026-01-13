@@ -13,6 +13,15 @@ const config = require('../config');
 const dav3 = require('autodesk.forge.designautomation');
 const ForgeAPI = require('forge-apis');
 
+// Import activity logger
+let logActivity;
+try {
+    const ActivityLog = require('./ActivityLog');
+    logActivity = ActivityLog.logActivity;
+} catch (e) {
+    logActivity = (type, data) => console.log(`Activity: ${type}`, data);
+}
+
 router.use(bodyParser.json());
 
 /// <summary>
@@ -326,6 +335,54 @@ router.get('/appbundles', async /*GetLocalBundles*/(req, res) => {
 });
 
 /// <summary>
+/// Get registered AppBundles from APS Design Automation
+/// </summary>
+router.get('/aps/appbundles', async (req, res) => {
+    try {
+        const api = await Utils.dav3API(req.oauth_token);
+        let allBundles = [];
+        let paginationToken = null;
+        
+        while (true) {
+            let bundles = await api.getAppBundles({ 'page': paginationToken });
+            allBundles = allBundles.concat(bundles.data);
+            if (bundles.paginationToken == null) break;
+            paginationToken = bundles.paginationToken;
+        }
+        
+        // Filter to only show bundles belonging to this account
+        const myBundles = allBundles.filter(b => 
+            b.startsWith(Utils.NickName) && !b.includes('$LATEST')
+        ).map(b => b.replace(Utils.NickName + '.', ''));
+        
+        res.json(myBundles);
+    } catch (ex) {
+        console.error('Error fetching appbundles:', ex);
+        res.status(500).json({ error: 'Failed to fetch app bundles' });
+    }
+});
+
+/// <summary>
+/// Get registered Activities from APS Design Automation (alias for frontend compatibility)
+/// </summary>
+router.get('/aps/activities', async (req, res) => {
+    try {
+        const api = await Utils.dav3API(req.oauth_token);
+        let activities = await api.getActivities();
+        
+        // Filter to only show activities belonging to this account
+        const myActivities = activities.data.filter(a => 
+            a.startsWith(Utils.NickName) && !a.includes('$LATEST')
+        ).map(a => a.replace(Utils.NickName + '.', ''));
+        
+        res.json(myActivities);
+    } catch (ex) {
+        console.error('Error fetching activities:', ex);
+        res.status(500).json({ error: 'Failed to fetch activities' });
+    }
+});
+
+/// <summary>
 /// Return a list of available engines
 /// </summary>
 router.get('/aps/designautomation/engines', async /*GetAvailableEngines*/(req, res) => {
@@ -475,6 +532,13 @@ router.post('/aps/designautomation/appbundles', async /*CreateAppBundle*/(req, r
         appBundle: qualifiedAppBundleId,
         version: newAppVersion.version
     });
+    
+    // Log activity
+    logActivity('da:bundle:created', {
+        title: 'AppBundle Created',
+        message: `Created AppBundle "${appBundleName}" version ${newAppVersion.version}`,
+        details: { appBundleId: qualifiedAppBundleId, version: newAppVersion.version, engine: engineName }
+    });
 });
 
 /// <summary>
@@ -566,6 +630,14 @@ router.post('/aps/designautomation/activities', async /*CreateActivity*/(req, re
                 diagnostic: 'Failed to create new alias for activity'
             }));
         }
+        
+        // Log activity
+        logActivity('da:activity:created', {
+            title: 'Activity Created',
+            message: `Created Design Automation Activity "${activityName}"`,
+            details: { activityId: qualifiedActivityId, engine: engineName }
+        });
+        
         res.status(200).json({
             activity: qualifiedActivityId
         });
@@ -712,6 +784,14 @@ router.post('/aps/designautomation/workitems', multer({
     try {
         const api = await Utils.dav3API(req.oauth_token);
         workItemStatus = await api.createWorkItem(workItemSpec);
+        
+        // Log activity for workitem start
+        logActivity('da:workitem:started', {
+            title: 'WorkItem Started',
+            message: `Design Automation workitem started`,
+            details: { workItemId: workItemStatus.id, activityName }
+        });
+        
         monitorWorkItem(req.oauth_client, req.oauth_token, workItemStatus.id, browserConnectionId, outputFileNameOSS, inputFileNameOSS);
     } catch (ex) {
         console.error(ex);
@@ -776,12 +856,25 @@ async function monitorWorkItem(oauthClient, oauthToken, workItemId, browserConne
                     objectKey: outputFileName
                 });
                 
+                // Log activity for workitem completion
+                logActivity('da:workitem:completed', {
+                    title: 'WorkItem Completed',
+                    message: `Design Automation workitem completed successfully`,
+                    details: { workItemId, outputFile: outputFileName }
+                });
+                
                 // Also provide download link
                 response = await objectsApi.getS3DownloadURL(bucketKey, outputFileName, { 
                     useAcceleration: false, minutesExpiration: 15 
                 }, freshClient, freshToken);
                 socketIO.to(browserConnectionId).emit('downloadResult', response.body.url);
             } else {
+                // Log activity for workitem failure
+                logActivity('da:workitem:failed', {
+                    title: 'WorkItem Failed',
+                    message: `Design Automation workitem failed`,
+                    details: { workItemId, status: status.status }
+                });
                 throw new Error('Work item failed...');
             }
             await objectsApi.deleteObject(bucketKey, inputFileName, oauthClient, oauthToken);
@@ -851,6 +944,14 @@ router.post('/oss/buckets', async (req, res) => {
         payload.policyKey = policyKey || 'transient';
         
         const result = await bucketsApi.createBucket(payload, {}, req.oauth_client, req.oauth_token);
+        
+        // Log activity
+        logActivity('oss:bucket:created', {
+            title: 'Bucket Created',
+            message: `Created OSS bucket "${bucketKey}"`,
+            details: { bucketKey: payload.bucketKey, policyKey: payload.policyKey }
+        });
+        
         res.json(result.body);
     } catch (ex) {
         console.error('Create bucket error:', ex);
@@ -869,6 +970,14 @@ router.delete('/oss/buckets/:bucketKey', async (req, res) => {
     try {
         const bucketsApi = new ForgeAPI.BucketsApi();
         await bucketsApi.deleteBucket(req.params.bucketKey, req.oauth_client, req.oauth_token);
+        
+        // Log activity
+        logActivity('oss:bucket:deleted', {
+            title: 'Bucket Deleted',
+            message: `Deleted OSS bucket "${req.params.bucketKey}"`,
+            details: { bucketKey: req.params.bucketKey }
+        });
+        
         res.json({ success: true, message: 'Bucket deleted' });
     } catch (ex) {
         console.error('Delete bucket error:', ex);
@@ -926,6 +1035,13 @@ router.post('/oss/buckets/:bucketKey/objects', multer({ dest: 'uploads/' }).sing
             throw new Error(uploadResponse[0].completed.reason);
         }
         
+        // Log activity
+        logActivity('oss:object:uploaded', {
+            title: 'File Uploaded',
+            message: `Uploaded "${objectKey}" to ${bucketKey}`,
+            details: { bucketKey, objectKey, size: req.file.size }
+        });
+        
         res.json(uploadResponse[0].completed);
     } catch (ex) {
         console.error('Upload object error:', ex);
@@ -940,6 +1056,14 @@ router.delete('/oss/buckets/:bucketKey/objects/:objectKey', async (req, res) => 
     try {
         const objectsApi = new ForgeAPI.ObjectsApi();
         await objectsApi.deleteObject(req.params.bucketKey, req.params.objectKey, req.oauth_client, req.oauth_token);
+        
+        // Log activity
+        logActivity('oss:object:deleted', {
+            title: 'File Deleted',
+            message: `Deleted "${req.params.objectKey}" from ${req.params.bucketKey}`,
+            details: { bucketKey: req.params.bucketKey, objectKey: req.params.objectKey }
+        });
+        
         res.json({ success: true, message: 'Object deleted' });
     } catch (ex) {
         console.error('Delete object error:', ex);
@@ -1011,6 +1135,13 @@ router.post('/oss/translate', async (req, res) => {
         try {
             await derivativesApi.translate(job, { xAdsForce: false }, req.oauth_client, req.oauth_token);
             console.log('Translation job started for URN:', urn);
+            
+            // Log activity
+            logActivity('oss:object:translated', {
+                title: 'Translation Started',
+                message: `Started 3D translation for viewing`,
+                details: { urn }
+            });
         } catch (ex) {
             // Translation might already be in progress or complete
             console.log('Translation status:', ex.statusCode);
@@ -1082,6 +1213,14 @@ router.post('/products', async (req, res) => {
         };
         data.products.push(newProduct);
         writeProductsFile(data);
+        
+        // Log activity
+        logActivity('product:created', {
+            title: 'Product Created',
+            message: `Created product "${newProduct.name || newProduct.id}"`,
+            details: { productId: newProduct.id, name: newProduct.name }
+        });
+        
         res.json(newProduct);
     } catch (ex) {
         console.error('Create product error:', ex);
@@ -1104,6 +1243,14 @@ router.put('/products/:id', async (req, res) => {
             updatedAt: new Date().toISOString()
         };
         writeProductsFile(data);
+        
+        // Log activity
+        logActivity('product:updated', {
+            title: 'Product Updated',
+            message: `Updated product "${data.products[index].name || req.params.id}"`,
+            details: { productId: req.params.id, name: data.products[index].name }
+        });
+        
         res.json(data.products[index]);
     } catch (ex) {
         console.error('Update product error:', ex);
@@ -1121,6 +1268,14 @@ router.delete('/products/:id', async (req, res) => {
         }
         const deleted = data.products.splice(index, 1)[0];
         writeProductsFile(data);
+        
+        // Log activity
+        logActivity('product:deleted', {
+            title: 'Product Deleted',
+            message: `Deleted product "${deleted.name || deleted.id}"`,
+            details: { productId: deleted.id, name: deleted.name }
+        });
+        
         res.json({ success: true, deleted });
     } catch (ex) {
         console.error('Delete product error:', ex);

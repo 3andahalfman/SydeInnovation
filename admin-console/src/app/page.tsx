@@ -54,7 +54,7 @@ export default function AdminConsole() {
   const checkServerStatus = async () => {
     setServerStatus('checking');
     try {
-      const response = await fetch('/api/aps/auth/token', { method: 'GET' });
+      const response = await fetch('/api/auth/token', { method: 'GET' });
       if (response.ok) {
         setServerStatus('online');
       } else {

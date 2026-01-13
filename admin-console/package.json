@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
+    "export": "next build && xcopy /E /I /Y out ..\\server\\admin-console",
     "start": "next start -p 3001",
     "lint": "next lint"
   },

@@ -9,6 +9,8 @@
     "dev:server": "node server/start.js",
     "dev:all": "concurrently \"npm run dev\" \"npm run dev:server\"",
     "build": "vite build",
+    "build:admin": "cd admin-console && npm run build && xcopy /E /I /Y out ..\\server\\admin-console",
+    "build:all": "npm run build && npm run build:admin",
     "start": "node server/start.js",
     "lint": "eslint .",
     "preview": "vite preview",

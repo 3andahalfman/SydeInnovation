@@ -13,7 +13,7 @@ if (!config.credentials.client_id || !config.credentials.client_secret) {
 
 let app = express();
 
-// Enable CORS for Vite dev server and Next.js admin console
+// Enable CORS for Vite dev server and Next.js admin console (dev mode)
 app.use(cors({
     origin: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:8080'],
     credentials: true
@@ -22,8 +22,14 @@ app.use(cors({
 // Serve static files from public folder (for legacy frontend)
 app.use(express.static(_path.join(__dirname, './public')));
 
-// Also serve dist folder (production React build)
+// Also serve dist folder (production React build - landing page)
 app.use(express.static(_path.join(__dirname, '../dist')));
+
+// Serve admin console static files (built from Next.js)
+const adminConsolePath = _path.join(__dirname, './admin-console');
+if (_fs.existsSync(adminConsolePath)) {
+    app.use('/admin', express.static(adminConsolePath));
+}
 
 // Cookie session
 app.use(cookieSession({
@@ -38,9 +44,19 @@ app.use(express.json({ limit: '50mb' }));
 // API routes
 app.use('/api', require('./routes/DesignAutomation'));
 app.use('/api/filesync', require('./routes/FileSync'));
+app.use('/api/activity', require('./routes/ActivityLog'));
 
-// Serve React app for all other routes (SPA fallback)
-app.get('*', (req, res) => {
+// 404 handler for API routes
+app.use('/api/*', (req, res) => {
+    res.status(404).json({ error: 'API endpoint not found', path: req.path });
+});
+
+// Serve React app for all other routes (SPA fallback) - exclude API routes
+app.get('*', (req, res, next) => {
+    // Skip if this is an API request
+    if (req.path.startsWith('/api')) {
+        return next();
+    }
     const indexPath = _path.join(__dirname, '../dist/index.html');
     if (_fs.existsSync(indexPath)) {
         res.sendFile(indexPath);

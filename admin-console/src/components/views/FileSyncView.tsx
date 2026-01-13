@@ -5,7 +5,8 @@ import {
   RefreshCw, Plus, Trash2, Play, Pause, CheckCircle, 
   XCircle, Clock, Loader2, FolderTree, Cloud, HardDrive,
   Link, Unlink, ChevronRight, ChevronDown, Folder, File,
-  AlertCircle, Settings, History, Webhook, ArrowRight, Edit
+  AlertCircle, Settings, History, Webhook, ArrowRight, Edit,
+  Box, Database
 } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
 import { useNotifications } from '@/contexts/NotificationContext';
@@ -64,6 +65,20 @@ interface SyncHistoryEntry {
   };
 }
 
+type CloudProvider = 'autodesk' | 'google-drive' | 'dropbox';
+type AutodeskStorageType = 'fusion' | 'docs';
+
+interface AutodeskStorageInfo {
+  id: AutodeskStorageType;
+  name: string;
+  shortName: string;
+  description: string;
+  icon: 'F' | 'D';
+  iconLabel: string;
+  color: string;
+  comingSoon?: boolean;
+}
+
 interface Bucket {
   bucketKey: string;
   createdDate: string;
@@ -74,6 +89,31 @@ export default function FileSyncView() {
   const [activeTab, setActiveTab] = useState<'config' | 'browse' | 'history'>('config');
   const [loading, setLoading] = useState(false);
   const { addNotification } = useNotifications();
+  
+  // Cloud provider selection
+  const [selectedProvider, setSelectedProvider] = useState<CloudProvider>('autodesk');
+  const [selectedAutodeskStorage, setSelectedAutodeskStorage] = useState<AutodeskStorageType>('fusion');
+  const [autodeskStorageTypes] = useState<AutodeskStorageInfo[]>([
+    {
+      id: 'fusion',
+      name: 'Autodesk Fusion',
+      shortName: 'Fusion',
+      description: 'Fusion Team cloud storage',
+      icon: 'F',
+      iconLabel: '',
+      color: 'from-orange-500 to-orange-600'
+    },
+    {
+      id: 'docs',
+      name: 'Autodesk Docs',
+      shortName: 'Docs',
+      description: 'ACC & BIM 360 Docs',
+      icon: 'D',
+      iconLabel: 'DOC',
+      color: 'from-blue-500 to-blue-600',
+      comingSoon: true
+    }
+  ]);
   
   // Sync configurations
   const [syncConfigs, setSyncConfigs] = useState<SyncConfig[]>([]);
@@ -628,7 +668,7 @@ export default function FileSyncView() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">File Sync</h1>
-          <p className="text-gray-400">Sync files from Autodesk Cloud to OSS automatically</p>
+          <p className="text-gray-400">Sync files from cloud storage to OSS automatically</p>
         </div>
         <button
           onClick={() => {
@@ -641,6 +681,142 @@ export default function FileSyncView() {
           <Plus className="w-5 h-5" />
           New Sync Config
         </button>
+      </div>
+
+      {/* Cloud Provider Selector */}
+      <div className="bg-slate-800/30 backdrop-blur-lg rounded-xl border border-slate-700/50 p-4">
+        <h3 className="text-sm font-medium text-gray-400 mb-3">Select Cloud Storage Provider</h3>
+        <div className="space-y-3">
+          {/* Autodesk Cloud - Expandable */}
+          <div className={`rounded-xl border-2 transition-all overflow-hidden ${
+            selectedProvider === 'autodesk'
+              ? 'border-orange-500 bg-orange-500/5'
+              : 'border-slate-700/50 bg-slate-800/30 hover:border-slate-600'
+          }`}>
+            <button
+              onClick={() => setSelectedProvider('autodesk')}
+              className="w-full p-4 text-left"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
+                  <Box className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className={`font-medium truncate ${
+                    selectedProvider === 'autodesk' ? 'text-orange-400' : 'text-white'
+                  }`}>
+                    Autodesk Cloud
+                  </h4>
+                  <p className="text-xs text-gray-400 truncate">ACC, BIM360, Fusion Team</p>
+                </div>
+                <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${
+                  selectedProvider === 'autodesk' ? 'rotate-180' : ''
+                }`} />
+              </div>
+            </button>
+            
+            {/* Autodesk Storage Types - Expanded */}
+            {selectedProvider === 'autodesk' && (
+              <div className="px-4 pb-4 pt-1 border-t border-slate-700/50">
+                <p className="text-xs text-gray-500 mb-3">Select storage type:</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                  {autodeskStorageTypes.map((storage) => (
+                    <button
+                      key={storage.id}
+                      onClick={() => !storage.comingSoon && setSelectedAutodeskStorage(storage.id)}
+                      disabled={storage.comingSoon}
+                      className={`relative p-3 rounded-lg border transition-all text-left ${
+                        selectedAutodeskStorage === storage.id
+                          ? 'border-orange-500 bg-orange-500/20'
+                          : storage.comingSoon
+                            ? 'border-slate-700/50 bg-slate-800/50 opacity-50 cursor-not-allowed'
+                            : 'border-slate-700/50 bg-slate-800/50 hover:border-slate-600 hover:bg-slate-700/50'
+                      }`}
+                    >
+                      {storage.comingSoon && (
+                        <span className="absolute top-1 right-1 text-[10px] px-1.5 py-0.5 bg-slate-600/50 text-slate-300 rounded">
+                          Soon
+                        </span>
+                      )}
+                      <div className="flex items-center gap-2">
+                        <div className={`w-8 h-8 rounded-md bg-gradient-to-br ${storage.color} flex flex-col items-center justify-center flex-shrink-0`}>
+                          <span className="text-white font-bold text-sm leading-none">{storage.icon}</span>
+                          {storage.iconLabel && (
+                            <span className={`text-[5px] font-bold px-0.5 rounded-sm mt-0.5 ${
+                              storage.id === 'docs' 
+                                ? 'text-blue-600 bg-white' 
+                                : 'text-white bg-black/30'
+                            }`}>
+                              {storage.iconLabel}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h5 className={`text-sm font-medium truncate ${
+                            selectedAutodeskStorage === storage.id ? 'text-orange-400' : 'text-white'
+                          }`}>
+                            {storage.shortName}
+                          </h5>
+                          <p className="text-[10px] text-gray-400 truncate">{storage.description}</p>
+                        </div>
+                        {selectedAutodeskStorage === storage.id && !storage.comingSoon && (
+                          <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isAuthenticated ? 'bg-green-400' : 'bg-gray-500'}`} />
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Other providers row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {/* Google Drive */}
+            <button
+              disabled
+              className="relative p-4 rounded-xl border-2 border-slate-700/50 bg-slate-800/30 opacity-60 cursor-not-allowed text-left"
+            >
+              <span className="absolute top-2 right-2 text-xs px-2 py-0.5 bg-slate-600/50 text-slate-300 rounded-full">
+                Coming Soon
+              </span>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center">
+                  <svg className="w-6 h-6" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#FFC107" d="M17 6L31 6 45 30 31 30z"/>
+                    <path fill="#1976D2" d="M9.875 42L16.938 30 45 30 37.938 42z"/>
+                    <path fill="#4CAF50" d="M3 30L17 6 24 18 10 42z"/>
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-white truncate">Google Drive</h4>
+                  <p className="text-xs text-gray-400 truncate">Sync from Google Drive</p>
+                </div>
+              </div>
+            </button>
+
+            {/* Dropbox */}
+            <button
+              disabled
+              className="relative p-4 rounded-xl border-2 border-slate-700/50 bg-slate-800/30 opacity-60 cursor-not-allowed text-left"
+            >
+              <span className="absolute top-2 right-2 text-xs px-2 py-0.5 bg-slate-600/50 text-slate-300 rounded-full">
+                Coming Soon
+              </span>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 2l6 3.75L6 9.5 0 5.75 6 2zm12 0l6 3.75-6 3.75-6-3.75L18 2zM0 13.25L6 9.5l6 3.75-6 3.75-6-3.75zm18-3.75l6 3.75-6 3.75-6-3.75 6-3.75zM6 18.25l6-3.75 6 3.75-6 3.75-6-3.75z"/>
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-white truncate">Dropbox</h4>
+                  <p className="text-xs text-gray-400 truncate">Sync from Dropbox</p>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -677,15 +853,15 @@ export default function FileSyncView() {
         ))}
       </div>
 
-      {/* Login Banner - Show on all tabs when not authenticated */}
-      {!isAuthenticated && (
+      {/* Login Banner - Show for Autodesk when not authenticated */}
+      {selectedProvider === 'autodesk' && !isAuthenticated && (
         <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
           <div className="flex items-center gap-3">
             <AlertCircle className="w-6 h-6 text-yellow-400 flex-shrink-0" />
             <div className="flex-1">
               <h4 className="font-medium text-white">Autodesk Login Required</h4>
               <p className="text-sm text-gray-400">
-                To browse and sync files from ACC/Fusion Team, log in with your Autodesk account.
+                To browse and sync files from Autodesk Cloud (Fusion, Docs, Drive), log in with your Autodesk account.
               </p>
             </div>
             <button
@@ -698,13 +874,55 @@ export default function FileSyncView() {
         </div>
       )}
 
-      {/* Content */}
+      {/* Coming Soon Banner for Google Drive and Dropbox */}
+      {(selectedProvider === 'google-drive' || selectedProvider === 'dropbox') && (
+        <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-8 text-center">
+          <div className="max-w-md mx-auto">
+            {selectedProvider === 'google-drive' ? (
+              <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center mx-auto mb-4">
+                <svg className="w-10 h-10" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                  <path fill="#FFC107" d="M17 6L31 6 45 30 31 30z"/>
+                  <path fill="#1976D2" d="M9.875 42L16.938 30 45 30 37.938 42z"/>
+                  <path fill="#4CAF50" d="M3 30L17 6 24 18 10 42z"/>
+                </svg>
+              </div>
+            ) : (
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M6 2l6 3.75L6 9.5 0 5.75 6 2zm12 0l6 3.75-6 3.75-6-3.75L18 2zM0 13.25L6 9.5l6 3.75-6 3.75-6-3.75zm18-3.75l6 3.75-6 3.75-6-3.75 6-3.75zM6 18.25l6-3.75 6 3.75-6 3.75-6-3.75z"/>
+                </svg>
+              </div>
+            )}
+            <h3 className="text-xl font-bold text-white mb-2">
+              {selectedProvider === 'google-drive' ? 'Google Drive' : 'Dropbox'} Integration
+            </h3>
+            <p className="text-gray-400 mb-4">
+              {selectedProvider === 'google-drive' 
+                ? 'Sync CAD files directly from your Google Drive to APS Object Storage Service.'
+                : 'Connect your Dropbox account to automatically sync CAD files to APS.'}
+            </p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700/50 rounded-lg text-gray-300">
+              <Clock className="w-4 h-4" />
+              <span className="text-sm">Coming in a future update</span>
+            </div>
+            <p className="text-xs text-gray-500 mt-4">
+              Want this feature sooner? Let us know at feedback@sydeflow.com
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Content - Only show for Autodesk provider */}
+      {selectedProvider === 'autodesk' && (
       <div className="bg-slate-800/30 backdrop-blur-lg rounded-xl border border-slate-700/50 p-6">
         {activeTab === 'config' && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-white flex items-center gap-2">
               <Link className="w-5 h-5 text-orange-400" />
               Sync Configurations
+              <span className="text-sm font-normal text-gray-400">
+                ({selectedAutodeskStorage === 'fusion' ? 'Fusion Team' : 'ACC/BIM 360'})
+              </span>
             </h3>
             
             {syncConfigs.length === 0 ? (
@@ -796,27 +1014,6 @@ export default function FileSyncView() {
 
         {activeTab === 'browse' && (
           <div className="space-y-4">
-            {/* Login prompt if not authenticated */}
-            {!isAuthenticated && (
-              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-                <div className="flex items-center gap-3">
-                  <AlertCircle className="w-6 h-6 text-yellow-400" />
-                  <div className="flex-1">
-                    <h4 className="font-medium text-white">Autodesk Login Required</h4>
-                    <p className="text-sm text-gray-400">
-                      To browse your ACC/Fusion Team projects, you need to log in with your Autodesk account.
-                    </p>
-                  </div>
-                  <button
-                    onClick={handleLogin}
-                    className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
-                  >
-                    Log in with Autodesk
-                  </button>
-                </div>
-              </div>
-            )}
-
             <div className="grid grid-cols-3 gap-4">
               {/* Hubs */}
               <div className="bg-slate-900/50 rounded-lg p-4">
@@ -952,6 +1149,7 @@ export default function FileSyncView() {
           </div>
         )}
       </div>
+      )}
 
       {/* Create/Edit Modal */}
       {showConfigModal && (

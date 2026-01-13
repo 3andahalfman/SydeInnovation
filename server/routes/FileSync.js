@@ -25,6 +25,18 @@ const ForgeAPI = require('forge-apis');
 const _fs = require('fs');
 const _path = require('path');
 
+// Import activity logger
+let logActivity, ActivityType;
+try {
+    const ActivityLog = require('./ActivityLog');
+    logActivity = ActivityLog.logActivity;
+    ActivityType = ActivityLog.ActivityType;
+} catch (e) {
+    // Fallback if ActivityLog not loaded yet
+    logActivity = (type, data) => console.log(`Activity: ${type}`, data);
+    ActivityType = {};
+}
+
 // In-memory storage for sync configurations (can be moved to database later)
 let syncConfigurations = [];
 let syncHistory = [];
@@ -60,7 +72,7 @@ const saveSyncConfig = () => {
 // Socket.io reference - use global.socketIO set by socket.io.js
 const getIO = () => global.socketIO;
 
-// Emit sync event to connected clients
+// Emit sync event to connected clients and log to activity
 const emitSyncEvent = (event, data) => {
     const io = getIO();
     if (io) {
@@ -68,6 +80,21 @@ const emitSyncEvent = (event, data) => {
         io.emit(event, data);
     } else {
         console.log(`⚠️ Socket.io not initialized, cannot emit ${event}`);
+    }
+    
+    // Also log to activity system for sync:completed and sync:error events
+    if (event === 'sync:completed') {
+        logActivity('sync:completed', {
+            title: 'File Synced',
+            message: data.message || `Synced ${data.fileName}`,
+            details: data.ossObject || {}
+        });
+    } else if (event === 'sync:error') {
+        logActivity('sync:error', {
+            title: 'Sync Error',
+            message: data.message || 'File sync failed',
+            details: { configId: data.configId }
+        });
     }
 };
 
@@ -114,10 +141,10 @@ router.get('/auth/callback', async (req, res) => {
         console.log('✅ User authenticated successfully');
         
         // Redirect back to admin console
-        res.redirect('http://localhost:3001?auth=success');
+        res.redirect('/admin?auth=success');
     } catch (error) {
         console.error('OAuth callback error:', error);
-        res.redirect('http://localhost:3001?auth=error');
+        res.redirect('/admin?auth=error');
     }
 });
 
@@ -510,6 +537,13 @@ router.post('/config', (req, res) => {
     syncConfigurations.push(newConfig);
     saveSyncConfig();
     
+    // Log activity
+    logActivity('sync:config:created', {
+        title: 'Sync Configuration Created',
+        message: `Created sync config "${newConfig.name}"`,
+        details: { configId: newConfig.id, name: newConfig.name, targetBucket: newConfig.targetBucket }
+    });
+    
     res.json(newConfig);
 });
 
@@ -524,6 +558,7 @@ router.put('/config/:id', (req, res) => {
         return res.status(404).json({ error: 'Configuration not found' });
     }
     
+    const oldName = syncConfigurations[index].name;
     syncConfigurations[index] = {
         ...syncConfigurations[index],
         ...req.body,
@@ -531,6 +566,14 @@ router.put('/config/:id', (req, res) => {
     };
     
     saveSyncConfig();
+    
+    // Log activity
+    logActivity('sync:config:updated', {
+        title: 'Sync Configuration Updated',
+        message: `Updated sync config "${syncConfigurations[index].name}"`,
+        details: { configId: id, name: syncConfigurations[index].name }
+    });
+    
     res.json(syncConfigurations[index]);
 });
 
@@ -539,8 +582,19 @@ router.put('/config/:id', (req, res) => {
  */
 router.delete('/config/:id', (req, res) => {
     const { id } = req.params;
+    const config = syncConfigurations.find(c => c.id === id);
+    const configName = config?.name || id;
+    
     syncConfigurations = syncConfigurations.filter(c => c.id !== id);
     saveSyncConfig();
+    
+    // Log activity
+    logActivity('sync:config:deleted', {
+        title: 'Sync Configuration Deleted',
+        message: `Deleted sync config "${configName}"`,
+        details: { configId: id }
+    });
+    
     res.json({ status: 'deleted', id });
 });
 
@@ -818,6 +872,13 @@ router.post('/sync/trigger', async (req, res) => {
         if (folderId) {
             // Sync entire folder
             console.log('🔄 Starting manual sync for folder:', folderId);
+            
+            // Log sync started activity
+            logActivity('sync:started', {
+                title: 'File Sync Started',
+                message: `Starting sync to ${targetBucket}`,
+                details: { targetBucket, folderId }
+            });
             
             const contentsResponse = await axios.get(
                 `https://developer.api.autodesk.com/data/v1/projects/${projectId}/folders/${encodeURIComponent(folderId)}/contents`,
