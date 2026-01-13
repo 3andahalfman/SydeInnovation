@@ -17,6 +17,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
     "autodesk.forge.designautomation": "^3.0.5",
+    "axios": "^1.13.2",
     "body-parser": "^1.20.4",
     "concurrently": "^8.2.2",
     "cookie-session": "^2.1.1",

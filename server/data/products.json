@@ -1,0 +1,52 @@
+{
+  "products": [
+    {
+      "id": "product-1768185436087",
+      "status": "testing",
+      "description": "Test",
+      "name": "Test Product",
+      "parameters": [],
+      "category": "wardrobes",
+      "createdAt": "2026-01-12T02:37:16.087Z",
+      "updatedAt": "2026-01-13T00:21:09.348Z",
+      "ossBucket": "syde-sample",
+      "ossObjectKey": "inventor_sample_file.ipt",
+      "activityId": "UpdateIPTParamActivity+dev",
+      "pricing": {
+        "basePrice": 10
+      }
+    }
+  ],
+  "categories": [
+    {
+      "id": "wardrobes",
+      "name": "Wardrobes",
+      "icon": "Box"
+    },
+    {
+      "id": "cabinets",
+      "name": "Cabinets",
+      "icon": "Box"
+    },
+    {
+      "id": "tables",
+      "name": "Tables",
+      "icon": "Table2"
+    },
+    {
+      "id": "shelving",
+      "name": "Shelving",
+      "icon": "Grid3x3"
+    },
+    {
+      "id": "furniture",
+      "name": "Furniture",
+      "icon": "Armchair"
+    },
+    {
+      "id": "other",
+      "name": "Other",
+      "icon": "Box"
+    }
+  ]
+}

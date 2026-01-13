@@ -1,0 +1,216 @@
+' =====================================================
+' PARAMETER EXTRACTION iLogic CODE
+' For use with Design Automation for Inventor
+' =====================================================
+' This code extracts all user parameters from an Inventor
+' file (IPT or IAM) and outputs them as JSON for use in
+' SydeFlow Design Automation Platform
+' =====================================================
+
+Imports System.IO
+Imports Newtonsoft.Json
+
+Sub Main()
+    ' Get the active document
+    Dim doc As Document = ThisApplication.ActiveDocument
+    
+    ' Create parameter list
+    Dim paramList As New List(Of Object)
+    
+    ' Handle Part documents
+    If TypeOf doc Is PartDocument Then
+        Dim partDoc As PartDocument = doc
+        ExtractParameters(partDoc.ComponentDefinition.Parameters.UserParameters, paramList)
+    
+    ' Handle Assembly documents
+    ElseIf TypeOf doc Is AssemblyDocument Then
+        Dim assyDoc As AssemblyDocument = doc
+        ExtractParameters(assyDoc.ComponentDefinition.Parameters.UserParameters, paramList)
+    End If
+    
+    ' Create output object
+    Dim output As New Dictionary(Of String, Object)
+    output("fileName") = doc.DisplayName
+    output("fileType") = GetFileType(doc)
+    output("parameters") = paramList
+    output("extractedAt") = DateTime.Now.ToString("o")
+    output("parameterCount") = paramList.Count
+    
+    ' Serialize to JSON
+    Dim json As String = JsonConvert.SerializeObject(output, Formatting.Indented)
+    
+    ' Get output path from arguments or use default
+    Dim outputPath As String = ""
+    Try
+        ' Design Automation passes arguments - try to get outputJson path
+        outputPath = System.Environment.GetEnvironmentVariable("DA_OUTPUT_JSON")
+        If String.IsNullOrEmpty(outputPath) Then
+            ' Fallback to same directory as input file
+            outputPath = IO.Path.Combine(IO.Path.GetDirectoryName(doc.FullFileName), "parameters.json")
+        End If
+    Catch
+        outputPath = IO.Path.Combine(IO.Path.GetDirectoryName(doc.FullFileName), "parameters.json")
+    End Try
+    
+    ' Write to output file
+    IO.File.WriteAllText(outputPath, json)
+    
+    ' Log success
+    Logger.Info("Parameters extracted successfully: " & paramList.Count & " parameters")
+    Logger.Info("Output written to: " & outputPath)
+End Sub
+
+Sub ExtractParameters(userParams As UserParameters, paramList As List(Of Object))
+    For Each param As UserParameter In userParams
+        Dim paramInfo As New Dictionary(Of String, Object)
+        
+        ' Basic properties
+        paramInfo("name") = param.Name
+        paramInfo("displayName") = FormatDisplayName(param.Name)
+        paramInfo("expression") = param.Expression
+        paramInfo("unit") = GetUnitString(param)
+        
+        ' Determine type and get value
+        If param.ParameterType = ParameterTypeEnum.kTextParameter Then
+            paramInfo("type") = "text"
+            paramInfo("defaultValue") = param.Expression
+        ElseIf param.ParameterType = ParameterTypeEnum.kBooleanParameter Then
+            paramInfo("type") = "boolean"
+            paramInfo("defaultValue") = param.Value
+        Else
+            paramInfo("type") = "number"
+            ' Get numeric value in document units
+            paramInfo("defaultValue") = param.Value
+            
+            ' Try to get numeric limits if defined
+            Try
+                If param.HasLimits Then
+                    paramInfo("min") = param.LowerBound
+                    paramInfo("max") = param.UpperBound
+                End If
+            Catch
+                ' Limits not available - that's fine
+            End Try
+        End If
+        
+        ' Try to detect parameter group from name patterns
+        paramInfo("group") = DetectGroup(param.Name, param.Units)
+        
+        ' Add export flag (useful for filtering which params to expose)
+        paramInfo("exportable") = True
+        
+        ' Add to list
+        paramList.Add(paramInfo)
+    Next
+End Sub
+
+Function FormatDisplayName(name As String) As String
+    ' Convert camelCase, PascalCase, or d0/d1 style names to readable format
+    Dim result As String = name
+    
+    ' Handle d0, d1, d2 style parameters
+    If System.Text.RegularExpressions.Regex.IsMatch(name, "^d\d+$") Then
+        Return "Parameter " & name
+    End If
+    
+    ' Handle underscore_case
+    result = result.Replace("_", " ")
+    
+    ' Add spaces before capitals (camelCase/PascalCase)
+    result = System.Text.RegularExpressions.Regex.Replace(result, "([a-z])([A-Z])", "$1 $2")
+    
+    ' Capitalize first letter
+    If result.Length > 0 Then
+        result = Char.ToUpper(result(0)) & result.Substring(1)
+    End If
+    
+    Return result.Trim()
+End Function
+
+Function GetUnitString(param As UserParameter) As String
+    Try
+        Dim units As UnitsOfMeasure = ThisApplication.ActiveDocument.UnitsOfMeasure
+        Dim unitType As UnitsTypeEnum = param.Units
+        
+        Select Case unitType
+            Case UnitsTypeEnum.kMillimeterLengthUnits
+                Return "mm"
+            Case UnitsTypeEnum.kCentimeterLengthUnits
+                Return "cm"
+            Case UnitsTypeEnum.kMeterLengthUnits
+                Return "m"
+            Case UnitsTypeEnum.kInchLengthUnits
+                Return "in"
+            Case UnitsTypeEnum.kFootLengthUnits
+                Return "ft"
+            Case UnitsTypeEnum.kDegreeAngleUnits
+                Return "deg"
+            Case UnitsTypeEnum.kRadianAngleUnits
+                Return "rad"
+            Case UnitsTypeEnum.kKilogramMassUnits
+                Return "kg"
+            Case UnitsTypeEnum.kGramMassUnits
+                Return "g"
+            Case UnitsTypeEnum.kPoundMassUnits
+                Return "lb"
+            Case Else
+                Return ""
+        End Select
+    Catch
+        Return ""
+    End Try
+End Function
+
+Function DetectGroup(name As String, unitType As UnitsTypeEnum) As String
+    Dim nameLower As String = name.ToLower()
+    
+    ' Check name patterns first
+    If nameLower.Contains("width") Or nameLower.Contains("depth") Or _
+       nameLower.Contains("height") Or nameLower.Contains("length") Or _
+       nameLower.Contains("size") Then
+        Return "Dimensions"
+    End If
+    
+    If nameLower.Contains("material") Or nameLower.Contains("finish") Or _
+       nameLower.Contains("color") Or nameLower.Contains("texture") Then
+        Return "Material"
+    End If
+    
+    If nameLower.Contains("angle") Or nameLower.Contains("rotation") Then
+        Return "Angles"
+    End If
+    
+    If nameLower.Contains("count") Or nameLower.Contains("qty") Or _
+       nameLower.Contains("number") Or nameLower.Contains("quantity") Then
+        Return "Quantity"
+    End If
+    
+    ' Check unit type
+    Select Case unitType
+        Case UnitsTypeEnum.kMillimeterLengthUnits, _
+             UnitsTypeEnum.kCentimeterLengthUnits, _
+             UnitsTypeEnum.kMeterLengthUnits, _
+             UnitsTypeEnum.kInchLengthUnits, _
+             UnitsTypeEnum.kFootLengthUnits
+            Return "Dimensions"
+        Case UnitsTypeEnum.kDegreeAngleUnits, _
+             UnitsTypeEnum.kRadianAngleUnits
+            Return "Angles"
+        Case Else
+            Return "General"
+    End Select
+End Function
+
+Function GetFileType(doc As Document) As String
+    If TypeOf doc Is PartDocument Then
+        Return "IPT"
+    ElseIf TypeOf doc Is AssemblyDocument Then
+        Return "IAM"
+    ElseIf TypeOf doc Is DrawingDocument Then
+        Return "IDW"
+    ElseIf TypeOf doc Is PresentationDocument Then
+        Return "IPN"
+    Else
+        Return "Unknown"
+    End If
+End Function

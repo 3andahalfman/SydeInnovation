@@ -13,9 +13,9 @@ if (!config.credentials.client_id || !config.credentials.client_secret) {
 
 let app = express();
 
-// Enable CORS for Vite dev server
+// Enable CORS for Vite dev server and Next.js admin console
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:8080'],
+    origin: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:8080'],
     credentials: true
 }));
 
@@ -37,6 +37,7 @@ app.use(express.json({ limit: '50mb' }));
 
 // API routes
 app.use('/api', require('./routes/DesignAutomation'));
+app.use('/api/filesync', require('./routes/FileSync'));
 
 // Serve React app for all other routes (SPA fallback)
 app.get('*', (req, res) => {

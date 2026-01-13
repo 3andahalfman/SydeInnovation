@@ -1,8 +1,11 @@
-const { AuthClientTwoLegged } = require('forge-apis');
+const { AuthClientTwoLegged, AuthClientThreeLegged } = require('forge-apis');
 const config = require('../../config');
 
 // Tokens are auto-refreshed, keeping clients in simple cache
 let cache = {};
+
+// 3-legged token storage (per user session)
+let userTokens = {};
 
 // Since we got 3 calls at the first page loading, let's initialize this one now,
 // to avoid concurrent requests.
@@ -31,6 +34,100 @@ async function getClient(scopes) {
     }
 }
 
+/**
+ * Creates a 3-legged OAuth client for user authentication
+ * @param {string[]} scopes List of resource access scopes.
+ * @param {string} callbackUrl Optional custom callback URL
+ * @returns {AuthClientThreeLegged} 3-legged authentication client.
+ */
+function getThreeLeggedClient(scopes, callbackUrl) {
+    const { client_id, client_secret, callback_url } = config.credentials;
+    scopes = scopes || ['data:read', 'data:write', 'data:create', 'account:read'];
+    const finalCallbackUrl = callbackUrl || callback_url;
+    return new AuthClientThreeLegged(client_id, client_secret, finalCallbackUrl, scopes, true);
+}
+
+/**
+ * Gets the authorization URL for 3-legged OAuth
+ * @param {string} callbackUrl Optional custom callback URL
+ */
+function getAuthorizationUrl(callbackUrl) {
+    const client = getThreeLeggedClient(null, callbackUrl);
+    return client.generateAuthUrl();
+}
+
+/**
+ * Exchanges authorization code for tokens
+ * @param {string} code Authorization code
+ * @param {string} callbackUrl Must match the URL used during authorization
+ */
+async function exchangeCodeForToken(code, callbackUrl) {
+    const client = getThreeLeggedClient(null, callbackUrl);
+    const credentials = await client.getToken(code);
+    return {
+        client,
+        credentials
+    };
+}
+
+/**
+ * Stores user tokens in memory (for demo - use database in production)
+ */
+function setUserToken(sessionId, credentials) {
+    userTokens[sessionId] = {
+        credentials,
+        timestamp: Date.now()
+    };
+}
+
+/**
+ * Gets user tokens
+ */
+function getUserToken(sessionId) {
+    return userTokens[sessionId]?.credentials || null;
+}
+
+/**
+ * Checks if user is authenticated
+ */
+function isUserAuthenticated(sessionId) {
+    const token = userTokens[sessionId];
+    if (!token) return false;
+    // Check if token is expired (rough check - tokens last ~1 hour)
+    if (Date.now() - token.timestamp > 55 * 60 * 1000) {
+        delete userTokens[sessionId];
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Refreshes user token
+ */
+async function refreshUserToken(sessionId) {
+    const token = userTokens[sessionId];
+    if (!token) return null;
+    
+    try {
+        const client = getThreeLeggedClient();
+        client.setCredentials(token.credentials);
+        const newCredentials = await client.refreshToken(token.credentials);
+        setUserToken(sessionId, newCredentials);
+        return newCredentials;
+    } catch (error) {
+        console.error('Failed to refresh token:', error);
+        delete userTokens[sessionId];
+        return null;
+    }
+}
+
 module.exports = {
-    getClient
+    getClient,
+    getThreeLeggedClient,
+    getAuthorizationUrl,
+    exchangeCodeForToken,
+    setUserToken,
+    getUserToken,
+    isUserAuthenticated,
+    refreshUserToken
 };

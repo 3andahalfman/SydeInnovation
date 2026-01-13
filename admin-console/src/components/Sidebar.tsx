@@ -1,9 +1,10 @@
 'use client';
 
 import { ViewType } from '@/app/page';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { 
-  LayoutDashboard, Workflow, FolderOpen, Package, 
-  Activity, Settings, Zap, Server, Box, Database
+  LayoutDashboard, Workflow, Package, 
+  Activity, Settings, Zap, Server, Database, ShoppingBag, CloudCog
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -12,17 +13,28 @@ interface SidebarProps {
   serverStatus: 'online' | 'offline' | 'checking';
 }
 
-const navItems: { id: ViewType; label: string; icon: React.ElementType }[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'automation', label: 'Design Automation', icon: Workflow },
-  { id: 'files', label: 'File Manager', icon: FolderOpen },
-  { id: 'oss', label: 'OSS Buckets', icon: Database },
-  { id: 'bundles', label: 'App Bundles', icon: Package },
-  { id: 'activity', label: 'Activity Log', icon: Activity },
-  { id: 'settings', label: 'Settings', icon: Settings },
+const navItems: { id: ViewType; label: string; icon: React.ElementType; description?: string }[] = [
+  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, description: 'Overview & Status' },
+  { id: 'sync', label: 'File Sync', icon: CloudCog, description: 'Sync from Cloud' },
+  { id: 'oss', label: 'OSS Buckets', icon: Database, description: 'File Storage' },
+  { id: 'products', label: 'Products', icon: ShoppingBag, description: 'Configurations' },
+  { id: 'automation', label: 'Design Automation', icon: Workflow, description: 'Run Jobs' },
+  { id: 'bundles', label: 'App Bundles', icon: Package, description: 'Custom Code' },
+  { id: 'activity', label: 'Activity Log', icon: Activity, description: 'History' },
+  { id: 'settings', label: 'Settings', icon: Settings, description: 'Configuration' },
 ];
 
 export default function Sidebar({ activeView, setActiveView, serverStatus }: SidebarProps) {
+  const { notifications, clearNotification } = useNotifications();
+
+  const handleNavClick = (viewId: ViewType) => {
+    setActiveView(viewId);
+    // Clear notification when user views the tab
+    if (notifications[viewId] > 0) {
+      clearNotification(viewId);
+    }
+  };
+
   return (
     <aside className="w-64 bg-slate-900/50 backdrop-blur-lg border-r border-slate-700/50 flex flex-col">
       {/* Logo */}
@@ -43,19 +55,32 @@ export default function Sidebar({ activeView, setActiveView, serverStatus }: Sid
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeView === item.id;
+          const notificationCount = notifications[item.id] || 0;
           
           return (
             <button
               key={item.id}
-              onClick={() => setActiveView(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+              onClick={() => handleNavClick(item.id)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 relative ${
                 isActive 
                   ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' 
                   : 'text-gray-400 hover:bg-slate-700/50 hover:text-white'
               }`}
             >
-              <Icon className="w-5 h-5" />
-              <span className="font-medium">{item.label}</span>
+              <div className="relative">
+                <Icon className="w-5 h-5" />
+                {notificationCount > 0 && !isActive && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 bg-gradient-to-br from-cyan-400/90 via-blue-500/90 to-cyan-600/90 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg shadow-cyan-500/40 backdrop-blur-sm border border-white/30">
+                    {notificationCount > 99 ? '99+' : notificationCount}
+                  </span>
+                )}
+              </div>
+              <span className="font-medium flex-1 text-left">{item.label}</span>
+              {notificationCount > 0 && isActive && (
+                <span className="text-xs text-cyan-400/60">
+                  {notificationCount} new
+                </span>
+              )}
             </button>
           );
         })}

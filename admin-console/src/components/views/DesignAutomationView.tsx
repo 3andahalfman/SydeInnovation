@@ -5,7 +5,7 @@ import {
   Play, Upload, FileCode, RefreshCw, CheckCircle, 
   XCircle, Clock, Loader2, ChevronDown, ChevronRight,
   Terminal, Download, Eye, Trash2, AlertCircle, Box,
-  Settings, Zap, ArrowRight
+  Settings, Zap, ArrowRight, Package, Cog
 } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
 
@@ -40,10 +40,18 @@ export default function DesignAutomationView() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [workItemStatus, setWorkItemStatus] = useState<WorkItemStatus | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<'upload' | 'parameters' | 'output'>('upload');
+  const [activeTab, setActiveTab] = useState<'setup' | 'upload' | 'parameters' | 'output'>('setup');
   const socketRef = useRef<Socket | null>(null);
   const logsEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Setup tab state
+  const [localBundles, setLocalBundles] = useState<string[]>([]);
+  const [engines, setEngines] = useState<string[]>([]);
+  const [activities, setActivities] = useState<string[]>([]);
+  const [selectedBundle, setSelectedBundle] = useState<string>('');
+  const [selectedEngine, setSelectedEngine] = useState<string>('');
+  const [loadingSetup, setLoadingSetup] = useState(false);
 
   useEffect(() => {
     // Connect to socket.io for real-time updates
@@ -78,10 +86,125 @@ export default function DesignAutomationView() {
       setIsProcessing(false);
     });
 
+    // Load setup data
+    fetchSetupData();
+
     return () => {
       socketRef.current?.disconnect();
     };
   }, []);
+
+  const fetchSetupData = async () => {
+    setLoadingSetup(true);
+    try {
+      // Fetch local bundles, engines, and activities in parallel
+      const [bundlesRes, enginesRes, activitiesRes] = await Promise.all([
+        fetch('/api/appbundles'),
+        fetch('/api/aps/designautomation/engines'),
+        fetch('/api/aps/designautomation/activities')
+      ]);
+
+      const bundles = await bundlesRes.json();
+      const enginesList = await enginesRes.json();
+      const activitiesList = await activitiesRes.json();
+
+      console.log('Setup data loaded:', { bundles, enginesList, activitiesList });
+
+      setLocalBundles(Array.isArray(bundles) ? bundles : []);
+      setEngines(Array.isArray(enginesList) ? enginesList : []);
+      setActivities(Array.isArray(activitiesList) ? activitiesList : []);
+
+      if (bundles.length > 0) setSelectedBundle(bundles[0]);
+      // Default to Inventor engine
+      const inventorEngine = enginesList.find((e: string) => e.includes('Inventor'));
+      if (inventorEngine) setSelectedEngine(inventorEngine);
+      else if (enginesList.length > 0) setSelectedEngine(enginesList[0]);
+
+    } catch (error) {
+      console.error('Failed to load setup data:', error);
+      addLog('❌ Failed to load setup data');
+    } finally {
+      setLoadingSetup(false);
+    }
+  };
+
+  const createAppBundleAndActivity = async () => {
+    if (!selectedBundle || !selectedEngine) {
+      addLog('⚠️ Please select a bundle and engine');
+      return;
+    }
+
+    setIsProcessing(true);
+    addLog(`🚀 Creating AppBundle and Activity for ${selectedBundle}...`);
+
+    try {
+      // Step 1: Create AppBundle
+      addLog(`📦 Uploading AppBundle: ${selectedBundle}...`);
+      const bundleRes = await fetch('/api/aps/designautomation/appbundles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          zipFileName: selectedBundle,
+          engine: selectedEngine
+        })
+      });
+
+      const bundleData = await bundleRes.json();
+      if (!bundleRes.ok) {
+        throw new Error(bundleData.diagnostic || 'Failed to create AppBundle');
+      }
+      addLog(`✅ AppBundle created: ${bundleData.appBundle} v${bundleData.version}`);
+
+      // Step 2: Create Activity
+      addLog(`⚙️ Creating Activity...`);
+      const activityRes = await fetch('/api/aps/designautomation/activities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          zipFileName: selectedBundle,
+          engine: selectedEngine
+        })
+      });
+
+      const activityData = await activityRes.json();
+      if (!activityRes.ok) {
+        throw new Error(activityData.diagnostic || 'Failed to create Activity');
+      }
+      addLog(`✅ Activity created: ${activityData.activity}`);
+
+      // Refresh activities list
+      await fetchSetupData();
+      addLog('🎉 Setup complete! You can now use Design Automation.');
+
+    } catch (error: any) {
+      addLog(`❌ Error: ${error.message}`);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const clearAccount = async () => {
+    if (!confirm('This will delete ALL AppBundles and Activities from your APS account. This cannot be undone. Continue?')) {
+      return;
+    }
+
+    setIsProcessing(true);
+    addLog('🗑️ Clearing APS account...');
+
+    try {
+      const res = await fetch('/api/aps/designautomation/account', { method: 'DELETE' });
+      if (res.ok) {
+        addLog('✅ Account cleared successfully');
+        await fetchSetupData();
+      } else {
+        addLog('❌ Failed to clear account');
+      }
+    } catch (error: any) {
+      addLog(`❌ Error: ${error.message}`);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   useEffect(() => {
     logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -207,7 +330,7 @@ export default function DesignAutomationView() {
       <div className="flex flex-col space-y-4">
         {/* Tabs */}
         <div className="flex gap-2 bg-slate-800/30 p-2 rounded-xl">
-          {(['upload', 'parameters', 'output'] as const).map(tab => (
+          {(['setup', 'upload', 'parameters', 'output'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -224,6 +347,144 @@ export default function DesignAutomationView() {
 
         {/* Tab Content */}
         <div className="flex-1 bg-slate-800/30 backdrop-blur-lg rounded-xl border border-slate-700/50 p-6 overflow-auto">
+          {activeTab === 'setup' && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
+                  <Cog className="w-5 h-5 text-orange-400" />
+                  Design Automation Setup
+                </h3>
+                <p className="text-sm text-gray-400 mb-4">
+                  Configure AppBundles and Activities to enable Design Automation processing.
+                </p>
+              </div>
+
+              {/* Current Activities */}
+              <div className="bg-slate-900/50 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-medium text-white flex items-center gap-2">
+                    <Package className="w-4 h-4 text-orange-400" />
+                    Registered Activities
+                  </h4>
+                  <button
+                    onClick={fetchSetupData}
+                    disabled={loadingSetup}
+                    className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors"
+                    title="Refresh"
+                  >
+                    <RefreshCw className={`w-4 h-4 text-gray-400 ${loadingSetup ? 'animate-spin' : ''}`} />
+                  </button>
+                </div>
+                {activities.length === 0 ? (
+                  <div className="text-center py-4">
+                    <AlertCircle className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
+                    <p className="text-gray-400 text-sm">No activities registered yet</p>
+                    <p className="text-gray-500 text-xs">Create an AppBundle and Activity below to get started</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {activities.map((activity) => (
+                      <div key={activity} className="flex items-center gap-2 px-3 py-2 bg-green-500/10 border border-green-500/30 rounded-lg">
+                        <CheckCircle className="w-4 h-4 text-green-400" />
+                        <span className="text-sm text-white">{activity}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Create New AppBundle & Activity */}
+              <div className="bg-slate-900/50 rounded-lg p-4">
+                <h4 className="font-medium text-white mb-4 flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-orange-400" />
+                  Create AppBundle & Activity
+                </h4>
+
+                <div className="space-y-4">
+                  {/* Bundle Selection */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Local Bundle (ZIP)
+                    </label>
+                    <select
+                      value={selectedBundle}
+                      onChange={(e) => setSelectedBundle(e.target.value)}
+                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                    >
+                      {localBundles.length === 0 ? (
+                        <option disabled>No bundles found in server/bundles/</option>
+                      ) : (
+                        localBundles.map((bundle) => (
+                          <option key={bundle} value={bundle}>{bundle}</option>
+                        ))
+                      )}
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Place .zip bundles in server/bundles/ folder
+                    </p>
+                  </div>
+
+                  {/* Engine Selection */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Design Automation Engine
+                    </label>
+                    <select
+                      value={selectedEngine}
+                      onChange={(e) => setSelectedEngine(e.target.value)}
+                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                    >
+                      {engines.length === 0 ? (
+                        <option disabled>Loading engines...</option>
+                      ) : (
+                        engines.map((engine) => (
+                          <option key={engine} value={engine}>{engine}</option>
+                        ))
+                      )}
+                    </select>
+                  </div>
+
+                  {/* Create Button */}
+                  <button
+                    onClick={createAppBundleAndActivity}
+                    disabled={isProcessing || !selectedBundle || !selectedEngine}
+                    className="w-full py-3 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Creating...
+                      </>
+                    ) : (
+                      <>
+                        <Package className="w-5 h-5" />
+                        Create AppBundle & Activity
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Danger Zone */}
+              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                <h4 className="font-medium text-red-400 mb-2 flex items-center gap-2">
+                  <Trash2 className="w-4 h-4" />
+                  Danger Zone
+                </h4>
+                <p className="text-sm text-gray-400 mb-3">
+                  Clear all AppBundles and Activities from your APS account.
+                </p>
+                <button
+                  onClick={clearAccount}
+                  disabled={isProcessing}
+                  className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg font-medium transition-colors border border-red-500/30"
+                >
+                  Clear Account
+                </button>
+              </div>
+            </div>
+          )}
+
           {activeTab === 'upload' && (
             <div className="space-y-6">
               <div>

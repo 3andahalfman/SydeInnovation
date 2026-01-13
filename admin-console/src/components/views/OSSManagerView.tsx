@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { 
   Database, FolderPlus, Trash2, RefreshCw, Upload, Download,
   File, Folder, ChevronRight, AlertCircle, CheckCircle,
-  Loader2, Eye, X, HardDrive, Clock, Shield, Maximize2, Minimize2, Box
+  Loader2, Eye, X, HardDrive, Clock, Shield, Maximize2, Minimize2, Box, CloudCog
 } from 'lucide-react';
 
 declare global {
@@ -27,10 +27,18 @@ interface OSSObject {
   location: string;
 }
 
+interface SyncInfo {
+  syncedAt: string;
+  sourceFolder?: string;
+  sourceFile?: string;
+  configId?: string;
+}
+
 export default function OSSManagerView() {
   const [buckets, setBuckets] = useState<Bucket[]>([]);
   const [selectedBucket, setSelectedBucket] = useState<string | null>(null);
   const [objects, setObjects] = useState<OSSObject[]>([]);
+  const [syncedFiles, setSyncedFiles] = useState<Record<string, SyncInfo>>({});
   const [loading, setLoading] = useState(false);
   const [loadingObjects, setLoadingObjects] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -73,12 +81,21 @@ export default function OSSManagerView() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/aps/oss/buckets');
+      const response = await fetch('/api/oss/buckets');
       if (!response.ok) {
         throw new Error('Failed to fetch buckets');
       }
       const data = await response.json();
-      setBuckets(data);
+      // Handle different response formats
+      let bucketList: Bucket[] = [];
+      if (Array.isArray(data)) {
+        bucketList = data;
+      } else if (data.items && Array.isArray(data.items)) {
+        bucketList = data.items;
+      } else if (data.value && Array.isArray(data.value)) {
+        bucketList = data.value;
+      }
+      setBuckets(bucketList);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch buckets');
     } finally {
@@ -90,16 +107,48 @@ export default function OSSManagerView() {
     setLoadingObjects(true);
     setError(null);
     try {
-      const response = await fetch(`/api/aps/oss/buckets/${bucketKey}/objects`);
+      const response = await fetch(`/api/oss/buckets/${bucketKey}/objects`);
       if (!response.ok) {
         throw new Error('Failed to fetch objects');
       }
       const data = await response.json();
-      setObjects(data);
+      // Handle different response formats
+      let objectList: OSSObject[] = [];
+      if (Array.isArray(data)) {
+        objectList = data;
+      } else if (data.items && Array.isArray(data.items)) {
+        objectList = data.items;
+      } else if (data.value && Array.isArray(data.value)) {
+        objectList = data.value;
+      }
+      setObjects(objectList);
+      
+      // Fetch sync info for these objects
+      if (objectList.length > 0) {
+        fetchSyncedFiles(bucketKey, objectList.map(o => o.objectKey));
+      } else {
+        setSyncedFiles({});
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch objects');
     } finally {
       setLoadingObjects(false);
+    }
+  };
+
+  const fetchSyncedFiles = async (bucketKey: string, objectKeys: string[]) => {
+    try {
+      const response = await fetch('/api/filesync/synced-files/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bucketKey, objectKeys })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setSyncedFiles(data);
+      }
+    } catch (err) {
+      console.log('Could not fetch sync info:', err);
     }
   };
 
@@ -112,24 +161,35 @@ export default function OSSManagerView() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/aps/oss/buckets', {
+      const bucketName = newBucketKey.toLowerCase().replace(/[^a-z0-9-]/g, '');
+      const response = await fetch('/api/oss/buckets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          bucketKey: newBucketKey.toLowerCase().replace(/[^a-z0-9-]/g, ''),
+          bucketKey: bucketName,
           policyKey: newBucketPolicy 
         }),
       });
       
+      const data = await response.json();
+      
       if (!response.ok) {
-        const data = await response.json();
+        // If bucket already exists (409), still close dialog and refresh
+        if (response.status === 409) {
+          setSuccess('Bucket already exists - refreshing list');
+          setNewBucketKey('');
+          setShowNewBucketForm(false);
+          await fetchBuckets();
+          setTimeout(() => setSuccess(null), 3000);
+          return;
+        }
         throw new Error(data.diagnostic || 'Failed to create bucket');
       }
       
       setSuccess('Bucket created successfully!');
       setNewBucketKey('');
       setShowNewBucketForm(false);
-      fetchBuckets();
+      await fetchBuckets();
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create bucket');
@@ -146,7 +206,7 @@ export default function OSSManagerView() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/aps/oss/buckets/${bucketKey}`, {
+      const response = await fetch(`/api/oss/buckets/${bucketKey}`, {
         method: 'DELETE',
       });
       
@@ -179,7 +239,7 @@ export default function OSSManagerView() {
       formData.append('file', uploadFile);
       formData.append('objectKey', uploadFile.name);
       
-      const response = await fetch(`/api/aps/oss/buckets/${selectedBucket}/objects`, {
+      const response = await fetch(`/api/oss/buckets/${selectedBucket}/objects`, {
         method: 'POST',
         body: formData,
       });
@@ -207,7 +267,7 @@ export default function OSSManagerView() {
     setLoadingObjects(true);
     setError(null);
     try {
-      const response = await fetch(`/api/aps/oss/buckets/${selectedBucket}/objects/${encodeURIComponent(objectKey)}`, {
+      const response = await fetch(`/api/oss/buckets/${selectedBucket}/objects/${encodeURIComponent(objectKey)}`, {
         method: 'DELETE',
       });
       
@@ -230,7 +290,7 @@ export default function OSSManagerView() {
     if (!selectedBucket) return;
     
     try {
-      const response = await fetch(`/api/aps/oss/buckets/${selectedBucket}/objects/${encodeURIComponent(objectKey)}/download`);
+      const response = await fetch(`/api/oss/buckets/${selectedBucket}/objects/${encodeURIComponent(objectKey)}/download`);
       if (!response.ok) {
         throw new Error('Failed to get download URL');
       }
@@ -255,7 +315,7 @@ export default function OSSManagerView() {
       
       // Try to start translation
       try {
-        await fetch('/api/aps/oss/translate', {
+        await fetch('/api/oss/translate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ objectId: obj.objectId }),
@@ -270,7 +330,7 @@ export default function OSSManagerView() {
       
       while (!translationComplete && attempts < 60) {
         try {
-          const statusResponse = await fetch(`/api/aps/translation/${urn}`);
+          const statusResponse = await fetch(`/api/translation/${urn}`);
           if (statusResponse.ok) {
             const status = await statusResponse.json();
             setTranslationStatus(`Translation: ${status.status} (${status.progress || '0%'})`);
@@ -303,7 +363,7 @@ export default function OSSManagerView() {
     }
 
     try {
-      const tokenResponse = await fetch('/api/aps/auth/token');
+      const tokenResponse = await fetch('/api/auth/token');
       const tokenData = await tokenResponse.json();
       
       const options = {
@@ -453,8 +513,12 @@ export default function OSSManagerView() {
         <div className={`fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 ${viewerFullscreen ? 'p-0' : 'p-6'}`}>
           <div className={`bg-slate-900 rounded-2xl border border-slate-700 overflow-hidden flex flex-col ${viewerFullscreen ? 'w-full h-full rounded-none' : 'w-full max-w-6xl h-[80vh]'}`}>
             <div className="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-800">
-              <div className="flex items-center gap-3">
-                <Box className="w-5 h-5 text-orange-400" />
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded-lg">
+                  <Box className="w-5 h-5 text-cyan-400" />
+                  <span className="text-sm font-bold text-cyan-400">3D Viewer SDK</span>
+                </div>
+                <div className="h-6 w-px bg-slate-600" />
                 <div>
                   <h3 className="font-semibold text-white">{viewerObject?.objectKey}</h3>
                   <p className="text-xs text-gray-400">{viewerLoading ? translationStatus : 'Ready'}</p>
@@ -677,12 +741,15 @@ export default function OSSManagerView() {
                 <thead className="bg-slate-900/50 sticky top-0">
                   <tr>
                     <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase">Name</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase">Source</th>
                     <th className="text-left px-4 py-3 text-xs font-medium text-gray-400 uppercase">Size</th>
                     <th className="text-right px-4 py-3 text-xs font-medium text-gray-400 uppercase">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700/50">
-                  {objects.map((obj) => (
+                  {objects.map((obj) => {
+                    const syncInfo = syncedFiles[obj.objectKey];
+                    return (
                     <tr key={obj.objectKey} className="hover:bg-slate-700/30 transition-colors">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
@@ -696,6 +763,16 @@ export default function OSSManagerView() {
                             <span className="text-xs px-1.5 py-0.5 bg-orange-500/20 text-orange-400 rounded">3D</span>
                           )}
                         </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        {syncInfo ? (
+                          <div className="flex items-center gap-2" title={`Synced: ${new Date(syncInfo.syncedAt).toLocaleString()}`}>
+                            <CloudCog className="w-4 h-4 text-cyan-400" />
+                            <span className="text-xs px-1.5 py-0.5 bg-cyan-500/20 text-cyan-400 rounded">Auto-Sync</span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-gray-500">Manual Upload</span>
+                        )}
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-gray-400 text-sm">{formatBytes(obj.size)}</span>
@@ -728,7 +805,8 @@ export default function OSSManagerView() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  );
+                  })}
                 </tbody>
               </table>
             )}

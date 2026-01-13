@@ -43,11 +43,23 @@ export default function DashboardView({ serverStatus, onRefresh }: DashboardView
     try {
       // Fetch app bundles
       const bundlesRes = await fetch('/api/aps/appbundles');
-      const bundlesData = bundlesRes.ok ? await bundlesRes.json() : { data: [] };
+      let bundlesData = { data: [] };
+      if (bundlesRes.ok) {
+        const text = await bundlesRes.text();
+        try {
+          bundlesData = JSON.parse(text);
+        } catch { /* not JSON */ }
+      }
       
       // Fetch activities
       const activitiesRes = await fetch('/api/aps/activities');
-      const activitiesData = activitiesRes.ok ? await activitiesRes.json() : { data: [] };
+      let activitiesData = { data: [] };
+      if (activitiesRes.ok) {
+        const text = await activitiesRes.text();
+        try {
+          activitiesData = JSON.parse(text);
+        } catch { /* not JSON */ }
+      }
 
       setStats({
         appBundles: bundlesData.data?.length || 0,

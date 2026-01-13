@@ -1023,4 +1023,693 @@ router.post('/oss/translate', async (req, res) => {
     }
 });
 
+// ============================================================================
+// PRODUCT MANAGEMENT API
+// ============================================================================
+
+const productsFilePath = _path.join(__dirname, '../data/products.json');
+
+// Helper to read products
+function readProductsFile() {
+    try {
+        const data = _fs.readFileSync(productsFilePath, 'utf8');
+        return JSON.parse(data);
+    } catch (ex) {
+        return { products: [], categories: [] };
+    }
+}
+
+// Helper to write products
+function writeProductsFile(data) {
+    _fs.writeFileSync(productsFilePath, JSON.stringify(data, null, 2), 'utf8');
+}
+
+// Get all products
+router.get('/products', async (req, res) => {
+    try {
+        const data = readProductsFile();
+        res.json(data);
+    } catch (ex) {
+        console.error('Get products error:', ex);
+        res.status(500).json({ diagnostic: 'Failed to get products: ' + ex.message });
+    }
+});
+
+// Get single product
+router.get('/products/:id', async (req, res) => {
+    try {
+        const data = readProductsFile();
+        const product = data.products.find(p => p.id === req.params.id);
+        if (!product) {
+            return res.status(404).json({ diagnostic: 'Product not found' });
+        }
+        res.json(product);
+    } catch (ex) {
+        console.error('Get product error:', ex);
+        res.status(500).json({ diagnostic: 'Failed to get product: ' + ex.message });
+    }
+});
+
+// Create product
+router.post('/products', async (req, res) => {
+    try {
+        const data = readProductsFile();
+        const newProduct = {
+            id: `product-${Date.now()}`,
+            ...req.body,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        data.products.push(newProduct);
+        writeProductsFile(data);
+        res.json(newProduct);
+    } catch (ex) {
+        console.error('Create product error:', ex);
+        res.status(500).json({ diagnostic: 'Failed to create product: ' + ex.message });
+    }
+});
+
+// Update product
+router.put('/products/:id', async (req, res) => {
+    try {
+        const data = readProductsFile();
+        const index = data.products.findIndex(p => p.id === req.params.id);
+        if (index === -1) {
+            return res.status(404).json({ diagnostic: 'Product not found' });
+        }
+        data.products[index] = {
+            ...data.products[index],
+            ...req.body,
+            id: req.params.id, // Preserve original ID
+            updatedAt: new Date().toISOString()
+        };
+        writeProductsFile(data);
+        res.json(data.products[index]);
+    } catch (ex) {
+        console.error('Update product error:', ex);
+        res.status(500).json({ diagnostic: 'Failed to update product: ' + ex.message });
+    }
+});
+
+// Delete product
+router.delete('/products/:id', async (req, res) => {
+    try {
+        const data = readProductsFile();
+        const index = data.products.findIndex(p => p.id === req.params.id);
+        if (index === -1) {
+            return res.status(404).json({ diagnostic: 'Product not found' });
+        }
+        const deleted = data.products.splice(index, 1)[0];
+        writeProductsFile(data);
+        res.json({ success: true, deleted });
+    } catch (ex) {
+        console.error('Delete product error:', ex);
+        res.status(500).json({ diagnostic: 'Failed to delete product: ' + ex.message });
+    }
+});
+
+// Get categories
+router.get('/categories', async (req, res) => {
+    try {
+        const data = readProductsFile();
+        res.json(data.categories || []);
+    } catch (ex) {
+        console.error('Get categories error:', ex);
+        res.status(500).json({ diagnostic: 'Failed to get categories: ' + ex.message });
+    }
+});
+
+// Get activities list (for product linking)
+router.get('/products/meta/activities', async (req, res) => {
+    try {
+        const api = await Utils.dav3API(req.oauth_token);
+        const activities = await api.getActivities();
+        res.json(activities.data || []);
+    } catch (ex) {
+        console.error('Get activities error:', ex);
+        res.status(500).json({ diagnostic: 'Failed to get activities: ' + ex.message });
+    }
+});
+
+// Test a product configuration (run DA workitem)
+router.post('/products/:id/test', async (req, res) => {
+    try {
+        const data = readProductsFile();
+        const product = data.products.find(p => p.id === req.params.id);
+        if (!product) {
+            return res.status(404).json({ diagnostic: 'Product not found' });
+        }
+
+        const { parameterValues, browserConnectionId } = req.body;
+        
+        // Build the workitem based on product configuration
+        const bucketKey = product.ossBucket;
+        const objectKey = product.ossObjectKey;
+        const activityId = product.activityId;
+
+        if (!bucketKey || !objectKey || !activityId) {
+            return res.status(400).json({ diagnostic: 'Product not fully configured (missing bucket, object, or activity)' });
+        }
+
+        // Get signed URL for input file
+        const objectsApi = new ForgeAPI.ObjectsApi();
+        const bearerToken = ["Bearer", req.oauth_token.access_token].join(" ");
+
+        // Construct input file URL
+        const inputObjectId = `urn:adsk.objects:os.object:${bucketKey}/${objectKey}`;
+        const inputFileArgument = {
+            url: `https://developer.api.autodesk.com/oss/v2/buckets/${bucketKey}/objects/${encodeURIComponent(objectKey)}`,
+            headers: { "Authorization": bearerToken }
+        };
+
+        // Build parameter JSON from product parameters and user values
+        const inputJson = {};
+        (product.parameters || []).forEach(param => {
+            if (parameterValues && parameterValues[param.name] !== undefined) {
+                inputJson[param.name] = parameterValues[param.name];
+            } else {
+                inputJson[param.name] = param.defaultValue;
+            }
+        });
+
+        const inputJsonArgument = {
+            url: "data:application/json, " + JSON.stringify(inputJson).replace(/"/g, "'")
+        };
+
+        // Output file
+        const timestamp = new Date().toISOString().replace(/[-T:\.Z]/gm, '').substring(0, 14);
+        const outputFileName = `${timestamp}_test_output_${objectKey}`;
+        const outputFileArgument = {
+            url: `https://developer.api.autodesk.com/oss/v2/buckets/${bucketKey}/objects/${encodeURIComponent(outputFileName)}`,
+            verb: dav3.Verb.put,
+            headers: { "Authorization": bearerToken }
+        };
+
+        // Prepare workitem
+        const workItemSpec = {
+            activityId: activityId,
+            arguments: {
+                inputFile: inputFileArgument,
+                inputJson: inputJsonArgument,
+                outputFile: outputFileArgument,
+            }
+        };
+
+        const api = await Utils.dav3API(req.oauth_token);
+        const workItemStatus = await api.createWorkItem(workItemSpec);
+        
+        // Monitor the workitem
+        monitorWorkItem(req.oauth_client, req.oauth_token, workItemStatus.id, browserConnectionId, outputFileName, objectKey);
+
+        res.json({
+            workItemId: workItemStatus.id,
+            status: workItemStatus.status,
+            outputFileName: outputFileName
+        });
+    } catch (ex) {
+        console.error('Test product error:', ex);
+        res.status(500).json({ diagnostic: 'Failed to test product: ' + ex.message });
+    }
+});
+
+// Update product status
+router.patch('/products/:id/status', async (req, res) => {
+    try {
+        const { status } = req.body;
+        if (!['draft', 'testing', 'live'].includes(status)) {
+            return res.status(400).json({ diagnostic: 'Invalid status. Must be draft, testing, or live' });
+        }
+
+        const data = readProductsFile();
+        const index = data.products.findIndex(p => p.id === req.params.id);
+        if (index === -1) {
+            return res.status(404).json({ diagnostic: 'Product not found' });
+        }
+
+        data.products[index].status = status;
+        data.products[index].updatedAt = new Date().toISOString();
+        writeProductsFile(data);
+        
+        res.json(data.products[index]);
+    } catch (ex) {
+        console.error('Update status error:', ex);
+        res.status(500).json({ diagnostic: 'Failed to update status: ' + ex.message });
+    }
+});
+
+// Get live products only (for SydeFlow frontend)
+router.get('/products/live', async (req, res) => {
+    try {
+        const data = readProductsFile();
+        const liveProducts = data.products.filter(p => p.status === 'live');
+        res.json(liveProducts);
+    } catch (ex) {
+        console.error('Get live products error:', ex);
+        res.status(500).json({ diagnostic: 'Failed to get live products: ' + ex.message });
+    }
+});
+
+// ============================================================================
+// PARAMETER EXTRACTION API
+// ============================================================================
+
+// Extract parameters from an Inventor file using Design Automation
+router.post('/extract-parameters', async (req, res) => {
+    try {
+        const { ossBucket, ossObjectKey, browserConnectionId } = req.body;
+
+        if (!ossBucket || !ossObjectKey) {
+            return res.status(400).json({ diagnostic: 'ossBucket and ossObjectKey are required' });
+        }
+
+        const bearerToken = ["Bearer", req.oauth_token.access_token].join(" ");
+        
+        // Input file from OSS
+        const inputFileArgument = {
+            url: `https://developer.api.autodesk.com/oss/v2/buckets/${ossBucket}/objects/${encodeURIComponent(ossObjectKey)}`,
+            headers: { "Authorization": bearerToken }
+        };
+
+        // Output JSON file for extracted parameters
+        const timestamp = new Date().toISOString().replace(/[-T:\.Z]/gm, '').substring(0, 14);
+        const outputFileName = `${timestamp}_params_${ossObjectKey.replace(/\.[^/.]+$/, '')}.json`;
+        const outputFileArgument = {
+            url: `https://developer.api.autodesk.com/oss/v2/buckets/${ossBucket}/objects/${encodeURIComponent(outputFileName)}`,
+            verb: dav3.Verb.put,
+            headers: { "Authorization": bearerToken }
+        };
+
+        // Check if ExtractParams activity exists, if not inform user
+        const activityId = `${Utils.NickName}.ExtractParamsActivity+${Utils.Alias}`;
+        
+        const workItemSpec = {
+            activityId: activityId,
+            arguments: {
+                inputFile: inputFileArgument,
+                outputJson: outputFileArgument
+            }
+        };
+
+        const api = await Utils.dav3API(req.oauth_token);
+        let workItemStatus;
+        
+        try {
+            workItemStatus = await api.createWorkItem(workItemSpec);
+        } catch (ex) {
+            // Activity might not exist yet
+            if (ex.statusCode === 404 || ex.message?.includes('not found')) {
+                return res.status(404).json({ 
+                    diagnostic: 'ExtractParamsActivity not found. Please create the parameter extraction activity first.',
+                    hint: 'Upload ExtractParamsBundle.zip and create ExtractParamsActivity',
+                    activityNeeded: activityId
+                });
+            }
+            throw ex;
+        }
+
+        // Monitor workitem and return results when complete
+        monitorParameterExtraction(
+            req.oauth_client, 
+            req.oauth_token, 
+            workItemStatus.id, 
+            browserConnectionId, 
+            ossBucket,
+            outputFileName
+        );
+
+        res.json({
+            workItemId: workItemStatus.id,
+            status: 'started',
+            message: 'Parameter extraction started. Results will be sent via socket.'
+        });
+    } catch (ex) {
+        console.error('Extract parameters error:', ex);
+        res.status(500).json({ diagnostic: 'Failed to extract parameters: ' + ex.message });
+    }
+});
+
+// Monitor parameter extraction workitem
+async function monitorParameterExtraction(oauthClient, oauthToken, workItemId, browserConnectionId, bucketKey, outputFileName) {
+    const socketIO = global.socketIO;
+    
+    try {
+        while (true) {
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+            const api = await Utils.dav3API(oauthToken);
+            const status = await api.getWorkitemStatus(workItemId);
+            
+            socketIO.to(browserConnectionId).emit('extractionProgress', { 
+                status: status.status, 
+                progress: status.progress 
+            });
+            
+            if (status.status === 'pending' || status.status === 'inprogress') {
+                continue;
+            }
+            
+            if (status.status === 'success') {
+                // Download the output JSON with extracted parameters
+                try {
+                    const objectsApi = new ForgeAPI.ObjectsApi();
+                    const objectData = await objectsApi.getObject(
+                        bucketKey, 
+                        outputFileName, 
+                        {}, 
+                        oauthClient, 
+                        oauthToken
+                    );
+                    
+                    // Parse the JSON content
+                    let parametersJson;
+                    if (Buffer.isBuffer(objectData.body)) {
+                        parametersJson = JSON.parse(objectData.body.toString());
+                    } else {
+                        parametersJson = objectData.body;
+                    }
+                    
+                    socketIO.to(browserConnectionId).emit('extractionComplete', {
+                        success: true,
+                        parameters: parametersJson.parameters || parametersJson
+                    });
+                } catch (downloadError) {
+                    console.error('Failed to download extracted parameters:', downloadError);
+                    socketIO.to(browserConnectionId).emit('extractionComplete', {
+                        success: false,
+                        error: 'Failed to download extracted parameters'
+                    });
+                }
+            } else {
+                // Report failure
+                let errorDetails = status.status;
+                if (status.reportUrl) {
+                    try {
+                        const response = await fetch(status.reportUrl);
+                        errorDetails = await response.text();
+                    } catch (e) {}
+                }
+                socketIO.to(browserConnectionId).emit('extractionComplete', {
+                    success: false,
+                    error: errorDetails
+                });
+            }
+            break;
+        }
+    } catch (ex) {
+        console.error('Monitor parameter extraction error:', ex);
+        socketIO.to(browserConnectionId).emit('extractionComplete', {
+            success: false,
+            error: ex.message
+        });
+    }
+}
+
+// Simplified parameter reading for files already translated (using Model Derivative)
+router.post('/extract-parameters-simple', async (req, res) => {
+    try {
+        const { ossBucket, ossObjectKey } = req.body;
+
+        if (!ossBucket || !ossObjectKey) {
+            return res.status(400).json({ diagnostic: 'ossBucket and ossObjectKey are required' });
+        }
+
+        // Construct URN
+        const objectId = `urn:adsk.objects:os.object:${ossBucket}/${ossObjectKey}`;
+        const urn = Buffer.from(objectId).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+
+        // Try to get metadata from Model Derivative API
+        const derivativesApi = new ForgeAPI.DerivativesApi();
+        
+        try {
+            const metadata = await derivativesApi.getMetadata(urn, {}, req.oauth_client, req.oauth_token);
+            
+            if (metadata.body?.data?.metadata) {
+                const viewableId = metadata.body.data.metadata[0]?.guid;
+                
+                if (viewableId) {
+                    // Get properties
+                    const properties = await derivativesApi.getModelviewProperties(
+                        urn, 
+                        viewableId, 
+                        {}, 
+                        req.oauth_client, 
+                        req.oauth_token
+                    );
+                    
+                    // Extract parameters from properties
+                    const extractedParams = extractParametersFromProperties(properties.body);
+                    
+                    return res.json({
+                        success: true,
+                        parameters: extractedParams,
+                        source: 'model-derivative'
+                    });
+                }
+            }
+            
+            res.json({
+                success: false,
+                message: 'No metadata available. File may need translation first, or use Design Automation extraction.',
+                hint: 'Use the full extraction with Design Automation for Inventor parameters'
+            });
+        } catch (ex) {
+            if (ex.statusCode === 404) {
+                return res.json({
+                    success: false,
+                    message: 'File not translated yet. Translate first or use Design Automation extraction.',
+                    hint: 'Click "View" on the file in OSS to trigger translation'
+                });
+            }
+            throw ex;
+        }
+    } catch (ex) {
+        console.error('Simple extract parameters error:', ex);
+        res.status(500).json({ diagnostic: 'Failed to extract parameters: ' + ex.message });
+    }
+});
+
+// Helper to extract parameter-like properties from Model Derivative
+function extractParametersFromProperties(propertiesData) {
+    const parameters = [];
+    
+    try {
+        const collection = propertiesData?.data?.collection || [];
+        
+        collection.forEach(item => {
+            const props = item.properties || {};
+            
+            // Look for Inventor parameters (usually in specific categories)
+            Object.keys(props).forEach(category => {
+                if (category.toLowerCase().includes('parameter') || 
+                    category.toLowerCase().includes('dimension') ||
+                    category === 'Inventor' ||
+                    category === 'Parameters') {
+                    
+                    const categoryProps = props[category];
+                    Object.keys(categoryProps).forEach(propName => {
+                        const value = categoryProps[propName];
+                        
+                        // Try to determine type
+                        let paramType = 'text';
+                        let numValue = parseFloat(value);
+                        
+                        if (!isNaN(numValue)) {
+                            paramType = 'number';
+                        } else if (value === 'true' || value === 'false') {
+                            paramType = 'boolean';
+                        }
+                        
+                        parameters.push({
+                            name: propName,
+                            displayName: propName.replace(/([A-Z])/g, ' $1').trim(),
+                            type: paramType,
+                            defaultValue: paramType === 'number' ? numValue : value,
+                            unit: extractUnit(propName, value),
+                            group: category
+                        });
+                    });
+                }
+            });
+        });
+    } catch (ex) {
+        console.error('Error extracting parameters:', ex);
+    }
+    
+    return parameters;
+}
+
+// Helper to extract units from parameter names or values
+function extractUnit(name, value) {
+    const nameLower = name.toLowerCase();
+    const valueStr = String(value);
+    
+    // Common unit patterns
+    if (nameLower.includes('width') || nameLower.includes('height') || 
+        nameLower.includes('depth') || nameLower.includes('length') ||
+        nameLower.includes('size') || nameLower.includes('dimension')) {
+        return 'mm';
+    }
+    if (nameLower.includes('angle') || nameLower.includes('rotation')) {
+        return 'deg';
+    }
+    if (nameLower.includes('weight') || nameLower.includes('mass')) {
+        return 'kg';
+    }
+    
+    // Try to extract from value string
+    const unitMatch = valueStr.match(/[\d.]+\s*([a-zA-Z]+)/);
+    if (unitMatch) {
+        return unitMatch[1];
+    }
+    
+    return '';
+}
+
+// Get iLogic code template for parameter extraction
+router.get('/extract-parameters/template', (req, res) => {
+    const iLogicCode = `' =====================================================
+' PARAMETER EXTRACTION iLogic CODE
+' For use with Design Automation
+' =====================================================
+' This code extracts all user parameters from an Inventor
+' file and outputs them as JSON for use in SydeFlow
+' =====================================================
+
+Imports System.IO
+Imports Newtonsoft.Json
+
+Sub Main()
+    ' Get the document
+    Dim doc As Document = ThisApplication.ActiveDocument
+    
+    ' Create parameter list
+    Dim paramList As New List(Of Object)
+    
+    ' Handle Part documents
+    If TypeOf doc Is PartDocument Then
+        Dim partDoc As PartDocument = doc
+        ExtractParameters(partDoc.ComponentDefinition.Parameters.UserParameters, paramList)
+    
+    ' Handle Assembly documents
+    ElseIf TypeOf doc Is AssemblyDocument Then
+        Dim assyDoc As AssemblyDocument = doc
+        ExtractParameters(assyDoc.ComponentDefinition.Parameters.UserParameters, paramList)
+    End If
+    
+    ' Create output object
+    Dim output As New Dictionary(Of String, Object)
+    output("fileName") = doc.DisplayName
+    output("fileType") = doc.DocumentType.ToString()
+    output("parameters") = paramList
+    output("extractedAt") = DateTime.Now.ToString("o")
+    
+    ' Serialize to JSON
+    Dim json As String = JsonConvert.SerializeObject(output, Formatting.Indented)
+    
+    ' Write to output file
+    Dim outputPath As String = IO.Path.Combine(IO.Path.GetDirectoryName(doc.FullFileName), "parameters.json")
+    IO.File.WriteAllText(outputPath, json)
+    
+    ' Log success
+    Logger.Info("Parameters extracted successfully: " & paramList.Count & " parameters")
+End Sub
+
+Sub ExtractParameters(userParams As UserParameters, paramList As List(Of Object))
+    For Each param As UserParameter In userParams
+        Dim paramInfo As New Dictionary(Of String, Object)
+        
+        paramInfo("name") = param.Name
+        paramInfo("displayName") = FormatDisplayName(param.Name)
+        paramInfo("expression") = param.Expression
+        paramInfo("unit") = GetUnitString(param)
+        
+        ' Determine type and get value
+        If param.ParameterType = ParameterTypeEnum.kTextParameter Then
+            paramInfo("type") = "text"
+            paramInfo("defaultValue") = param.Expression
+        ElseIf param.ParameterType = ParameterTypeEnum.kBooleanParameter Then
+            paramInfo("type") = "boolean"
+            paramInfo("defaultValue") = param.Value
+        Else
+            paramInfo("type") = "number"
+            paramInfo("defaultValue") = param.Value
+            
+            ' Try to get numeric limits if defined
+            Try
+                If param.HasLimits Then
+                    paramInfo("min") = param.LowerBound
+                    paramInfo("max") = param.UpperBound
+                End If
+            Catch
+                ' Limits not available
+            End Try
+        End If
+        
+        ' Add to list
+        paramList.Add(paramInfo)
+    Next
+End Sub
+
+Function FormatDisplayName(name As String) As String
+    ' Convert camelCase or d0, d1 style names to readable format
+    Dim result As String = name
+    
+    ' Handle d0, d1, d2 style parameters
+    If System.Text.RegularExpressions.Regex.IsMatch(name, "^d\\d+$") Then
+        Return "Parameter " & name
+    End If
+    
+    ' Add spaces before capitals
+    result = System.Text.RegularExpressions.Regex.Replace(name, "([a-z])([A-Z])", "$1 $2")
+    
+    ' Capitalize first letter
+    If result.Length > 0 Then
+        result = Char.ToUpper(result(0)) & result.Substring(1)
+    End If
+    
+    Return result
+End Function
+
+Function GetUnitString(param As UserParameter) As String
+    Try
+        Dim units As UnitsOfMeasure = ThisApplication.ActiveDocument.UnitsOfMeasure
+        Dim unitType As UnitsTypeEnum = param.Units
+        
+        Select Case unitType
+            Case UnitsTypeEnum.kMillimeterLengthUnits
+                Return "mm"
+            Case UnitsTypeEnum.kCentimeterLengthUnits
+                Return "cm"
+            Case UnitsTypeEnum.kMeterLengthUnits
+                Return "m"
+            Case UnitsTypeEnum.kInchLengthUnits
+                Return "in"
+            Case UnitsTypeEnum.kFootLengthUnits
+                Return "ft"
+            Case UnitsTypeEnum.kDegreeAngleUnits
+                Return "deg"
+            Case UnitsTypeEnum.kRadianAngleUnits
+                Return "rad"
+            Case Else
+                Return ""
+        End Select
+    Catch
+        Return ""
+    End Try
+End Function
+`;
+
+    res.json({
+        code: iLogicCode,
+        instructions: {
+            step1: "Save this code as 'ExtractParams.iLogicVb'",
+            step2: "Create an AppBundle ZIP containing the code",
+            step3: "Upload the ZIP to server/bundles/ folder",
+            step4: "Create the AppBundle and Activity using Design Automation view",
+            step5: "The activity should have: inputFile (input), outputJson (output)",
+            activityName: "ExtractParamsActivity",
+            bundleName: "ExtractParamsBundle"
+        }
+    });
+});
+
 module.exports = router;
