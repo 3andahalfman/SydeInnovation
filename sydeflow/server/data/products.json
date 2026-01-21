@@ -1,0 +1,80 @@
+{
+  "products": [
+    {
+      "id": "product-1768185436087",
+      "status": "published",
+      "description": "Test sample one",
+      "name": "Test One",
+      "parameters": [],
+      "category": "enclosures",
+      "createdAt": "2026-01-12T02:37:16.087Z",
+      "updatedAt": "2026-01-17T22:53:07.590Z",
+      "ossBucket": "syde-sample",
+      "ossObjectKey": "inventor_sample_file.ipt",
+      "activityId": "UpdateIPTParamActivity+dev",
+      "pricing": {
+        "basePrice": 12,
+        "setupFee": 2
+      },
+      "automation": {
+        "activityId": "UpdateIPTParamActivity+dev",
+        "outputFormat": "ipt",
+        "additionalOutputs": [
+          "pdf"
+        ]
+      }
+    },
+    {
+      "id": "product-1768690939292",
+      "name": "test two",
+      "category": "brackets",
+      "description": "dsgfhd",
+      "status": "testing",
+      "parameters": [],
+      "pricing": {
+        "basePrice": 0,
+        "currency": "USD"
+      },
+      "automation": {
+        "activityId": "UpdateIPTParamActivity+dev",
+        "outputFormat": "ipt"
+      },
+      "activityId": "UpdateIPTParamActivity+dev",
+      "ossBucket": "",
+      "createdAt": "2026-01-17T23:02:19.293Z",
+      "updatedAt": "2026-01-17T23:02:19.294Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "wardrobes",
+      "name": "Wardrobes",
+      "icon": "Box"
+    },
+    {
+      "id": "cabinets",
+      "name": "Cabinets",
+      "icon": "Box"
+    },
+    {
+      "id": "tables",
+      "name": "Tables",
+      "icon": "Table2"
+    },
+    {
+      "id": "shelving",
+      "name": "Shelving",
+      "icon": "Grid3x3"
+    },
+    {
+      "id": "furniture",
+      "name": "Furniture",
+      "icon": "Armchair"
+    },
+    {
+      "id": "other",
+      "name": "Other",
+      "icon": "Box"
+    }
+  ]
+}

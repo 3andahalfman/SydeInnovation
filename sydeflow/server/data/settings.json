@@ -1,0 +1,9 @@
+{
+  "apsClientId": "AUQ0ELZK6MYcB4vMTJ5NZ7XRgyKEB0ZfbrKDUEIIumArtUhQ",
+  "apsClientSecret": "RQF2iMWAPafkeuSzJzc0kYXVrjQlJL0BrTxtHM7KIFdxX7kiLSRPzoxiqzFBdYaG",
+  "callbackUrl": "http://localhost:8080/api/aps/callback/oauth",
+  "webhookUrl": "",
+  "bucketKey": "",
+  "activityId": "",
+  "appBundleId": ""
+}

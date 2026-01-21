@@ -1,0 +1,296 @@
+{
+  "schemaVersion": "1.0",
+  "productId": "industrial-enclosure",
+  "name": "Industrial Control Enclosure",
+  "description": "NEMA-rated industrial enclosure with configurable dimensions, door styles, and mounting options. Suitable for electrical and control systems.",
+  "category": "enclosures",
+  "thumbnail": "/images/products/enclosure.png",
+
+  "cadModel": {
+    "inputFile": "IndustrialEnclosure.iam",
+    "activityId": "UpdateAssemblyActivity",
+    "engineVersion": "2025",
+    "description": "Inventor assembly with sub-components"
+  },
+
+  "parameterGroups": [
+    { "id": "dimensions", "label": "Enclosure Size", "icon": "Box", "order": 1 },
+    { "id": "door", "label": "Door Configuration", "icon": "DoorOpen", "order": 2 },
+    { "id": "mounting", "label": "Mounting Options", "icon": "Anchor", "order": 3 },
+    { "id": "features", "label": "Additional Features", "icon": "Settings", "order": 4 },
+    { "id": "material", "label": "Material & Finish", "icon": "Layers", "order": 5 }
+  ],
+
+  "parameters": [
+    {
+      "id": "height",
+      "label": "Height",
+      "inventorParam": "Enclosure_Height",
+      "type": "slider",
+      "min": 300,
+      "max": 2000,
+      "step": 50,
+      "default": 600,
+      "unit": "mm",
+      "group": "dimensions"
+    },
+    {
+      "id": "width",
+      "label": "Width",
+      "inventorParam": "Enclosure_Width",
+      "type": "slider",
+      "min": 200,
+      "max": 1200,
+      "step": 50,
+      "default": 400,
+      "unit": "mm",
+      "group": "dimensions"
+    },
+    {
+      "id": "depth",
+      "label": "Depth",
+      "inventorParam": "Enclosure_Depth",
+      "type": "slider",
+      "min": 150,
+      "max": 600,
+      "step": 25,
+      "default": 250,
+      "unit": "mm",
+      "group": "dimensions"
+    },
+    {
+      "id": "doorStyle",
+      "label": "Door Style",
+      "inventorParam": "Door_Style",
+      "type": "radio",
+      "options": [
+        { "value": "solid", "label": "Solid Door", "priceMultiplier": 1.0, "default": true },
+        { "value": "window", "label": "Window Door", "priceMultiplier": 1.3 },
+        { "value": "ventilated", "label": "Ventilated Door", "priceMultiplier": 1.2 },
+        { "value": "double", "label": "Double Door", "priceMultiplier": 1.5 }
+      ],
+      "group": "door"
+    },
+    {
+      "id": "doorHinge",
+      "label": "Door Hinge Side",
+      "inventorParam": "Door_Hinge",
+      "type": "radio",
+      "options": [
+        { "value": "left", "label": "Left Hinged", "default": true },
+        { "value": "right", "label": "Right Hinged" }
+      ],
+      "group": "door"
+    },
+    {
+      "id": "lockType",
+      "label": "Lock Type",
+      "inventorParam": "Lock_Type",
+      "type": "select",
+      "options": [
+        { "value": "quarter", "label": "Quarter Turn Latch", "priceAdd": 0, "default": true },
+        { "value": "keyed", "label": "Keyed Lock", "priceAdd": 25 },
+        { "value": "padlock", "label": "Padlock Hasp", "priceAdd": 15 },
+        { "value": "electronic", "label": "Electronic Lock", "priceAdd": 150 }
+      ],
+      "group": "door"
+    },
+    {
+      "id": "mountingType",
+      "label": "Mounting Type",
+      "inventorParam": "Mounting_Type",
+      "type": "radio",
+      "options": [
+        { "value": "wall", "label": "Wall Mount", "priceAdd": 0, "default": true },
+        { "value": "floor", "label": "Floor Stand", "priceAdd": 75 },
+        { "value": "pole", "label": "Pole Mount", "priceAdd": 60 },
+        { "value": "freestanding", "label": "Freestanding", "priceAdd": 120 }
+      ],
+      "group": "mounting"
+    },
+    {
+      "id": "backpanel",
+      "label": "Back Panel",
+      "inventorParam": "Backpanel",
+      "type": "radio",
+      "options": [
+        { "value": "none", "label": "No Back Panel" },
+        { "value": "solid", "label": "Solid Back Panel", "priceAdd": 30, "default": true },
+        { "value": "perforated", "label": "Perforated Panel", "priceAdd": 45 }
+      ],
+      "group": "mounting"
+    },
+    {
+      "id": "dinRails",
+      "label": "DIN Rail Mounting",
+      "inventorParam": "DIN_Rails",
+      "type": "checkbox",
+      "options": [
+        { "value": "top", "label": "Top DIN Rail", "priceAdd": 20 },
+        { "value": "middle", "label": "Middle DIN Rail", "priceAdd": 20, "default": true },
+        { "value": "bottom", "label": "Bottom DIN Rail", "priceAdd": 20 }
+      ],
+      "group": "features"
+    },
+    {
+      "id": "cableEntry",
+      "label": "Cable Entry",
+      "inventorParam": "Cable_Entry",
+      "type": "checkbox",
+      "options": [
+        { "value": "top", "label": "Top Entry", "priceAdd": 15 },
+        { "value": "bottom", "label": "Bottom Entry", "priceAdd": 15, "default": true },
+        { "value": "left", "label": "Left Side Entry", "priceAdd": 15 },
+        { "value": "right", "label": "Right Side Entry", "priceAdd": 15 }
+      ],
+      "group": "features"
+    },
+    {
+      "id": "ventilation",
+      "label": "Ventilation",
+      "inventorParam": "Ventilation",
+      "type": "select",
+      "options": [
+        { "value": "none", "label": "None (Sealed)", "default": true },
+        { "value": "louvers", "label": "Passive Louvers", "priceAdd": 25 },
+        { "value": "fan", "label": "Exhaust Fan", "priceAdd": 85 },
+        { "value": "filtered", "label": "Filtered Fan System", "priceAdd": 150 }
+      ],
+      "group": "features"
+    },
+    {
+      "id": "nemaRating",
+      "label": "NEMA Rating",
+      "inventorParam": "NEMA_Rating",
+      "type": "select",
+      "options": [
+        { "value": "1", "label": "NEMA 1 - Indoor", "priceMultiplier": 1.0 },
+        { "value": "3R", "label": "NEMA 3R - Outdoor", "priceMultiplier": 1.3, "default": true },
+        { "value": "4", "label": "NEMA 4 - Watertight", "priceMultiplier": 1.6 },
+        { "value": "4X", "label": "NEMA 4X - Corrosion Resistant", "priceMultiplier": 2.0 },
+        { "value": "12", "label": "NEMA 12 - Industrial", "priceMultiplier": 1.4 }
+      ],
+      "group": "material"
+    },
+    {
+      "id": "material",
+      "label": "Material",
+      "inventorParam": "Material",
+      "type": "radio",
+      "options": [
+        { "value": "steel", "label": "Carbon Steel", "priceMultiplier": 1.0, "default": true },
+        { "value": "stainless", "label": "Stainless Steel 304", "priceMultiplier": 2.2 },
+        { "value": "stainless316", "label": "Stainless Steel 316L", "priceMultiplier": 2.8 },
+        { "value": "aluminum", "label": "Aluminum", "priceMultiplier": 1.5 },
+        { "value": "fiberglass", "label": "Fiberglass", "priceMultiplier": 1.8 }
+      ],
+      "group": "material"
+    },
+    {
+      "id": "color",
+      "label": "Color",
+      "inventorParam": "Color",
+      "type": "color",
+      "options": [
+        { "value": "ral7035", "label": "RAL 7035 Light Gray", "hex": "#c4c4c4", "default": true },
+        { "value": "ral7032", "label": "RAL 7032 Pebble Gray", "hex": "#b5b0a1" },
+        { "value": "ral9003", "label": "RAL 9003 Signal White", "hex": "#f4f8f4" },
+        { "value": "ral5012", "label": "RAL 5012 Light Blue", "hex": "#3b83bd" },
+        { "value": "ral2004", "label": "RAL 2004 Orange", "hex": "#e75b12" },
+        { "value": "custom", "label": "Custom RAL Color", "hex": "#888888", "priceAdd": 50 }
+      ],
+      "group": "material"
+    }
+  ],
+
+  "rules": [
+    {
+      "id": "double-door-width",
+      "name": "Double door minimum width",
+      "condition": "doorStyle === 'double' && width < 600",
+      "actions": [
+        { "type": "setMin", "parameter": "width", "value": 600 },
+        { "type": "warn", "message": "Double doors require minimum 600mm width" }
+      ]
+    },
+    {
+      "id": "floor-stand-height",
+      "name": "Floor stand minimum height",
+      "condition": "mountingType === 'floor' && height < 800",
+      "actions": [
+        { "type": "setMin", "parameter": "height", "value": 800 },
+        { "type": "warn", "message": "Floor standing enclosures require minimum 800mm height" }
+      ]
+    },
+    {
+      "id": "nema4x-material",
+      "name": "NEMA 4X requires corrosion resistant material",
+      "condition": "nemaRating === '4X' && material === 'steel'",
+      "actions": [
+        { "type": "disable", "parameter": "material", "optionValue": "steel" },
+        { "type": "warn", "message": "NEMA 4X rating requires stainless steel, aluminum, or fiberglass" }
+      ]
+    },
+    {
+      "id": "ventilated-not-sealed",
+      "name": "Ventilated door conflicts with sealed rating",
+      "condition": "doorStyle === 'ventilated' && (nemaRating === '4' || nemaRating === '4X')",
+      "actions": [
+        { "type": "disable", "parameter": "doorStyle", "optionValue": "ventilated" },
+        { "type": "warn", "message": "Ventilated doors not available with NEMA 4/4X watertight ratings" }
+      ]
+    },
+    {
+      "id": "fan-ventilation-conflict",
+      "name": "Fan requires sealed enclosure consideration",
+      "condition": "ventilation === 'fan' && nemaRating === '4X'",
+      "actions": [
+        { "type": "setValue", "parameter": "ventilation", "value": "filtered" },
+        { "type": "warn", "message": "NEMA 4X rating requires filtered fan system for proper sealing" }
+      ]
+    }
+  ],
+
+  "pricing": {
+    "currency": "USD",
+    "basePrice": 150,
+    "formula": "basePrice + (volume * volumeRate * materialMultiplier * nemaMultiplier) + optionPrices",
+    "calculations": {
+      "volumeRate": 0.00003,
+      "volume": "height * width * depth"
+    },
+    "discounts": [
+      { "minQuantity": 5, "percentage": 5 },
+      { "minQuantity": 10, "percentage": 10 },
+      { "minQuantity": 25, "percentage": 15 }
+    ]
+  },
+
+  "outputs": {
+    "3dModel": {
+      "enabled": true,
+      "formats": ["iam", "ipt", "step", "iges"]
+    },
+    "drawings": {
+      "enabled": true,
+      "types": ["fabrication", "assembly", "installation"],
+      "formats": ["pdf", "dwg", "dxf"]
+    },
+    "bom": {
+      "enabled": true,
+      "format": "xlsx"
+    },
+    "cutlist": {
+      "enabled": true,
+      "format": "csv"
+    }
+  },
+
+  "metadata": {
+    "createdAt": "2025-01-14T00:00:00Z",
+    "updatedAt": "2025-01-14T00:00:00Z",
+    "version": "1.0.0",
+    "status": "active",
+    "author": "SydeFlow"
+  }
+}
