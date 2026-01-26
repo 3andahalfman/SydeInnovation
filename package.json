@@ -1,8 +1,8 @@
 {
-  "name": "sydeingenis",
+  "name": "sydeinnovation",
   "private": true,
   "version": "1.0.0",
-  "description": "SydeIngenis - Design Engineering & CAD Automation with APS Integration",
+  "description": "SydeInnovation - Design Engineering & CAD Automation with APS Integration",
   "type": "module",
   "scripts": {
     "dev": "vite --port 3000",
@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
+    "archiver": "^7.0.1",
     "autodesk.forge.designautomation": "^3.0.5",
     "axios": "^1.13.2",
     "body-parser": "^1.20.4",

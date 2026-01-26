@@ -9,8 +9,8 @@ const servicesDropdown = [
   { label: 'Process Optimization', path: '/services/process-optimization' },
 ];
 
-const productsDropdown = [
-  { label: 'SydeFlow: 3D Design Planner', path: '/sydeflow' },
+const productsDropdown: { label: string; path: string }[] = [
+  // Products will be added here as they are developed
 ];
 
 export default function Header() {
@@ -76,7 +76,7 @@ export default function Header() {
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="text-2xl font-bold bg-gradient-to-r from-blue-950 to-orange-500 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
             >
-              SydeIngenis
+              SydeInnovation
             </Link>
           </div>
 

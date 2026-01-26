@@ -59,7 +59,7 @@ export default function AboutPage() {
             <span>Back to Home</span>
           </Link>
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            About <span className="bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">SydeIngenis</span>
+            About <span className="bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">SydeInnovation</span>
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl leading-relaxed">
             We are a team of passionate engineers and designers committed to transforming 
@@ -80,7 +80,7 @@ export default function AboutPage() {
                 Engineering the Future, Today
               </h2>
               <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                At SydeIngenis, we specialize in CAD design, 3D modeling, and product automation 
+                At SydeInnovation, we specialize in CAD design, 3D modeling, and product automation 
                 using Autodesk Inventor and Fusion 360. Our expertise in iLogic programming and 
                 Autodesk Platform Services (APS) enables us to create intelligent, automated 
                 design solutions that transform how businesses approach product development.

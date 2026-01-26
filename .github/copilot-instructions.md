@@ -1,7 +1,7 @@
-# SydeIngenis - Copilot Instructions
+# SydeInnovation - Copilot Instructions
 
 ## Project Overview
-SydeIngenis is a landing page for a **design, automation, and mechanical engineering** company specializing in:
+SydeInnovation is a landing page for a **design, automation, and mechanical engineering** company specializing in:
 - **CAD Services**: Autodesk Inventor, Fusion 360
 - **3D Modeling**: Product design and visualization
 - **Product Automation**: Inventor iLogic and Autodesk Platform Services (APS)
@@ -18,14 +18,24 @@ SydeIngenis is a landing page for a **design, automation, and mechanical enginee
 ## Project Structure
 ```
 src/
-├── App.tsx              # Main app - single-page layout with sections
-├── components/          # All UI components (one per section)
+├── App.tsx              # Main app - routing and layout
+├── components/          # Reusable UI components
 │   ├── Header.tsx       # Fixed navbar with scroll detection
 │   ├── Hero.tsx         # Landing section with stats
 │   ├── Services.tsx     # Service cards grid
 │   ├── Products.tsx     # Product showcase cards
 │   ├── About.tsx        # Company values + CTA
-│   └── Footer.tsx       # Contact info + social links
+│   ├── Footer.tsx       # Contact info + social links
+│   ├── APSViewer.tsx    # Autodesk Platform Services viewer
+│   └── DesignAutomation.tsx  # Design automation component
+├── pages/               # Full page components
+│   ├── AboutPage.tsx
+│   ├── CadCamServicesPage.tsx
+│   ├── DesignEngineeringPage.tsx
+│   ├── HowItWorksPage.tsx
+│   ├── ManufacturingSolutionsPage.tsx
+│   ├── PortfolioPage.tsx
+│   └── ProcessOptimizationPage.tsx
 ├── index.css            # Global styles + Tailwind imports
 └── main.tsx             # React entry point
 ```
@@ -52,7 +62,7 @@ src/
 
 ## Development Commands
 ```bash
-npm run dev        # Start dev server (http://localhost:5173)
+npm run dev        # Start dev server (http://localhost:3000)
 npm run build      # Production build to dist/
 npm run preview    # Preview production build
 npm run lint       # ESLint check
@@ -86,4 +96,4 @@ When updating content, reference these core service areas:
 - **Consulting**: Technical analysis, feasibility studies
 
 ## Git Workflow
-All changes commit to `realms3d/SydeIngenis` on `main` branch.
+All changes commit to `realms3d/SydeInnovation` on `main` branch.

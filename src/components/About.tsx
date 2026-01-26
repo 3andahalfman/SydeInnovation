@@ -40,7 +40,7 @@ export default function About() {
               Engineering the Future, Today
             </h2>
             <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-              At SydeIngenis, we are a team of passionate engineers and designers committed to
+              At SydeInnovation, we are a team of passionate engineers and designers committed to
               transforming complex challenges into elegant solutions. With over 15 years of
               experience in the industry, we combine technical expertise with creative innovation.
             </p>

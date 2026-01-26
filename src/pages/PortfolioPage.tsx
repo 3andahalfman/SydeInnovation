@@ -44,7 +44,7 @@ export default function PortfolioPage() {
             <Eye className="w-8 h-8 text-orange-500" /> Portfolio: Viewer SDK
           </h1>
           <p className="text-xl text-gray-300 mb-10 max-w-2xl">
-            Explore interactive 3D models, CAD projects, and engineering visualizations powered by the Autodesk Viewer SDK. This portfolio demonstrates real-world applications of SydeIngenis automation and design expertise.
+            Explore interactive 3D models, CAD projects, and engineering visualizations powered by the Autodesk Viewer SDK. This portfolio demonstrates real-world applications of SydeInnovation automation and design expertise.
           </p>
 
           {/* Project List or Viewer */}

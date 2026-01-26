@@ -1,7 +1,0 @@
-{
-  "name": "sydeflow-server",
-  "version": "1.0.0",
-  "description": "SydeFlow APS Backend Server",
-  "type": "commonjs",
-  "main": "start.js"
-}

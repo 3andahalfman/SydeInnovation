@@ -20,7 +20,7 @@ export default function Footer() {
         <div className="grid md:grid-cols-4 gap-12 mb-12">
           <div className="col-span-2">
             <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
-              SydeIngenis
+              SydeInnovation
             </h3>
             <p className="text-gray-400 mb-6 leading-relaxed">
               Leading the way in innovative design engineering solutions. Transforming ideas into
@@ -77,14 +77,14 @@ export default function Footer() {
               </li>
               <li className="flex items-center space-x-3 text-gray-400">
                 <Mail className="w-5 h-5 flex-shrink-0" />
-                <span>info@sydeingenis.com</span>
+                <span>info@sydeinnovation.com</span>
               </li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-white/10 pt-8 text-center text-gray-400">
-          <p>&copy; {currentYear} SydeIngenis. All rights reserved.</p>
+          <p>&copy; {currentYear} SydeInnovation. All rights reserved.</p>
         </div>
       </div>
     </footer>
