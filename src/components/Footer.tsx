@@ -1,9 +1,18 @@
 import { Mail, MapPin, Phone, Linkedin, Twitter, Github } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const scrollToSection = (id: string) => {
+    // If not on home page, navigate there first
+    if (location.pathname !== '/') {
+      navigate('/', { state: { scrollTo: id } });
+      return;
+    }
+    
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -22,25 +31,34 @@ export default function Footer() {
             <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
               SydeInnovation
             </h3>
-            <p className="text-gray-400 mb-6 leading-relaxed">
-              Leading the way in innovative design engineering solutions. Transforming ideas into
-              reality with precision and excellence.
+            <p className="text-gray-400 mb-4 leading-relaxed">
+              Expert CAD and mechanical engineering services with 8+ years of experience. 
+              Specializing in product design, FEA analysis, and design automation.
+            </p>
+            <p className="text-gray-500 text-sm mb-6">
+              Autodesk Inventor • Fusion 360 • SolidWorks • Onshape • AutoCAD • ANSYS
             </p>
             <div className="flex space-x-4">
               <a
                 href="#"
+                title="LinkedIn"
+                aria-label="LinkedIn"
                 className="w-10 h-10 glass rounded-xl flex items-center justify-center hover:bg-orange-500/80 transition-all duration-300 hover:scale-110"
               >
                 <Linkedin className="w-5 h-5" />
               </a>
               <a
                 href="#"
+                title="Twitter"
+                aria-label="Twitter"
                 className="w-10 h-10 glass rounded-xl flex items-center justify-center hover:bg-orange-500/80 transition-all duration-300 hover:scale-110"
               >
                 <Twitter className="w-5 h-5" />
               </a>
               <a
                 href="#"
+                title="GitHub"
+                aria-label="GitHub"
                 className="w-10 h-10 glass rounded-xl flex items-center justify-center hover:bg-orange-500/80 transition-all duration-300 hover:scale-110"
               >
                 <Github className="w-5 h-5" />
@@ -51,13 +69,18 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2">
-              {['home', 'services', 'products', 'about'].map((item) => (
-                <li key={item}>
+              {[
+                { id: 'home', label: 'Home' },
+                { id: 'services', label: 'Services' },
+                { id: 'products', label: 'Capabilities' },
+                { id: 'about', label: 'About Us' },
+              ].map((item) => (
+                <li key={item.id}>
                   <button
-                    onClick={() => scrollToSection(item)}
-                    className="text-gray-400 hover:text-orange-400 transition-colors capitalize"
+                    onClick={() => scrollToSection(item.id)}
+                    className="text-gray-400 hover:text-orange-400 transition-colors"
                   >
-                    {item === 'about' ? 'About Us' : item}
+                    {item.label}
                   </button>
                 </li>
               ))}
@@ -69,11 +92,11 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start space-x-3 text-gray-400">
                 <MapPin className="w-5 h-5 flex-shrink-0 mt-1" />
-                <span>123 Engineering Ave, Tech City, TC 12345</span>
+                <span>Available for Remote Work Worldwide</span>
               </li>
               <li className="flex items-center space-x-3 text-gray-400">
                 <Phone className="w-5 h-5 flex-shrink-0" />
-                <span>+1 (555) 123-4567</span>
+                <span>Contact via Email</span>
               </li>
               <li className="flex items-center space-x-3 text-gray-400">
                 <Mail className="w-5 h-5 flex-shrink-0" />

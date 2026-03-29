@@ -1,29 +1,33 @@
-import { Cog, Lightbulb, Ruler, Workflow } from 'lucide-react';
+import { Cpu, Settings, GraduationCap, Factory, PenTool } from 'lucide-react';
 
 const services = [
   {
-    icon: Lightbulb,
-    title: 'Design Engineering',
+    icon: PenTool,
+    title: 'CAD Design',
     description:
-      'Innovative product design solutions that blend aesthetics with functionality, creating engineered excellence.',
+      'Professional computer-aided design services using industry-leading software. From 3D modeling to technical documentation for manufacturing.',
+    features: ['3D Modeling', '2D Drawings', 'Assembly Design', 'Technical Documentation'],
   },
   {
-    icon: Cog,
-    title: 'Manufacturing Solutions',
+    icon: Factory,
+    title: 'Manufacturing',
     description:
-      'Advanced manufacturing processes and automation systems that optimize production efficiency and quality.',
+      'End-to-end manufacturing support including 3D printing, CNC machining preparation, and injection molding design. From rapid prototypes to production-ready outputs.',
+    features: ['3D Printing', 'CNC Prep', 'Injection Molding', 'DFM Analysis'],
   },
   {
-    icon: Ruler,
-    title: 'CAD/CAM Services',
+    icon: Cpu,
+    title: 'Simulation',
     description:
-      'Precision 3D modeling, simulation, and computer-aided manufacturing for complex engineering projects.',
+      'Finite Element Analysis for mechanical and structural validation using ANSYS. Topology optimization to reduce weight and material costs while maintaining performance.',
+    features: ['FEA Analysis', 'Stress Testing', 'Topology Optimization', 'Thermal Analysis'],
   },
   {
-    icon: Workflow,
-    title: 'Process Optimization',
+    icon: Settings,
+    title: 'Automation',
     description:
-      'Streamline operations and enhance productivity through systematic analysis and engineering improvements.',
+      'Custom design automation using iLogic and VB scripting in Autodesk Inventor and Fusion 360. Build configurators, automate workflows, and eliminate repetitive tasks.',
+    features: ['iLogic Rules', 'VB Scripting', 'Configurators', 'Workflow Automation'],
   },
 ];
 
@@ -40,28 +44,53 @@ export default function Services() {
             What We Offer
           </span>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-2 mb-4">
-            Our Services
+            Engineering Services
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Comprehensive engineering solutions tailored to meet your unique challenges
+            Comprehensive CAD and mechanical engineering solutions tailored to bring your ideas to life
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {services.map((service, index) => (
             <div
               key={index}
-              className="group glass-light rounded-2xl p-8 hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 glass-shine"
+              className="group glass-light rounded-2xl p-6 hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 glass-shine"
             >
-              <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform bg-gradient-to-br from-blue-900 to-blue-700 shadow-lg">
-                <service.icon className="w-7 h-7 text-white" />
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform bg-gradient-to-br from-blue-900 to-blue-700 shadow-lg">
+                <service.icon className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
+              <h3 className="text-lg font-bold text-gray-900 mb-2">
                 {service.title}
               </h3>
-              <p className="text-gray-600 leading-relaxed">{service.description}</p>
+              <p className="text-gray-600 text-sm leading-relaxed mb-4">{service.description}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {service.features.map((feature, idx) => (
+                  <span key={idx} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                    {feature}
+                  </span>
+                ))}
+              </div>
             </div>
           ))}
+        </div>
+
+        {/* Tutoring Section */}
+        <div className="glass-light rounded-3xl p-8 md:p-10 flex flex-col md:flex-row items-center gap-8">
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg flex-shrink-0">
+            <GraduationCap className="w-8 h-8 text-white" />
+          </div>
+          <div className="flex-1 text-center md:text-left">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Tutoring & Training</h3>
+            <p className="text-gray-600 leading-relaxed">
+              One-on-one and group training sessions on CAD software (Inventor, Fusion 360, SolidWorks), 
+              design automation, engineering fundamentals, and best practices. Perfect for individuals, 
+              teams, or academic institutions looking to level up their skills.
+            </p>
+          </div>
+          <div className="flex flex-wrap justify-center md:justify-end gap-2">
+            <span className="px-3 py-1.5 bg-orange-100 text-orange-800 text-sm font-medium rounded-full">CAD Training</span>
+          </div>
         </div>
       </div>
     </section>

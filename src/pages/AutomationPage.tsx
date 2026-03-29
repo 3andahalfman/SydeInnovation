@@ -2,18 +2,18 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { ArrowLeft, Workflow, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Settings, CheckCircle } from 'lucide-react';
 
 const features = [
-  'Workflow Analysis & Mapping',
-  'iLogic Automation & Rules',
-  'Autodesk Platform Services (APS) Integration',
-  'Product Configurator Development',
-  'Batch Processing & Automation Scripts',
-  'Data-Driven Design Systems',
+  'iLogic Rules & Automation',
+  'VB.NET Scripting',
+  'Product Configurators',
+  'Automated Drawing Generation',
+  'Custom Add-ins Development',
+  'Workflow Optimization',
 ];
 
-export default function ProcessOptimizationPage() {
+export default function AutomationPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -35,48 +35,46 @@ export default function ProcessOptimizationPage() {
           </Link>
           <div className="flex items-center gap-4 mb-6">
             <div className="w-16 h-16 bg-white/20 backdrop-blur-md border border-white/30 rounded-2xl flex items-center justify-center">
-              <Workflow className="w-8 h-8 text-orange-400" />
+              <Settings className="w-8 h-8 text-orange-400" />
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-white">
-              Process <span className="bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">Optimization</span>
+              <span className="bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">Automation</span>
             </h1>
           </div>
           <p className="text-xl text-gray-300 max-w-3xl leading-relaxed">
-            Streamline operations and enhance productivity through systematic 
-            analysis and engineering improvements powered by automation.
+            Streamline your design workflows with custom iLogic automation and configurators.
           </p>
         </div>
       </section>
 
       {/* Content Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white flex-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                Automate & Accelerate
+                Design Automation Services
               </h2>
               <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                Our process optimization services focus on eliminating bottlenecks and 
-                automating repetitive tasks. Using Inventor iLogic and Autodesk Platform 
-                Services (APS), we create intelligent systems that reduce design time 
-                from hours to minutes.
+                Stop doing repetitive design tasks manually. Our automation services using 
+                iLogic and VB scripting in Autodesk Inventor and Fusion 360 can transform 
+                hours of work into seconds.
               </p>
               <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                Whether you need a custom product configurator, automated drawing generation, 
-                or data-driven design workflows, we have the expertise to transform your 
-                engineering processes.
+                We build custom product configurators, automated drawing generation systems, 
+                and intelligent workflows that adapt to your specifications. Let your CAD 
+                system work for you, not the other way around.
               </p>
               <Link 
                 to="/portfolio"
                 className="inline-flex items-center px-6 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-all duration-300"
               >
-                See Our Automation Projects
+                View Our Portfolio
               </Link>
             </div>
 
-            <div className="bg-white/20 backdrop-blur-md border border-gray-200 shadow-xl rounded-2xl p-8" style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.1)' }}>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Our Expertise</h3>
+            <div className="bg-slate-50 rounded-2xl p-8 shadow-lg">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">Our Capabilities</h3>
               <div className="space-y-4">
                 {features.map((item, index) => (
                   <div key={index} className="flex items-center space-x-3">
@@ -94,10 +92,10 @@ export default function ProcessOptimizationPage() {
       <section className="py-20 bg-gradient-to-r from-blue-950 to-blue-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Ready to Optimize Your Workflows?
+            Ready to Automate?
           </h2>
           <p className="text-xl text-gray-300 mb-8">
-            Let's automate your design processes and boost productivity
+            Let us build custom automation for your design workflows
           </p>
           <Link to="/contact" className="inline-block px-8 py-4 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
             Get in Touch

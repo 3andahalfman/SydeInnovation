@@ -32,19 +32,20 @@ export default function Hero() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
         <div className="inline-flex items-center space-x-2 glass rounded-full px-5 py-2.5 mb-8">
           <Zap className="w-4 h-4 text-orange-400" />
-          <span className="text-orange-400 text-sm font-medium">Engineering Excellence</span>
+          <span className="text-orange-400 text-sm font-medium">CAD & Mechanical Engineering Expert</span>
         </div>
 
         <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-          Innovative Design
+          Parametric Design
           <br />
           <span className="bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
-            Engineering Solutions
+            Powered by Automation
           </span>
         </h1>
 
         <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-          Transforming ideas into reality with cutting-edge technology and precision engineering
+          Expert mechanical engineering and CAD services—from concept to prototype. 
+          Specializing in product design, manufacturing solutions, and design automation.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -52,7 +53,7 @@ export default function Hero() {
             onClick={() => scrollToSection('services')}
             className="group px-8 py-4 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl hover:scale-105 hover:-translate-y-1"
           >
-            <span>Explore Services</span>
+            <span>View Services</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
           <button
@@ -63,18 +64,18 @@ export default function Hero() {
           </button>
         </div>
 
-        <div className="mt-20 grid grid-cols-3 gap-6 max-w-3xl mx-auto">
-          <div className="glass rounded-2xl p-6 text-center">
-            <div className="text-4xl font-bold text-white mb-2">500+</div>
-            <div className="text-gray-400 text-sm">Projects Completed</div>
+        <div className="mt-20 grid grid-cols-3 gap-4 max-w-3xl mx-auto">
+          <div className="glass rounded-2xl p-5 text-center">
+            <div className="text-3xl font-bold text-white mb-1">$30K+</div>
+            <div className="text-gray-400 text-sm">Total Earnings</div>
           </div>
-          <div className="glass rounded-2xl p-6 text-center">
-            <div className="text-4xl font-bold text-white mb-2">15+</div>
-            <div className="text-gray-400 text-sm">Years Experience</div>
+          <div className="glass rounded-2xl p-5 text-center">
+            <div className="text-3xl font-bold text-white mb-1">80+</div>
+            <div className="text-gray-400 text-sm">Jobs Completed</div>
           </div>
-          <div className="glass rounded-2xl p-6 text-center">
-            <div className="text-4xl font-bold text-white mb-2">98%</div>
-            <div className="text-gray-400 text-sm">Client Satisfaction</div>
+          <div className="glass rounded-2xl p-5 text-center">
+            <div className="text-3xl font-bold text-white mb-1">100%</div>
+            <div className="text-gray-400 text-sm">Job Success</div>
           </div>
         </div>
       </div>

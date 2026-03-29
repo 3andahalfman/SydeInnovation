@@ -3,14 +3,14 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, ChevronDown } from 'lucide-react';
 
 const servicesDropdown = [
-  { label: 'Design Engineering', path: '/services/design-engineering' },
-  { label: 'CAD/CAM Services', path: '/services/cad-cam' },
-  { label: 'Manufacturing Solutions', path: '/services/manufacturing' },
-  { label: 'Process Optimization', path: '/services/process-optimization' },
+  { label: 'CAD Design', path: '/services/cad-design' },
+  { label: 'Manufacturing', path: '/services/manufacturing' },
+  { label: 'Simulation', path: '/services/simulation' },
+  { label: 'Automation', path: '/services/automation' },
 ];
 
-const productsDropdown: { label: string; path: string }[] = [
-  // Products will be added here as they are developed
+const productsDropdown = [
+  { label: 'SydeFlow', path: '#', comingSoon: true },
 ];
 
 export default function Header() {
@@ -140,14 +140,21 @@ export default function Header() {
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
                   {productsDropdown.map((item, idx) => (
-                    <Link
+                    <div
                       key={idx}
-                      to={item.path}
-                      onClick={() => setActiveDropdown(null)}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-500 transition-colors"
+                      className={`block w-full text-left px-4 py-2 text-sm ${
+                        item.comingSoon 
+                          ? 'text-gray-400 cursor-not-allowed' 
+                          : 'text-gray-700 hover:bg-orange-50 hover:text-orange-500 transition-colors'
+                      }`}
                     >
-                      {item.label}
-                    </Link>
+                      <span>{item.label}</span>
+                      {item.comingSoon && (
+                        <span className="ml-2 text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">
+                          Coming Soon
+                        </span>
+                      )}
+                    </div>
                   ))}
                 </div>
               )}
@@ -163,7 +170,17 @@ export default function Header() {
               About Us
             </Link>
 
-            {/* Portfolio Button */}
+            {/* Contact */}
+            <Link
+              to="/contact"
+              className={`text-sm font-medium uppercase tracking-wider transition-colors ${
+                isScrolled ? 'text-gray-700 hover:text-orange-500' : 'text-white hover:text-orange-400'
+              }`}
+            >
+              Contact
+            </Link>
+
+            {/* Project Button */}
             <Link
               to="/portfolio"
               className={`ml-4 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 uppercase tracking-wider border ${
@@ -173,13 +190,14 @@ export default function Header() {
               }`}
               style={{ minWidth: 220 }}
             >
-              Portfolio: Viewer SDK
+              Project: Viewer SDK
             </Link>
           </nav>
 
           <button
             className="md:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
           >
             {isMobileMenuOpen ? (
               <X className={isScrolled ? 'text-gray-700' : 'text-white'} />
@@ -236,13 +254,21 @@ export default function Header() {
                 {activeDropdown === 'mobile-products' && (
                   <div className="pl-4 mt-2 space-y-2 border-l-2 border-orange-200">
                     {productsDropdown.map((item, idx) => (
-                      <button
+                      <div
                         key={idx}
-                        onClick={() => scrollToSection(item.id)}
-                        className="block text-sm text-gray-600 hover:text-orange-500 transition-colors py-1"
+                        className={`text-sm py-1 ${
+                          item.comingSoon 
+                            ? 'text-gray-400 cursor-not-allowed' 
+                            : 'text-gray-600 hover:text-orange-500 transition-colors'
+                        }`}
                       >
-                        {item.label}
-                      </button>
+                        <span>{item.label}</span>
+                        {item.comingSoon && (
+                          <span className="ml-2 text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">
+                            Coming Soon
+                          </span>
+                        )}
+                      </div>
                     ))}
                   </div>
                 )}
@@ -256,13 +282,21 @@ export default function Header() {
                 About Us
               </Link>
 
-              {/* Portfolio Button */}
+              <Link
+                to="/contact"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-sm font-medium uppercase tracking-wider text-gray-700 hover:text-orange-500 transition-colors text-left py-2"
+              >
+                Contact
+              </Link>
+
+              {/* Project Button */}
               <Link
                 to="/portfolio"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="mt-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 uppercase tracking-wider text-center border border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500"
               >
-                Portfolio: Viewer SDK
+                Project: Viewer SDK
               </Link>
             </nav>
           </div>

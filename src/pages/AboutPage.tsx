@@ -154,16 +154,16 @@ export default function AboutPage() {
           </div>
           <div className="flex flex-wrap justify-center gap-6">
             <div className="bg-gradient-to-br from-blue-950 to-blue-800 text-white px-8 py-6 rounded-xl text-center">
-              <div className="text-3xl font-bold mb-1">ISO 9001</div>
-              <div className="text-sm opacity-90">Certified Quality</div>
+              <div className="text-3xl font-bold mb-1">$30K+</div>
+              <div className="text-sm opacity-90">Total Earnings</div>
             </div>
             <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white px-8 py-6 rounded-xl text-center">
-              <div className="text-3xl font-bold mb-1">500+</div>
-              <div className="text-sm opacity-90">Projects Delivered</div>
+              <div className="text-3xl font-bold mb-1">80+</div>
+              <div className="text-sm opacity-90">Jobs Completed</div>
             </div>
             <div className="bg-gradient-to-br from-slate-700 to-slate-600 text-white px-8 py-6 rounded-xl text-center">
-              <div className="text-3xl font-bold mb-1">15+</div>
-              <div className="text-sm opacity-90">Years Experience</div>
+              <div className="text-3xl font-bold mb-1">100%</div>
+              <div className="text-sm opacity-90">Job Success</div>
             </div>
             <div className="bg-gradient-to-br from-blue-950 to-blue-800 text-white px-8 py-6 rounded-xl text-center">
               <div className="text-3xl font-bold mb-1">24/7</div>
@@ -183,9 +183,9 @@ export default function AboutPage() {
             Let's collaborate to bring your engineering vision to life
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+            <Link to="/contact" className="px-8 py-4 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
               Get in Touch
-            </button>
+            </Link>
             <Link 
               to="/"
               className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-lg font-semibold hover:bg-white/20 transition-all duration-300 border border-white/20"

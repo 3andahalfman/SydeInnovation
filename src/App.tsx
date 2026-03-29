@@ -7,19 +7,23 @@ import About from './components/About';
 import Footer from './components/Footer';
 import AboutPage from './pages/AboutPage';
 import PortfolioPage from './pages/PortfolioPage';
-import DesignEngineeringPage from './pages/DesignEngineeringPage';
-import CadCamServicesPage from './pages/CadCamServicesPage';
-import ManufacturingSolutionsPage from './pages/ManufacturingSolutionsPage';
-import ProcessOptimizationPage from './pages/ProcessOptimizationPage';
+import ContactPage from './pages/ContactPage';
+import CadDesignPage from './pages/CadDesignPage';
+import ManufacturingPage from './pages/ManufacturingPage';
+import SimulationPage from './pages/SimulationPage';
+import AutomationPage from './pages/AutomationPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 function HomePage() {
   return (
     <>
       <Header />
-      <Hero />
-      <Services />
-      <Products />
-      <About />
+      <main>
+        <Hero />
+        <Services />
+        <Products />
+        <About />
+      </main>
       <Footer />
     </>
   );
@@ -33,10 +37,12 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
-          <Route path="/services/design-engineering" element={<DesignEngineeringPage />} />
-          <Route path="/services/cad-cam" element={<CadCamServicesPage />} />
-          <Route path="/services/manufacturing" element={<ManufacturingSolutionsPage />} />
-          <Route path="/services/process-optimization" element={<ProcessOptimizationPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/services/cad-design" element={<CadDesignPage />} />
+          <Route path="/services/manufacturing" element={<ManufacturingPage />} />
+          <Route path="/services/simulation" element={<SimulationPage />} />
+          <Route path="/services/automation" element={<AutomationPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
     </Router>
