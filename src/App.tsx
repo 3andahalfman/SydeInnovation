@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Services from './components/Services';
@@ -44,6 +45,7 @@ function App() {
           <Route path="/services/automation" element={<AutomationPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        <Analytics />
       </div>
     </Router>
   );
