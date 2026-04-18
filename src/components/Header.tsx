@@ -7,7 +7,7 @@ const servicesDropdown = [
   { label: 'CAD Drafting', path: '/services/cad-drafting' },
   { label: 'Manufacturing', path: '/services/manufacturing' },
   { label: 'Simulation', path: '/services/simulation' },
-  { label: 'Automation', path: '/services/automation' },
+  { label: 'Design Automation', path: '/services/design-automation' },
 ];
 
 const productsDropdown = [

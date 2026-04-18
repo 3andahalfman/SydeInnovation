@@ -31,10 +31,10 @@ const services = [
   },
   {
     icon: Settings,
-    title: 'Automation',
+    title: 'Design Automation',
     description:
-      'Custom design automation using iLogic and VB scripting in Autodesk Inventor and Fusion 360. Build configurators, automate workflows, and eliminate repetitive tasks.',
-    features: ['iLogic Rules', 'VB Scripting', 'Configurators', 'Workflow Automation'],
+      'Custom design automation using iLogic, VB.NET, DriveWorks, and APS. Build configurators, automate drawings, generate BOMs, and eliminate repetitive tasks.',
+    features: ['iLogic', 'Configurators', 'BOM Generation', 'Drawing Automation'],
   },
 ];
 

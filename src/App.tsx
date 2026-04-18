@@ -44,7 +44,7 @@ function App() {
           <Route path="/services/cad-drafting" element={<CadDraftingPage />} />
           <Route path="/services/manufacturing" element={<ManufacturingPage />} />
           <Route path="/services/simulation" element={<SimulationPage />} />
-          <Route path="/services/automation" element={<AutomationPage />} />
+          <Route path="/services/design-automation" element={<AutomationPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
         <Analytics />
