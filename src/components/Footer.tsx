@@ -1,4 +1,4 @@
-import { Mail, MapPin, Phone, Linkedin, Twitter, Github } from 'lucide-react';
+import { Mail, MapPin, Phone } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 export default function Footer() {
@@ -38,32 +38,6 @@ export default function Footer() {
             <p className="text-gray-500 text-sm mb-6">
               Autodesk Inventor • Fusion 360 • SolidWorks • Onshape • AutoCAD • ANSYS
             </p>
-            <div className="flex space-x-4">
-              <a
-                href="#"
-                title="LinkedIn"
-                aria-label="LinkedIn"
-                className="w-10 h-10 glass rounded-xl flex items-center justify-center hover:bg-orange-500/80 transition-all duration-300 hover:scale-110"
-              >
-                <Linkedin className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                title="Twitter"
-                aria-label="Twitter"
-                className="w-10 h-10 glass rounded-xl flex items-center justify-center hover:bg-orange-500/80 transition-all duration-300 hover:scale-110"
-              >
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                title="GitHub"
-                aria-label="GitHub"
-                className="w-10 h-10 glass rounded-xl flex items-center justify-center hover:bg-orange-500/80 transition-all duration-300 hover:scale-110"
-              >
-                <Github className="w-5 h-5" />
-              </a>
-            </div>
           </div>
 
           <div>
