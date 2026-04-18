@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Award, Target, Users, Zap, ArrowLeft, CheckCircle } from 'lucide-react';
+import { useCountUp } from '../hooks/useCountUp';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -39,6 +40,10 @@ const expertise = [
 ];
 
 export default function AboutPage() {
+  const aboutClients = useCountUp(70);
+  const aboutJobs = useCountUp(80);
+  const aboutSuccess = useCountUp(100);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -153,16 +158,16 @@ export default function AboutPage() {
             </h2>
           </div>
           <div className="flex flex-wrap justify-center gap-6">
-            <div className="bg-gradient-to-br from-blue-950 to-blue-800 text-white px-8 py-6 rounded-xl text-center">
-              <div className="text-3xl font-bold mb-1">$30K+</div>
-              <div className="text-sm opacity-90">Total Earnings</div>
+            <div ref={aboutClients.ref} className="bg-gradient-to-br from-blue-950 to-blue-800 text-white px-8 py-6 rounded-xl text-center">
+              <div className="text-3xl font-bold mb-1">{aboutClients.count}+</div>
+              <div className="text-sm opacity-90">Global Clients</div>
             </div>
-            <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white px-8 py-6 rounded-xl text-center">
-              <div className="text-3xl font-bold mb-1">80+</div>
+            <div ref={aboutJobs.ref} className="bg-gradient-to-br from-orange-500 to-orange-600 text-white px-8 py-6 rounded-xl text-center">
+              <div className="text-3xl font-bold mb-1">{aboutJobs.count}+</div>
               <div className="text-sm opacity-90">Jobs Completed</div>
             </div>
-            <div className="bg-gradient-to-br from-slate-700 to-slate-600 text-white px-8 py-6 rounded-xl text-center">
-              <div className="text-3xl font-bold mb-1">100%</div>
+            <div ref={aboutSuccess.ref} className="bg-gradient-to-br from-slate-700 to-slate-600 text-white px-8 py-6 rounded-xl text-center">
+              <div className="text-3xl font-bold mb-1">{aboutSuccess.count}%</div>
               <div className="text-sm opacity-90">Job Success</div>
             </div>
             <div className="bg-gradient-to-br from-blue-950 to-blue-800 text-white px-8 py-6 rounded-xl text-center">

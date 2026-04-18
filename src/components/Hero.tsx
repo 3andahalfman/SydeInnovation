@@ -1,6 +1,11 @@
 import { ArrowRight, Zap } from 'lucide-react';
+import { useCountUp } from '../hooks/useCountUp';
 
 export default function Hero() {
+  const clients = useCountUp(70);
+  const jobs = useCountUp(80);
+  const success = useCountUp(100);
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -65,16 +70,16 @@ export default function Hero() {
         </div>
 
         <div className="mt-20 grid grid-cols-3 gap-4 max-w-3xl mx-auto">
-          <div className="glass rounded-2xl p-5 text-center">
-            <div className="text-3xl font-bold text-white mb-1">$30K+</div>
-            <div className="text-gray-400 text-sm">Total Earnings</div>
+          <div ref={clients.ref} className="glass rounded-2xl p-5 text-center">
+            <div className="text-3xl font-bold text-white mb-1">{clients.count}+</div>
+            <div className="text-gray-400 text-sm">Global Clients</div>
           </div>
-          <div className="glass rounded-2xl p-5 text-center">
-            <div className="text-3xl font-bold text-white mb-1">80+</div>
+          <div ref={jobs.ref} className="glass rounded-2xl p-5 text-center">
+            <div className="text-3xl font-bold text-white mb-1">{jobs.count}+</div>
             <div className="text-gray-400 text-sm">Jobs Completed</div>
           </div>
-          <div className="glass rounded-2xl p-5 text-center">
-            <div className="text-3xl font-bold text-white mb-1">100%</div>
+          <div ref={success.ref} className="glass rounded-2xl p-5 text-center">
+            <div className="text-3xl font-bold text-white mb-1">{success.count}%</div>
             <div className="text-gray-400 text-sm">Job Success</div>
           </div>
         </div>
