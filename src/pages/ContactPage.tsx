@@ -112,8 +112,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-1">Email</h4>
-                    <a href="mailto:info@sydeinnovation.com" className="text-gray-600 hover:text-orange-500 transition-colors">
-                      info@sydeinnovation.com
+                    <a href="mailto:info@sydeinovation.com" className="text-gray-600 hover:text-orange-500 transition-colors">
+                      info@sydeinovation.com
                     </a>
                   </div>
                 </div>

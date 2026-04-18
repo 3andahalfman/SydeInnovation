@@ -100,7 +100,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center space-x-3 text-gray-400">
                 <Mail className="w-5 h-5 flex-shrink-0" />
-                <span>info@sydeinnovation.com</span>
+                <span>info@sydeinovation.com</span>
               </li>
             </ul>
           </div>
