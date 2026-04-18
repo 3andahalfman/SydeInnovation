@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, ChevronDown } from 'lucide-react';
 
 const servicesDropdown = [
-  { label: 'CAD Design', path: '/services/cad-design' },
+  { label: 'Mechanical Design', path: '/services/mechanical-design' },
   { label: 'Manufacturing', path: '/services/manufacturing' },
   { label: 'Simulation', path: '/services/simulation' },
   { label: 'Automation', path: '/services/automation' },

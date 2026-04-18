@@ -3,10 +3,10 @@ import { Cpu, Settings, GraduationCap, Factory, PenTool } from 'lucide-react';
 const services = [
   {
     icon: PenTool,
-    title: 'CAD Design',
+    title: 'Mechanical Design',
     description:
-      'Professional computer-aided design services using industry-leading software. From 3D modeling to technical documentation for manufacturing.',
-    features: ['3D Modeling', '2D Drawings', 'Assembly Design', 'Technical Documentation'],
+      'Comprehensive mechanical design services including 3D CAD modeling, drafting, sheet metal design, and product configurator development.',
+    features: ['3D Modeling', 'Mechanical Drafting', 'Sheet Metal', 'Configurators'],
   },
   {
     icon: Factory,
