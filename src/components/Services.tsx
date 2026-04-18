@@ -1,4 +1,4 @@
-import { Cpu, Settings, GraduationCap, Factory, PenTool } from 'lucide-react';
+import { Cpu, Settings, GraduationCap, Factory, PenTool, Ruler } from 'lucide-react';
 
 const services = [
   {
@@ -7,6 +7,13 @@ const services = [
     description:
       'Comprehensive mechanical design services including 3D CAD modeling, drafting, sheet metal design, and product configurator development.',
     features: ['3D Modeling', 'Mechanical Drafting', 'Sheet Metal', 'Configurators'],
+  },
+  {
+    icon: Ruler,
+    title: 'CAD Drafting',
+    description:
+      'Full-range 2D and 3D CAD drafting services for manufacturing, construction, and fabrication. From architectural drawings to assembly drawings with BOM.',
+    features: ['2D/3D Drafting', 'Fabrication Dwgs', 'BOM', 'CAD Conversion'],
   },
   {
     icon: Factory,
@@ -51,7 +58,7 @@ export default function Services() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-12">
           {services.map((service, index) => (
             <div
               key={index}

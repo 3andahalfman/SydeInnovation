@@ -10,6 +10,7 @@ import AboutPage from './pages/AboutPage';
 import PortfolioPage from './pages/PortfolioPage';
 import ContactPage from './pages/ContactPage';
 import CadDesignPage from './pages/CadDesignPage';
+import CadDraftingPage from './pages/CadDraftingPage';
 import ManufacturingPage from './pages/ManufacturingPage';
 import SimulationPage from './pages/SimulationPage';
 import AutomationPage from './pages/AutomationPage';
@@ -40,6 +41,7 @@ function App() {
           <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/services/mechanical-design" element={<CadDesignPage />} />
+          <Route path="/services/cad-drafting" element={<CadDraftingPage />} />
           <Route path="/services/manufacturing" element={<ManufacturingPage />} />
           <Route path="/services/simulation" element={<SimulationPage />} />
           <Route path="/services/automation" element={<AutomationPage />} />

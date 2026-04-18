@@ -152,11 +152,34 @@ export default function CadDesignPage() {
           </div>
 
           <div className="mt-12 bg-white rounded-2xl p-8 shadow-md">
-            <p className="text-lg text-gray-600 leading-relaxed">
+            <p className="text-lg text-gray-600 leading-relaxed mb-6">
               Our team uses leading CAD tools like AutoCAD, Autodesk Inventor, SolidWorks, Onshape, 
               Fusion 360, Revit, Plant 3D and Advance Steel to deliver comprehensive 2D drafting and 
               custom 3D CAD modeling services and design automation services.
             </p>
+            {/* Software Logo Badges */}
+            <div className="flex flex-wrap gap-4 items-center mb-6">
+              {[
+                { name: 'AutoCAD', brand: 'AUTODESK', color: 'bg-red-600' },
+                { name: 'Inventor', brand: 'AUTODESK', color: 'bg-amber-600' },
+                { name: 'SolidWorks', brand: 'DASSAULT', color: 'bg-red-700' },
+                { name: 'Onshape', brand: 'PTC', color: 'bg-green-600' },
+                { name: 'Fusion 360', brand: 'AUTODESK', color: 'bg-orange-500' },
+                { name: 'Revit', brand: 'AUTODESK', color: 'bg-blue-600' },
+                { name: 'Plant 3D', brand: 'AUTODESK', color: 'bg-teal-600' },
+                { name: 'Advance Steel', brand: 'AUTODESK', color: 'bg-slate-700' },
+              ].map((tool, index) => (
+                <div key={index} className="flex items-center bg-white border border-gray-200 rounded-xl px-4 py-2.5 shadow-sm hover:shadow-md transition-shadow">
+                  <div className={`w-7 h-7 ${tool.color} rounded-lg flex items-center justify-center mr-2.5`}>
+                    <span className="text-white text-[10px] font-bold">{tool.name.charAt(0)}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[9px] text-gray-400 font-semibold uppercase tracking-wider leading-none">{tool.brand}</span>
+                    <span className="text-xs font-bold text-gray-900 leading-tight">{tool.name}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
             <Link 
               to="/contact"
               className="mt-6 inline-flex items-center px-6 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-all duration-300"

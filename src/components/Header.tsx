@@ -4,6 +4,7 @@ import { Menu, X, ChevronDown } from 'lucide-react';
 
 const servicesDropdown = [
   { label: 'Mechanical Design', path: '/services/mechanical-design' },
+  { label: 'CAD Drafting', path: '/services/cad-drafting' },
   { label: 'Manufacturing', path: '/services/manufacturing' },
   { label: 'Simulation', path: '/services/simulation' },
   { label: 'Automation', path: '/services/automation' },
