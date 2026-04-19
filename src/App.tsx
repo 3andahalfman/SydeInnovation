@@ -11,9 +11,9 @@ import PortfolioPage from './pages/PortfolioPage';
 import ContactPage from './pages/ContactPage';
 import CadDesignPage from './pages/CadDesignPage';
 import CadDraftingPage from './pages/CadDraftingPage';
-import ManufacturingPage from './pages/ManufacturingPage';
 import SimulationPage from './pages/SimulationPage';
 import AutomationPage from './pages/AutomationPage';
+import AdminPage from './pages/AdminPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 function HomePage() {
@@ -42,9 +42,9 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/services/mechanical-design" element={<CadDesignPage />} />
           <Route path="/services/cad-drafting" element={<CadDraftingPage />} />
-          <Route path="/services/manufacturing" element={<ManufacturingPage />} />
           <Route path="/services/simulation" element={<SimulationPage />} />
           <Route path="/services/design-automation" element={<AutomationPage />} />
+          <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
         <Analytics />

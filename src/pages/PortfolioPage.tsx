@@ -1,27 +1,34 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import type { Project } from '../types/project';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
-
-const projects = [
-  {
-    id: 'project1',
-    name: 'Automated Conveyor System',
-    description: 'Automated conveyor system with real-time simulation and iLogic-driven configuration.',
-    tech: 'Inventor + APS',
-  },
-  {
-    id: 'project2',
-    name: 'Modular Enclosure Configurator',
-    description: 'Custom product configurator for modular enclosures, visualized in 3D.',
-    tech: 'Fusion 360 + Viewer SDK',
-  },
-];
+import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 
 export default function PortfolioPage() {
-  const [selectedProject, setSelectedProject] = useState<string | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [filterCategory, setFilterCategory] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const { data } = await supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false });
+      setProjects(data || []);
+      setLoading(false);
+    };
+    fetchProjects();
+  }, []);
+
+  const categories = [...new Set(projects.map((p) => p.category).filter(Boolean))];
+  const filtered = filterCategory
+    ? projects.filter((p) => p.category === filterCategory)
+    : projects;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -47,44 +54,102 @@ export default function PortfolioPage() {
             Explore interactive 3D models, CAD projects, and engineering visualizations powered by the Autodesk Viewer SDK. This portfolio demonstrates real-world applications of SydeInnovation automation and design expertise.
           </p>
 
+          {/* Category filters */}
+          {categories.length > 0 && !selectedProject && (
+            <div className="flex flex-wrap gap-2 mb-8">
+              <button
+                onClick={() => setFilterCategory(null)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${!filterCategory ? 'bg-orange-500 text-white' : 'bg-white/10 text-gray-300 hover:bg-white/20'}`}
+              >
+                All
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setFilterCategory(cat!)}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${filterCategory === cat ? 'bg-orange-500 text-white' : 'bg-white/10 text-gray-300 hover:bg-white/20'}`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Loading state */}
+          {loading && (
+            <div className="flex items-center justify-center py-24">
+              <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
+            </div>
+          )}
+
+          {/* Empty state */}
+          {!loading && projects.length === 0 && (
+            <div className="text-center py-24">
+              <p className="text-gray-400 text-lg">No projects yet. Check back soon!</p>
+            </div>
+          )}
+
           {/* Project List or Viewer */}
-          {!selectedProject ? (
-            <div className="grid md:grid-cols-2 gap-8" style={{ minHeight: '60vh' }}>
-              {projects.map((project) => (
+          {!loading && !selectedProject ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filtered.map((project) => (
                 <div
                   key={project.id}
-                  className="group relative glass rounded-2xl p-6 flex flex-col justify-between overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
+                  className="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
                 >
-                  <div className="glass-shine"></div>
-                  <div className="relative z-10">
-                    <h3 className="text-lg font-bold text-white mb-2">{project.name}</h3>
-                    <p className="text-gray-300 mb-2">{project.description}</p>
-                    <span className="inline-block px-3 py-1 glass text-white text-xs rounded-full mb-4">{project.tech}</span>
+                  {project.thumbnail_url ? (
+                    <img
+                      src={project.thumbnail_url}
+                      alt={project.title}
+                      className="w-full h-48 object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-48 bg-gradient-to-br from-blue-900/50 to-slate-800/50 flex items-center justify-center">
+                      <Eye className="w-10 h-10 text-gray-500" />
+                    </div>
+                  )}
+                  <div className="p-5">
+                    <h3 className="text-lg font-bold text-white mb-2">{project.title}</h3>
+                    <p className="text-gray-300 text-sm mb-3 line-clamp-2">{project.description}</p>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {project.category && (
+                        <span className="px-2.5 py-1 bg-blue-500/20 text-blue-300 text-xs rounded-full">
+                          {project.category}
+                        </span>
+                      )}
+                      {project.tech && (
+                        <span className="px-2.5 py-1 bg-orange-500/20 text-orange-300 text-xs rounded-full">
+                          {project.tech}
+                        </span>
+                      )}
+                    </div>
+                    {project.aps_urn && (
+                      <button
+                        className="w-full px-4 py-2 bg-orange-500/90 backdrop-blur text-white rounded-xl font-semibold hover:bg-orange-600 transition-all duration-300 flex items-center gap-2 justify-center hover:scale-105"
+                        onClick={() => setSelectedProject(project)}
+                      >
+                        <Eye className="w-4 h-4" /> View in 3D
+                      </button>
+                    )}
                   </div>
-                  <button
-                    className="relative z-10 mt-auto px-4 py-2 bg-orange-500/90 backdrop-blur text-white rounded-xl font-semibold hover:bg-orange-600 transition-all duration-300 flex items-center gap-2 justify-center hover:scale-105"
-                    onClick={() => setSelectedProject(project.id)}
-                  >
-                    <Eye className="w-4 h-4" /> View in 3D
-                  </button>
                 </div>
               ))}
             </div>
-          ) : (
-            <div className="glass rounded-2xl p-4 md:p-8 mb-8 flex flex-col items-center justify-center" style={{ minHeight: '80vh' }}>
+          ) : selectedProject ? (
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 md:p-8 mb-8 flex flex-col items-center justify-center min-h-[80vh]">
               <button
-                className="mb-6 px-4 py-2 glass text-white rounded-xl font-semibold hover:bg-white/20 transition-all duration-300 flex items-center gap-2"
+                className="mb-6 px-4 py-2 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 transition-all duration-300 flex items-center gap-2"
                 onClick={() => setSelectedProject(null)}
               >
                 <EyeOff className="w-4 h-4" /> Back to Projects
               </button>
-              <h2 className="text-2xl font-bold text-white mb-4">Live 3D Viewer Demo</h2>
-              <div className="w-full h-[65vh] md:h-[75vh] glass rounded-xl flex items-center justify-center text-gray-300">
-                {/* Embed Autodesk Viewer SDK or placeholder */}
-                <span>3D Viewer for <b>{projects.find(p => p.id === selectedProject)?.name}</b> coming soon...</span>
+              <h2 className="text-2xl font-bold text-white mb-4">{selectedProject.title}</h2>
+              <div className="w-full h-[65vh] md:h-[75vh] bg-white/5 rounded-xl flex items-center justify-center text-gray-300">
+                {/* Embed Autodesk Viewer SDK */}
+                <span>3D Viewer for <b>{selectedProject.title}</b> — loading URN...</span>
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </main>
       <Footer />
