@@ -55,6 +55,7 @@ interface Product {
   activityId?: string;
   parameters: Parameter[];
   lastOutputUrn?: string;
+  configuratorLayout?: unknown | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -107,7 +108,7 @@ export default function ConfiguratorView() {
         // Products with only lastOutputUrn and no layout can still be opened
         // from Products; deleting a layout removes it from this list.
         const configuredProducts = (data.products || []).filter(
-          (p: Product) => !!(p as Product & { configuratorLayout?: unknown }).configuratorLayout,
+          (p: Product) => !!p.configuratorLayout,
         );
         setProducts(configuredProducts);
       } else {

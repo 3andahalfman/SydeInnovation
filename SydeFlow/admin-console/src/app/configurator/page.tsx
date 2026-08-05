@@ -1082,12 +1082,27 @@ function ConfiguratorPageContent() {
           parameters: configValues
         })
       });
-      
-      if (!res.ok) throw new Error('Test run failed');
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || 'Test run failed');
+      }
+
+      if (data.cached && data.urn) {
+        setTestProgress('Loaded cached result');
+        if (data.urn) setViewerUrn(data.urn);
+      } else {
+        setTestProgress(
+          data.iptWorkItemId || data.workItemId
+            ? `Work item started: ${data.iptWorkItemId || data.workItemId}`
+            : 'Test run started',
+        );
+      }
     } catch (err) {
-      setTestRunning(false);
-      setTestProgress('');
       console.error('Test run failed:', err);
+      setTestProgress(err instanceof Error ? err.message : 'Test run failed');
+    } finally {
+      setTestRunning(false);
     }
   };
 

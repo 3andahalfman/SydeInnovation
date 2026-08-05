@@ -51,13 +51,16 @@ export default function BundlesView() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      // Fetch app bundles
+      // Fetch app bundles (API returns a plain string[] or { data: string[] })
       const bundlesRes = await fetch('/api/aps/appbundles');
       if (bundlesRes.ok) {
         const bundlesData = await bundlesRes.json();
-        const bundles = (bundlesData.data || []).map((name: string, i: number) => ({
+        const names: string[] = Array.isArray(bundlesData)
+          ? bundlesData
+          : (bundlesData.data || []);
+        const bundles = names.map((name: string) => ({
           id: name,
-          name: name.split('.').pop() || name,
+          name: name.split('.').pop()?.split('+')[0] || name,
           engine: 'Autodesk.Inventor+2024',
           version: 1,
           status: 'active' as const
@@ -69,9 +72,12 @@ export default function BundlesView() {
       const activitiesRes = await fetch('/api/aps/activities');
       if (activitiesRes.ok) {
         const activitiesData = await activitiesRes.json();
-        const acts = (activitiesData.data || []).map((name: string) => ({
+        const names: string[] = Array.isArray(activitiesData)
+          ? activitiesData
+          : (activitiesData.data || []);
+        const acts = names.map((name: string) => ({
           id: name,
-          name: name.split('.').pop() || name,
+          name: name.split('.').pop()?.split('+')[0] || name,
           appBundles: [],
           engine: 'Autodesk.Inventor+2024',
           commandLine: '',

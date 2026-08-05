@@ -61,10 +61,12 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const { product_id } = req.query;
-        
+
+        // Avoid PostgREST embedded joins — products FK relationship is not
+        // always present in the schema cache on this project.
         let query = supabase
             .from('configurations')
-            .select('*, products(name)')
+            .select('*')
             .order('created_at', { ascending: false });
 
         if (product_id) {
@@ -86,7 +88,7 @@ router.get('/:id', async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('configurations')
-            .select('*, products(*)')
+            .select('*')
             .eq('id', req.params.id)
             .single();
 
