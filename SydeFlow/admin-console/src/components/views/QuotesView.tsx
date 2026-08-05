@@ -27,6 +27,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { useNotifications } from "@/contexts/NotificationContext";
+import { BASE_PATH, appPath } from "@/lib/config";
 
 interface Quote {
   id: string;
@@ -713,12 +714,12 @@ export default function QuotesView() {
           <div className="flex items-center gap-2">
             <code className="flex-1 px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-orange-400 font-mono">
               {typeof window !== "undefined"
-                ? `${window.location.origin}/configure?id=<productId>`
-                : "/configure?id=<productId>"}
+                ? `${window.location.origin}${BASE_PATH}/configure?id=<productId>`
+                : appPath("/configure?id=<productId>")}
             </code>
             <button
               onClick={() => {
-                const url = `${window.location.origin}/configure?id=<productId>`;
+                const url = `${window.location.origin}${BASE_PATH}/configure?id=<productId>`;
                 navigator.clipboard.writeText(url);
               }}
               className="p-2 text-gray-400 hover:text-white bg-slate-700/50 rounded-lg transition-colors"
