@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
+import { appPath } from '@/lib/config';
   Code2,
   Copy,
   Check,
@@ -573,7 +574,7 @@ window.addEventListener('message', function(e) {
                   )}
                 </button>
                 <a
-                  href={`/configure?id=${config.productId}`}
+                  href={appPath(`/configure?id=${config.productId}`)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 rounded-lg bg-slate-700 text-gray-300 hover:bg-slate-600 transition-all"
