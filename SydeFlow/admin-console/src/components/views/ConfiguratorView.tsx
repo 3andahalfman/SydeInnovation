@@ -21,6 +21,7 @@ import { useToast } from "@/contexts/ToastContext";
 import TemplatePickerDialog from "@/components/configurator/TemplatePickerDialog";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { CONFIGURATOR_TEMPLATES } from "@/types/product";
+import { appPath } from "@/lib/config";
 
 // ============================================================================
 // TYPES
@@ -102,9 +103,11 @@ export default function ConfiguratorView() {
       const res = await fetch("/api/products", { headers });
       if (res.ok) {
         const data = await res.json();
-        // Only show products that have been configured (have lastOutputUrn)
+        // Show products that have a saved configurator layout (builder items).
+        // Products with only lastOutputUrn and no layout can still be opened
+        // from Products; deleting a layout removes it from this list.
         const configuredProducts = (data.products || []).filter(
-          (p: Product) => p.lastOutputUrn,
+          (p: Product) => !!(p as Product & { configuratorLayout?: unknown }).configuratorLayout,
         );
         setProducts(configuredProducts);
       } else {
@@ -182,7 +185,7 @@ export default function ConfiguratorView() {
       if (res.ok) {
         const data = await res.json();
         if (data.layout && !data.isDefault) {
-          window.open(`/admin/configurator?id=${productId}`, "_blank");
+          window.open(appPath(`/configurator?id=${productId}`), "_blank");
           setCheckingLayout(null);
           return;
         }
@@ -215,14 +218,26 @@ export default function ConfiguratorView() {
 
   const executeDelete = async (productId: string) => {
     try {
+      const token =
+        typeof window !== "undefined"
+          ? localStorage.getItem("sydeflow_token") ||
+            localStorage.getItem("token")
+          : null;
+      const headers: Record<string, string> = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
       const res = await fetch(`/api/products/${productId}/layout`, {
         method: "DELETE",
+        headers,
       });
       if (res.ok) {
         toast.success("Layout deleted");
+        // Drop from this list immediately; product remains in Products.
+        setProducts((prev) => prev.filter((p) => p.id !== productId));
         fetchProducts();
       } else {
-        toast.error("Failed to delete layout");
+        const data = await res.json().catch(() => ({}));
+        toast.error(data.error || "Failed to delete layout");
       }
     } catch {
       toast.error("Failed to delete layout");
@@ -233,7 +248,7 @@ export default function ConfiguratorView() {
   const handleTemplateSelect = (templateId: string) => {
     if (pendingProductId) {
       window.open(
-        `/admin/configurator?id=${pendingProductId}&template=${templateId}`,
+        appPath(`/configurator?id=${pendingProductId}&template=${templateId}`),
         "_blank",
       );
     }
@@ -481,7 +496,7 @@ export default function ConfiguratorView() {
                           <button
                             onClick={() =>
                               window.open(
-                                `/admin/configure?id=${product.id}`,
+                                appPath(`/configure?id=${product.id}`),
                                 "_blank",
                               )
                             }
@@ -585,7 +600,7 @@ export default function ConfiguratorView() {
                 >
                   <button
                     onClick={() =>
-                      window.open(`/admin/configure?id=${product.id}`, "_blank")
+                      window.open(appPath(`/configure?id=${product.id}`), "_blank")
                     }
                     className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-lg text-xs font-medium transition-colors"
                     title="Preview Configure Page"

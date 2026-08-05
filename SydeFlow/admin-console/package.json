@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
-    "export": "next build && xcopy /E /I /Y out ..\\server\\admin-console",
+    "export": "next build && rm -rf ../server/admin-console && mkdir -p ../server/admin-console && cp -a out/. ../server/admin-console/",
     "start": "next start -p 3001",
     "lint": "next lint",
     "storybook": "storybook dev -p 6006",

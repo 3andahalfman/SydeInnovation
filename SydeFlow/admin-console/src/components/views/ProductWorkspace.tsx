@@ -58,6 +58,7 @@ import { useNotifications } from "@/contexts/NotificationContext";
 import type { ViewType } from "@/app/page";
 import FormDesigner from "./FormDesigner";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { BASE_PATH, appPath } from '@/lib/config';
 
 // ============================================================================
 // TYPES
@@ -2077,16 +2078,16 @@ export default function ProductWorkspace({
             )}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-64 pl-9 pr-3 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-sm text-white placeholder-gray-400"
+                className="w-56 pl-8 pr-2.5 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-white placeholder-gray-400"
               />
             </div>
 
@@ -2096,23 +2097,23 @@ export default function ProductWorkspace({
                 setFormData({ name: "", description: "", category: "" });
                 setPageMode("create");
               }}
-              className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-medium transition-colors"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" />
               New Product
             </button>
           </div>
         </div>
 
         {/* Products Table */}
-        <div className="flex-1 overflow-hidden flex flex-col bg-slate-800/30 backdrop-blur-lg rounded-xl border border-slate-700/50">
+        <div className="flex-1 overflow-hidden flex flex-col bg-slate-800/30 backdrop-blur-lg rounded-lg border border-slate-700/50">
           {filteredProducts.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full">
-              <Package className="w-16 h-16 text-gray-600 mb-4" />
-              <h3 className="text-lg font-semibold text-white mb-2">
+              <Package className="w-12 h-12 text-gray-600 mb-3" />
+              <h3 className="text-base font-semibold text-white mb-1">
                 No products yet
               </h3>
-              <p className="text-gray-400 text-sm mb-4">
+              <p className="text-gray-400 text-xs mb-3">
                 Create your first configurable product
               </p>
               <button
@@ -2120,7 +2121,7 @@ export default function ProductWorkspace({
                   setFormData({ name: "", description: "", category: "" });
                   setPageMode("create");
                 }}
-                className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+                className="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-medium transition-colors"
               >
                 Create Product
               </button>
@@ -2129,11 +2130,11 @@ export default function ProductWorkspace({
             <>
               {/* Table */}
               <div className="flex-1 overflow-auto">
-                <table className="w-full min-w-[800px]">
+                <table className="w-full min-w-[800px] text-xs">
                   <thead className="bg-slate-800/50 sticky top-0">
                     <tr className="border-b border-slate-700/50">
                       {/* Checkbox */}
-                      <th className="w-12 px-4 py-3">
+                      <th className="w-10 px-3 py-2">
                         <input
                           type="checkbox"
                           checked={allSelected}
@@ -2142,90 +2143,90 @@ export default function ProductWorkspace({
                               el.indeterminate = someSelected && !allSelected;
                           }}
                           onChange={toggleSelectAll}
-                          className="w-4 h-4 rounded border-slate-600 bg-slate-700 text-orange-500 focus:ring-orange-500"
+                          className="w-3.5 h-3.5 rounded border-slate-600 bg-slate-700 text-orange-500 focus:ring-orange-500"
                           aria-label="Select all products"
                         />
                       </th>
 
                       {/* Name */}
-                      <th className="text-left px-4 py-3">
+                      <th className="text-left px-3 py-2">
                         <button
                           onClick={() => handleSort("name")}
-                          className="flex items-center gap-1 text-sm font-medium text-gray-400 hover:text-white"
+                          className="flex items-center gap-1 text-xs font-medium text-gray-400 hover:text-white"
                         >
                           Name
-                          <ArrowUpDown className="w-4 h-4" />
+                          <ArrowUpDown className="w-3 h-3" />
                         </button>
                       </th>
 
                       {/* Status */}
-                      <th className="text-left px-4 py-3">
+                      <th className="text-left px-3 py-2">
                         <button
                           onClick={() => handleSort("status")}
-                          className="flex items-center gap-1 text-sm font-medium text-gray-400 hover:text-white"
+                          className="flex items-center gap-1 text-xs font-medium text-gray-400 hover:text-white"
                         >
                           Status
-                          <ArrowUpDown className="w-4 h-4" />
+                          <ArrowUpDown className="w-3 h-3" />
                         </button>
                       </th>
 
                       {/* Category */}
-                      <th className="text-left px-4 py-3">
+                      <th className="text-left px-3 py-2">
                         <button
                           onClick={() => handleSort("category")}
-                          className="flex items-center gap-1 text-sm font-medium text-gray-400 hover:text-white"
+                          className="flex items-center gap-1 text-xs font-medium text-gray-400 hover:text-white"
                         >
                           Category
-                          <ArrowUpDown className="w-4 h-4" />
+                          <ArrowUpDown className="w-3 h-3" />
                         </button>
                       </th>
 
                       {/* Owner */}
-                      <th className="text-left px-4 py-3">
+                      <th className="text-left px-3 py-2">
                         <button
                           onClick={() => handleSort("owner")}
-                          className="flex items-center gap-1 text-sm font-medium text-gray-400 hover:text-white"
+                          className="flex items-center gap-1 text-xs font-medium text-gray-400 hover:text-white"
                         >
                           Owner
-                          <ArrowUpDown className="w-4 h-4" />
+                          <ArrowUpDown className="w-3 h-3" />
                         </button>
                       </th>
 
                       {/* Last Edited */}
-                      <th className="text-left px-4 py-3">
+                      <th className="text-left px-3 py-2">
                         <button
                           onClick={() => handleSort("updatedAt")}
-                          className="flex items-center gap-1 text-sm font-medium text-gray-400 hover:text-white"
+                          className="flex items-center gap-1 text-xs font-medium text-gray-400 hover:text-white"
                         >
                           Last Edited
-                          <ArrowUpDown className="w-4 h-4" />
+                          <ArrowUpDown className="w-3 h-3" />
                         </button>
                       </th>
 
                       {/* Source */}
-                      <th className="text-left px-4 py-3">
+                      <th className="text-left px-3 py-2">
                         <button
                           onClick={() => handleSort("source")}
-                          className="flex items-center gap-1 text-sm font-medium text-gray-400 hover:text-white"
+                          className="flex items-center gap-1 text-xs font-medium text-gray-400 hover:text-white"
                         >
                           Source
-                          <ArrowUpDown className="w-4 h-4" />
+                          <ArrowUpDown className="w-3 h-3" />
                         </button>
                       </th>
 
                       {/* Parameters */}
-                      <th className="text-left px-4 py-3">
+                      <th className="text-left px-3 py-2">
                         <button
                           onClick={() => handleSort("parameters")}
-                          className="flex items-center gap-1 text-sm font-medium text-gray-400 hover:text-white"
+                          className="flex items-center gap-1 text-xs font-medium text-gray-400 hover:text-white"
                         >
                           Parameters
-                          <ArrowUpDown className="w-4 h-4" />
+                          <ArrowUpDown className="w-3 h-3" />
                         </button>
                       </th>
 
                       {/* Actions */}
-                      <th className="w-32 px-4 py-3"></th>
+                      <th className="w-24 px-3 py-2"></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2241,7 +2242,7 @@ export default function ProductWorkspace({
                           className={`border-b border-slate-700/30 hover:bg-slate-700/30 cursor-pointer transition-colors ${isSelected ? "bg-orange-500/10" : ""}`}
                         >
                           {/* Checkbox */}
-                          <td className="px-4 py-3">
+                          <td className="px-3 py-2">
                             <input
                               type="checkbox"
                               checked={isSelected}
@@ -2249,23 +2250,23 @@ export default function ProductWorkspace({
                                 toggleSelect(product.id, e as any)
                               }
                               onClick={(e) => e.stopPropagation()}
-                              className="w-4 h-4 rounded border-slate-600 bg-slate-700 text-orange-500 focus:ring-orange-500"
+                              className="w-3.5 h-3.5 rounded border-slate-600 bg-slate-700 text-orange-500 focus:ring-orange-500"
                               aria-label={`Select ${product.name}`}
                             />
                           </td>
 
                           {/* Name */}
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm text-white font-medium">
+                          <td className="px-3 py-2">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs text-white font-medium">
                                 {product.name}
                               </span>
                               {product.lastOutputUrn && (
                                 <span
-                                  className="flex items-center gap-1 px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded text-xs"
+                                  className="flex items-center gap-1 px-1 py-0.5 bg-green-500/20 text-green-400 rounded text-[10px]"
                                   title="Automation run - 3D preview available"
                                 >
-                                  <Zap className="w-3 h-3" />
+                                  <Zap className="w-2.5 h-2.5" />
                                 </span>
                               )}
                             </div>
@@ -2273,7 +2274,7 @@ export default function ProductWorkspace({
 
                           {/* Status */}
                           <td
-                            className="px-4 py-3"
+                            className="px-3 py-2"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <div className="relative">
@@ -2353,8 +2354,8 @@ export default function ProductWorkspace({
                           </td>
 
                           {/* Category */}
-                          <td className="px-4 py-3">
-                            <span className="text-sm text-gray-400">
+                          <td className="px-3 py-2">
+                            <span className="text-xs text-gray-400">
                               {categories.find((c) => c.id === product.category)
                                 ?.name ||
                                 product.category ||
@@ -2363,20 +2364,20 @@ export default function ProductWorkspace({
                           </td>
 
                           {/* Owner */}
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white text-xs font-medium">
+                          <td className="px-3 py-2">
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white text-[10px] font-medium">
                                 {ownerName[0].toUpperCase()}
                               </div>
-                              <span className="text-sm text-gray-300">
+                              <span className="text-xs text-gray-300 truncate max-w-[120px]">
                                 {ownerName}
                               </span>
                             </div>
                           </td>
 
                           {/* Last Edited */}
-                          <td className="px-4 py-3">
-                            <span className="text-sm text-gray-400">
+                          <td className="px-3 py-2">
+                            <span className="text-xs text-gray-400">
                               {product.updatedAt &&
                               !isNaN(new Date(product.updatedAt).getTime())
                                 ? new Date(
@@ -2391,29 +2392,29 @@ export default function ProductWorkspace({
                           </td>
 
                           {/* Source */}
-                          <td className="px-4 py-3">
+                          <td className="px-3 py-2">
                             {product.sourceFile || product.source ? (
                               <span
-                                className={`inline-flex px-2 py-0.5 rounded text-xs font-medium border ${sourceBadge.style}`}
+                                className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium border ${sourceBadge.style}`}
                               >
                                 {sourceBadge.label}
                               </span>
                             ) : (
-                              <span className="text-sm text-gray-500">-</span>
+                              <span className="text-xs text-gray-500">-</span>
                             )}
                           </td>
 
                           {/* Parameters */}
-                          <td className="px-4 py-3 text-center">
-                            <span className="text-sm text-gray-400">
+                          <td className="px-3 py-2 text-center">
+                            <span className="text-xs text-gray-400">
                               {product.parameters?.length || 0}
                             </span>
                           </td>
 
                           {/* Actions */}
-                          <td className="px-4 py-3">
+                          <td className="px-3 py-2">
                             <div
-                              className="flex items-center justify-end gap-1"
+                              className="flex items-center justify-end gap-0.5"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <button
@@ -2421,10 +2422,10 @@ export default function ProductWorkspace({
                                   setEditCategoryProductId(product.id);
                                   setEditCategoryValue(product.category || "");
                                 }}
-                                className="p-1.5 text-gray-400 hover:text-orange-400 hover:bg-orange-500/20 rounded transition-colors"
+                                className="p-1 text-gray-400 hover:text-orange-400 hover:bg-orange-500/20 rounded transition-colors"
                                 title="Change Category"
                               >
-                                <Tag className="w-4 h-4" />
+                                <Tag className="w-3.5 h-3.5" />
                               </button>
                               {product.lastOutputUrn && (
                                 <button
@@ -2432,37 +2433,37 @@ export default function ProductWorkspace({
                                     e.stopPropagation();
                                     setPreviewProduct(product);
                                   }}
-                                  className="p-1.5 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 rounded transition-colors"
+                                  className="p-1 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 rounded transition-colors"
                                   title="Preview 3D Model"
                                 >
-                                  <Eye className="w-4 h-4" />
+                                  <Eye className="w-3.5 h-3.5" />
                                 </button>
                               )}
                               <a
-                                href={`/configure?id=${product.id}`}
+                                href={appPath(`/configure?id=${product.id}`)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
-                                className="p-1.5 text-gray-400 hover:text-green-400 hover:bg-green-500/20 rounded transition-colors"
+                                className="p-1 text-gray-400 hover:text-green-400 hover:bg-green-500/20 rounded transition-colors"
                                 title="Preview Customer Configurator"
                               >
-                                <ExternalLink className="w-4 h-4" />
+                                <ExternalLink className="w-3.5 h-3.5" />
                               </a>
                               <button
                                 onClick={() => openProductDetail(product)}
-                                className="p-1.5 text-gray-400 hover:text-blue-400 hover:bg-blue-500/20 rounded transition-colors"
+                                className="p-1 text-gray-400 hover:text-blue-400 hover:bg-blue-500/20 rounded transition-colors"
                                 title="Edit"
                               >
-                                <Edit className="w-4 h-4" />
+                                <Edit className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() =>
                                   confirmDeleteProduct(product.id, product.name)
                                 }
-                                className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/20 rounded transition-colors"
+                                className="p-1 text-gray-400 hover:text-red-400 hover:bg-red-500/20 rounded transition-colors"
                                 title="Delete"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
                           </td>
@@ -2474,8 +2475,8 @@ export default function ProductWorkspace({
               </div>
 
               {/* Pagination Footer */}
-              <div className="flex items-center justify-between px-4 py-3 border-t border-slate-700/50 bg-slate-800/30">
-                <span className="text-sm text-gray-400">
+              <div className="flex items-center justify-between px-3 py-2 border-t border-slate-700/50 bg-slate-800/30">
+                <span className="text-xs text-gray-400">
                   Showing {startIndex + 1} to{" "}
                   {Math.min(startIndex + itemsPerPage, sortedProducts.length)}{" "}
                   of {sortedProducts.length} entries
@@ -2585,7 +2586,7 @@ export default function ProductWorkspace({
         <div className="flex items-center gap-3">
           {selectedProduct && (
             <a
-              href={`/configure?id=${selectedProduct.id}`}
+              href={appPath(`/configure?id=${selectedProduct.id}`)}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 px-3 py-1.5 bg-green-600/20 hover:bg-green-600/30 border border-green-500/30 text-green-400 hover:text-green-300 text-sm rounded-lg transition-colors"
@@ -3145,14 +3146,14 @@ export default function ProductWorkspace({
             <div className="flex items-center gap-2">
               <code className="flex-1 bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-green-300 font-mono truncate select-all">
                 {typeof window !== "undefined"
-                  ? `${window.location.origin}/configure?id=${selectedProduct.id}`
-                  : `/configure?id=${selectedProduct.id}`}
+                  ? `${window.location.origin}${BASE_PATH}/configure?id=${selectedProduct.id}`
+                  : appPath(`/configure?id=${selectedProduct.id}`)}
               </code>
               <button
                 onClick={() => {
                   const url = typeof window !== "undefined"
-                    ? `${window.location.origin}/configure?id=${selectedProduct.id}`
-                    : `/configure?id=${selectedProduct.id}`;
+                    ? `${window.location.origin}${BASE_PATH}/configure?id=${selectedProduct.id}`
+                    : appPath(`/configure?id=${selectedProduct.id}`);
                   navigator.clipboard.writeText(url).then(() => {
                     setConfiguratorLinkCopied(true);
                     setTimeout(() => setConfiguratorLinkCopied(false), 2000);
@@ -3174,7 +3175,7 @@ export default function ProductWorkspace({
                 )}
               </button>
               <a
-                href={`/configure?id=${selectedProduct.id}`}
+                href={appPath(`/configure?id=${selectedProduct.id}`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 px-3 py-2 bg-green-600/20 hover:bg-green-600/30 border border-green-500/30 text-green-400 hover:text-green-300 text-sm rounded-lg transition-colors flex-shrink-0"
