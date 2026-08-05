@@ -1,0 +1,47 @@
+﻿{
+  "schema_version": "1.0.0",
+  "parameters": [
+    {
+      "key": "length",
+      "data_type": "NUMBER",
+      "unit": "in",
+      "default_expression": "24 in",
+      "default_value": 24
+    },
+    {
+      "key": "width",
+      "data_type": "NUMBER",
+      "unit": "in",
+      "default_expression": "36 in",
+      "default_value": 36
+    },
+    {
+      "key": "height",
+      "data_type": "NUMBER",
+      "unit": "in",
+      "default_expression": "12 in",
+      "default_value": 12
+    },
+    {
+      "key": "thickness",
+      "data_type": "NUMBER",
+      "unit": "in",
+      "default_expression": "0.5 in",
+      "default_value": 0.5
+    },
+    {
+      "key": "Color",
+      "data_type": "TEXT",
+      "unit": null,
+      "default_expression": "\"Blue\"",
+      "default_value": "Blue"
+    },
+    {
+      "key": "Holes",
+      "data_type": "BOOLEAN",
+      "unit": null,
+      "default_expression": "False",
+      "default_value": false
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "quotes": [
+    {
+      "id": "quote-1771028386312-gwpq7k",
+      "productId": "product-1768185436087",
+      "productName": "Test One",
+      "configuration": {
+        "length": 30,
+        "width": 40
+      },
+      "pricing": {
+        "unitPrice": 50,
+        "totalPrice": 50,
+        "currency": "USD",
+        "breakdown": [
+          {
+            "label": "Base",
+            "amount": 50
+          }
+        ],
+        "quantity": 1
+      },
+      "quantity": 1,
+      "customer": {
+        "name": "Test User",
+        "email": "test@example.com",
+        "phone": "",
+        "company": "TestCo",
+        "notes": "Test quote"
+      },
+      "status": "new",
+      "adminNotes": "",
+      "createdAt": "2026-02-14T00:19:46.313Z",
+      "updatedAt": "2026-02-14T00:19:46.313Z"
+    }
+  ]
+}

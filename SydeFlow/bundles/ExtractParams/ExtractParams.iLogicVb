@@ -1,0 +1,189 @@
+' iLogic Rule: ExtractUserParameters_Typed
+' Exports User Parameters with correct data types:
+' - NUMBER: default_value is numeric (unit stored separately)
+' - TEXT: default_value is string
+' - BOOLEAN: default_value is true/false
+
+Imports System.Text
+Imports System.Globalization
+Imports Inventor
+
+Sub Main()
+
+    Dim doc As Inventor.Document = ThisApplication.ActiveDocument
+    If doc Is Nothing OrElse String.IsNullOrEmpty(doc.FullFileName) Then
+        MessageBox.Show("Please open and save a document first.", "Extract Parameters")
+        Exit Sub
+    End If
+
+    Dim parms As Inventor.Parameters = doc.ComponentDefinition.Parameters
+    Dim outDir As String = System.IO.Path.GetDirectoryName(doc.FullFileName)
+    Dim outPath As String = System.IO.Path.Combine(outDir, "parameters.json")
+
+    Dim sb As New StringBuilder()
+    Dim inv As CultureInfo = CultureInfo.InvariantCulture
+
+    sb.AppendLine("{")
+    sb.AppendLine("  ""schema_version"": ""1.0.0"",")
+    sb.AppendLine("  ""parameters"": [")
+
+    Dim first As Boolean = True
+
+    For Each p As Inventor.Parameter In parms.UserParameters
+
+        If Not first Then sb.AppendLine(",")
+        first = False
+
+        Dim expr As String = ""
+        Try : expr = p.Expression : Catch : expr = "" : End Try
+
+        Dim unitStr As String = Nothing
+        Try
+            unitStr = p.Units
+            If unitStr IsNot Nothing Then
+                unitStr = unitStr.Trim()
+                If unitStr = "" Then unitStr = Nothing
+            End If
+        Catch
+            unitStr = Nothing
+        End Try
+
+        Dim dataType As String = "TEXT"
+        Dim defaultValueJson As String = "null"
+
+        ' 1) BOOLEAN detection (by Value type or expression)
+        Dim boolVal As Boolean
+        If TryGetBoolean(p, expr, boolVal) Then
+            dataType = "BOOLEAN"
+            defaultValueJson = LCase(boolVal.ToString())  ' JSON: true/false
+            unitStr = Nothing ' boolean has no unit
+
+        ' 2) NUMBER detection (if parameter has units OR numeric value can be parsed)
+        Else
+            Dim numVal As Double
+            If TryGetNumberFromExpression(expr, numVal) OrElse TryGetNumberFromValue(p, numVal) Then
+                dataType = "NUMBER"
+                defaultValueJson = numVal.ToString(inv)
+                ' keep unitStr as extracted (e.g. "in", "mm") if present
+            Else
+                ' 3) TEXT fallback
+                dataType = "TEXT"
+                Dim textVal As String = Nothing
+                If TryGetTextValue(p, expr, textVal) Then
+                    defaultValueJson = """" & JsonEscape(textVal) & """"
+                Else
+                    defaultValueJson = """" & JsonEscape(expr) & """"
+                End If
+                unitStr = Nothing ' treat text as unit-less
+            End If
+        End If
+
+        sb.AppendLine("    {")
+        sb.AppendLine("      ""key"": """ & JsonEscape(p.Name) & """,")
+        sb.AppendLine("      ""data_type"": """ & dataType & """,")
+
+        If unitStr Is Nothing Then
+            sb.AppendLine("      ""unit"": null,")
+        Else
+            sb.AppendLine("      ""unit"": """ & JsonEscape(unitStr) & """,")
+        End If
+
+        sb.AppendLine("      ""default_expression"": """ & JsonEscape(expr) & """,")
+        sb.AppendLine("      ""default_value"": " & defaultValueJson)
+        sb.Append("    }")
+
+    Next
+
+    sb.AppendLine()
+    sb.AppendLine("  ]")
+    sb.AppendLine("}")
+
+    System.IO.File.WriteAllText(outPath, sb.ToString(), Encoding.UTF8)
+
+    MessageBox.Show("Exported " & parms.UserParameters.Count & " parameters to:" & vbCrLf & outPath, _
+                    "Extract Parameters")
+
+End Sub
+
+' ---------------- Helpers ----------------
+
+Function JsonEscape(ByVal s As String) As String
+    If s Is Nothing Then Return ""
+    Return s.Replace("\", "\\").Replace("""", "\""") _
+            .Replace(vbCrLf, "\n").Replace(vbCr, "\n").Replace(vbLf, "\n")
+End Function
+
+Function TryGetBoolean(ByVal p As Inventor.Parameter, ByVal expr As String, ByRef outVal As Boolean) As Boolean
+    outVal = False
+
+    ' Prefer Value type if available
+    Try
+        Dim v = p.Value
+        If TypeOf v Is Boolean Then
+            outVal = CBool(v)
+            Return True
+        End If
+    Catch
+    End Try
+
+    ' Fallback: parse expression
+    If expr Is Nothing Then Return False
+    Dim e As String = expr.Trim().ToLowerInvariant()
+    If e = "true" Then outVal = True : Return True
+    If e = "false" Then outVal = False : Return True
+
+    Return False
+End Function
+
+Function TryGetNumberFromExpression(ByVal expr As String, ByRef outNum As Double) As Boolean
+    outNum = 0
+    If expr Is Nothing Then Return False
+
+    ' Common Inventor expressions: "24 in", "0.5 in", "100 mm"
+    ' Take first token as numeric value.
+    Dim e As String = expr.Trim()
+    If e = "" Then Return False
+
+    Dim parts() As String = e.Split(New Char() {" "c, vbTab(0)}, StringSplitOptions.RemoveEmptyEntries)
+    If parts Is Nothing OrElse parts.Length = 0 Then Return False
+
+    Dim inv As CultureInfo = CultureInfo.InvariantCulture
+    Return Double.TryParse(parts(0), NumberStyles.Float, inv, outNum)
+End Function
+
+Function TryGetNumberFromValue(ByVal p As Inventor.Parameter, ByRef outNum As Double) As Boolean
+    outNum = 0
+    Try
+        Dim v = p.Value
+        If TypeOf v Is Double OrElse TypeOf v Is Single OrElse TypeOf v Is Integer OrElse TypeOf v Is Long Then
+            outNum = CDbl(v)
+            Return True
+        End If
+    Catch
+    End Try
+    Return False
+End Function
+
+Function TryGetTextValue(ByVal p As Inventor.Parameter, ByVal expr As String, ByRef outText As String) As Boolean
+    outText = Nothing
+
+    ' Prefer Value if it is a string
+    Try
+        Dim v = p.Value
+        If TypeOf v Is String Then
+            outText = CStr(v)
+            Return True
+        End If
+    Catch
+    End Try
+
+    ' Fallback: expression
+    If expr IsNot Nothing Then
+        outText = expr
+        Return True
+    End If
+
+    Return False
+End Function
+
+

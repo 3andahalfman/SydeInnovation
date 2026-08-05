@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ApplicationPackage 
+    SchemaVersion="1.0" 
+    AutodeskProduct="Inventor"
+    ProductType="Application"
+    Name="UpdateModelBundle"
+    Description="Updates IPT/IAM parameters, regenerates geometry, opens linked IDW drawing and exports DWG for SydeFlow Design Automation"
+    AppVersion="1.0.0"
+    FriendlyVersion="1.0.0"
+    ProductCode="{F1A2B3C4-D5E6-7F89-0A1B-2C3D4E5F6A7B}"
+    UpgradeCode="{B2C3D4E5-F6A7-8901-B2C3-D4E5F6A7B8C9}">
+    
+    <CompanyDetails 
+        Name="SydeIngenis" 
+        Email="info@sydeingenis.com"
+        Url="https://sydeingenis.com"/>
+
+    <RuntimeRequirements 
+        OS="Win64" 
+        Platform="Inventor" 
+        SeriesMin="R25.0"/>
+
+    <Components>
+        <RuntimeRequirements OS="Win64" Platform="Inventor" SeriesMin="R25.0"/>
+        <ComponentEntry ModuleName="./Contents/UpdateModel.iLogicVb">
+            <Trigger OnEvent="OnDoc::AfterOpen"/>
+        </ComponentEntry>
+    </Components>
+</ApplicationPackage>
