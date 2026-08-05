@@ -252,8 +252,12 @@ class Utils {
     /// Returns the directory where bindles are stored on the local machine.
     /// </summary>
     static get LocalBundlesFolder() {
-        // Path updated for sydeflow structure: routes -> server -> sydeflow -> bundles
-        return (_path.resolve(_path.join(__dirname, '../../', 'bundles')));
+        // Prefer server/bundles (deploy root on Railway). Fall back to repo-level
+        // SydeFlow/bundles for local monorepo layouts.
+        const serverBundles = _path.resolve(_path.join(__dirname, '../bundles'));
+        const repoBundles = _path.resolve(_path.join(__dirname, '../../bundles'));
+        if (_fs.existsSync(serverBundles)) return serverBundles;
+        return repoBundles;
     }
 
     /// <summary>
