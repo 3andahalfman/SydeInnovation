@@ -391,6 +391,37 @@ router.put("/:id/layout", async (req, res) => {
   }
 });
 
+// ─── DELETE /api/products/:id/layout ─────────────────────────────────────────
+// Clears the saved configurator layout. The product itself is kept.
+router.delete("/:id/layout", async (req, res) => {
+  try {
+    const product = await ProductsStore.getById(req.params.id);
+    if (!product) return res.status(404).json({ success: false, error: "Product not found" });
+
+    if (!product.configuratorLayout) {
+      return res.json({ success: true, message: "No custom layout to delete" });
+    }
+
+    product.configuratorLayout = null;
+    product.updatedAt = new Date().toISOString();
+    await ProductsStore.save(product);
+
+    try {
+      const ActivityLog = require("./ActivityLog");
+      ActivityLog.logActivity("product:updated", {
+        title: "Layout Deleted",
+        message: `Configurator layout deleted for "${product.name}"`,
+        details: { productId: req.params.id },
+      });
+    } catch (_) { /* silently ignore */ }
+
+    res.json({ success: true, message: "Layout deleted" });
+  } catch (error) {
+    console.error("Error deleting layout:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // ─── GET /api/products/:id/download ──────────────────────────────────────────
 // Returns a short-lived signed OSS download URL for the product's last output.
 router.get("/:id/download", async (req, res) => {

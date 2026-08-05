@@ -103,9 +103,11 @@ export default function ConfiguratorView() {
       const res = await fetch("/api/products", { headers });
       if (res.ok) {
         const data = await res.json();
-        // Only show products that have been configured (have lastOutputUrn)
+        // Show products that have a saved configurator layout (builder items).
+        // Products with only lastOutputUrn and no layout can still be opened
+        // from Products; deleting a layout removes it from this list.
         const configuredProducts = (data.products || []).filter(
-          (p: Product) => p.lastOutputUrn,
+          (p: Product) => !!(p as Product & { configuratorLayout?: unknown }).configuratorLayout,
         );
         setProducts(configuredProducts);
       } else {
@@ -216,14 +218,26 @@ export default function ConfiguratorView() {
 
   const executeDelete = async (productId: string) => {
     try {
+      const token =
+        typeof window !== "undefined"
+          ? localStorage.getItem("sydeflow_token") ||
+            localStorage.getItem("token")
+          : null;
+      const headers: Record<string, string> = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
       const res = await fetch(`/api/products/${productId}/layout`, {
         method: "DELETE",
+        headers,
       });
       if (res.ok) {
         toast.success("Layout deleted");
+        // Drop from this list immediately; product remains in Products.
+        setProducts((prev) => prev.filter((p) => p.id !== productId));
         fetchProducts();
       } else {
-        toast.error("Failed to delete layout");
+        const data = await res.json().catch(() => ({}));
+        toast.error(data.error || "Failed to delete layout");
       }
     } catch {
       toast.error("Failed to delete layout");
