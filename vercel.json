@@ -1,4 +1,26 @@
 {
+  "redirects": [
+    {
+      "source": "/admin",
+      "destination": "/sydeflow",
+      "permanent": false
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "/sydeflow/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/configure",
+      "destination": "/sydeflow/configure",
+      "permanent": false
+    },
+    {
+      "source": "/configurator",
+      "destination": "/sydeflow/configurator",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/:path*",

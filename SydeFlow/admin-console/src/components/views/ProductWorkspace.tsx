@@ -58,7 +58,7 @@ import { useNotifications } from "@/contexts/NotificationContext";
 import type { ViewType } from "@/app/page";
 import FormDesigner from "./FormDesigner";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
-import { appPath } from '@/lib/config';
+import { BASE_PATH, appPath } from '@/lib/config';
 
 // ============================================================================
 // TYPES
@@ -3146,14 +3146,14 @@ export default function ProductWorkspace({
             <div className="flex items-center gap-2">
               <code className="flex-1 bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-green-300 font-mono truncate select-all">
                 {typeof window !== "undefined"
-                  ? `${window.location.origin}/configure?id=${selectedProduct.id}`
-                  : `/configure?id=${selectedProduct.id}`}
+                  ? `${window.location.origin}${BASE_PATH}/configure?id=${selectedProduct.id}`
+                  : appPath(`/configure?id=${selectedProduct.id}`)}
               </code>
               <button
                 onClick={() => {
                   const url = typeof window !== "undefined"
-                    ? `${window.location.origin}/configure?id=${selectedProduct.id}`
-                    : `/configure?id=${selectedProduct.id}`;
+                    ? `${window.location.origin}${BASE_PATH}/configure?id=${selectedProduct.id}`
+                    : appPath(`/configure?id=${selectedProduct.id}`);
                   navigator.clipboard.writeText(url).then(() => {
                     setConfiguratorLinkCopied(true);
                     setTimeout(() => setConfiguratorLinkCopied(false), 2000);

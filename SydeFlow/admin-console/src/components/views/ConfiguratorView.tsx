@@ -21,6 +21,7 @@ import { useToast } from "@/contexts/ToastContext";
 import TemplatePickerDialog from "@/components/configurator/TemplatePickerDialog";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { CONFIGURATOR_TEMPLATES } from "@/types/product";
+import { appPath } from "@/lib/config";
 
 // ============================================================================
 // TYPES
@@ -182,7 +183,7 @@ export default function ConfiguratorView() {
       if (res.ok) {
         const data = await res.json();
         if (data.layout && !data.isDefault) {
-          window.open(`/admin/configurator?id=${productId}`, "_blank");
+          window.open(appPath(`/configurator?id=${productId}`), "_blank");
           setCheckingLayout(null);
           return;
         }
@@ -233,7 +234,7 @@ export default function ConfiguratorView() {
   const handleTemplateSelect = (templateId: string) => {
     if (pendingProductId) {
       window.open(
-        `/admin/configurator?id=${pendingProductId}&template=${templateId}`,
+        appPath(`/configurator?id=${pendingProductId}&template=${templateId}`),
         "_blank",
       );
     }
@@ -481,7 +482,7 @@ export default function ConfiguratorView() {
                           <button
                             onClick={() =>
                               window.open(
-                                `/admin/configure?id=${product.id}`,
+                                appPath(`/configure?id=${product.id}`),
                                 "_blank",
                               )
                             }
@@ -585,7 +586,7 @@ export default function ConfiguratorView() {
                 >
                   <button
                     onClick={() =>
-                      window.open(`/admin/configure?id=${product.id}`, "_blank")
+                      window.open(appPath(`/configure?id=${product.id}`), "_blank")
                     }
                     className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-lg text-xs font-medium transition-colors"
                     title="Preview Configure Page"
