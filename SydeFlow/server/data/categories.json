@@ -1,0 +1,29 @@
+{
+  "categories": [
+    {
+      "id": "brackets",
+      "name": "Brackets",
+      "description": "Mounting brackets and supports"
+    },
+    {
+      "id": "enclosures",
+      "name": "Enclosures",
+      "description": "Protective enclosures and housings"
+    },
+    {
+      "id": "gjhjm",
+      "name": "table",
+      "description": "all big tables"
+    },
+    {
+      "id": "chair",
+      "name": "Chair",
+      "description": ""
+    },
+    {
+      "id": "metal",
+      "name": "metal",
+      "description": ""
+    }
+  ]
+}

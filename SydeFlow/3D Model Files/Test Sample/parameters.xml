@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <schema_version>1.0.0</schema_version>
+  <parameters>
+    <parameter>
+      <key>length</key>
+      <data_type>NUMBER</data_type>
+      <unit>mm</unit>
+      <default_expression>24 mm</default_expression>
+      <default_value>24</default_value>
+    </parameter>
+    <parameter>
+      <key>width</key>
+      <data_type>NUMBER</data_type>
+      <unit>mm</unit>
+      <default_expression>2 mm</default_expression>
+      <default_value>2</default_value>
+    </parameter>
+    <parameter>
+      <key>height</key>
+      <data_type>NUMBER</data_type>
+      <unit>mm</unit>
+      <default_expression>0.5 mm</default_expression>
+      <default_value>0.5</default_value>
+    </parameter>
+    <parameter>
+      <key>materialColor</key>
+      <data_type>TEXT</data_type>
+      <unit></unit>
+      <default_expression>"Blue"</default_expression>
+      <default_value>Blue</default_value>
+    </parameter>
+    <parameter>
+      <key>chamfered</key>
+      <data_type>BOOLEAN</data_type>
+      <unit></unit>
+      <default_expression>True</default_expression>
+      <default_value>True</default_value>
+    </parameter>
+    <parameter>
+      <key>partNumber</key>
+      <data_type>TEXT</data_type>
+      <unit></unit>
+      <default_expression>"ABC-123"</default_expression>
+      <default_value>ABC-123</default_value>
+    </parameter>
+  </parameters>
+</root>

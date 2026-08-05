@@ -1,0 +1,250 @@
+' =====================================================
+' MODEL + DRAWING UPDATE iLogic Rule
+' For use with Design Automation for Inventor
+' =====================================================
+' Updates parameters on an Inventor part/assembly,
+' regenerates geometry, then opens the associated
+' Inventor Drawing (.idw) and exports it as DWG.
+' =====================================================
+' Inputs:  input.ipt (or .iam), input.idw, params.json
+' Outputs: output.ipt (or .iam), output.dwg
+' =====================================================
+
+Imports System.IO
+Imports System.Text
+Imports System.Globalization
+Imports System.Runtime.InteropServices
+
+Sub Main()
+    Try
+        ' Get the active document (the IPT/IAM opened by the command line)
+        Dim doc As Document = ThisApplication.ActiveDocument
+        Dim docDir As String = Path.GetDirectoryName(doc.FullFileName)
+        
+        Logger.Info("UpdateModel: Processing " & doc.DisplayName)
+        Logger.Info("UpdateModel: Working directory = " & docDir)
+        
+        ' ─── STEP 1: Read params.json ───
+        Dim paramsPath As String = Path.Combine(docDir, "params.json")
+        If Not File.Exists(paramsPath) Then
+            Logger.Error("UpdateModel: params.json not found at " & paramsPath)
+            Return
+        End If
+        
+        Dim jsonContent As String = File.ReadAllText(paramsPath)
+        Logger.Info("UpdateModel: Read params.json (" & jsonContent.Length.ToString() & " chars)")
+        
+        ' Parse parameter values from JSON
+        Dim paramDict As Dictionary(Of String, String) = ParseJsonParams(jsonContent)
+        Logger.Info("UpdateModel: Parsed " & paramDict.Count.ToString() & " parameters")
+        
+        ' ─── STEP 2: Apply parameters to model ───
+        Dim userParams As UserParameters = Nothing
+        
+        If TypeOf doc Is PartDocument Then
+            Dim partDoc As PartDocument = doc
+            userParams = partDoc.ComponentDefinition.Parameters.UserParameters
+        ElseIf TypeOf doc Is AssemblyDocument Then
+            Dim assyDoc As AssemblyDocument = doc
+            userParams = assyDoc.ComponentDefinition.Parameters.UserParameters
+        End If
+        
+        If userParams Is Nothing Then
+            Logger.Error("UpdateModel: Could not get UserParameters from document")
+            Return
+        End If
+        
+        Dim updatedCount As Integer = 0
+        For Each kvp As KeyValuePair(Of String, String) In paramDict
+            Try
+                Dim param As UserParameter = userParams.Item(kvp.Key)
+                If param IsNot Nothing Then
+                    If param.ParameterType = ParameterTypeEnum.kTextParameter Then
+                        param.Expression = kvp.Value
+                    ElseIf param.ParameterType = ParameterTypeEnum.kBooleanParameter Then
+                        Dim boolVal As Boolean = False
+                        Boolean.TryParse(kvp.Value, boolVal)
+                        param.Value = boolVal
+                    Else
+                        ' Numeric parameter — set expression (handles units)
+                        param.Expression = kvp.Value
+                    End If
+                    updatedCount += 1
+                    Logger.Info("UpdateModel: Set " & kvp.Key & " = " & kvp.Value)
+                End If
+            Catch ex As Exception
+                Logger.Warn("UpdateModel: Could not set " & kvp.Key & ": " & ex.Message)
+            End Try
+        Next
+        
+        Logger.Info("UpdateModel: Updated " & updatedCount.ToString() & " parameters")
+        
+        ' ─── STEP 3: Run embedded iLogic rules ───
+        ' This triggers any rules the user embedded in the model (e.g., feature suppression)
+        Try
+            Dim iLogicAuto As Object = ThisApplication.ApplicationAddIns.ItemById("{3BDD8D79-2179-4B11-8A5A-257B1C0263AC}").Automation
+            Dim rules As Object = iLogicAuto.Rules(doc)
+            For Each rule As Object In rules
+                Try
+                    Logger.Info("UpdateModel: Running iLogic rule: " & rule.Name)
+                    iLogicAuto.RunRule(doc, rule.Name)
+                Catch ruleEx As Exception
+                    Logger.Warn("UpdateModel: Rule '" & rule.Name & "' failed: " & ruleEx.Message)
+                End Try
+            Next
+            Logger.Info("UpdateModel: Finished running embedded iLogic rules")
+        Catch ex As Exception
+            Logger.Warn("UpdateModel: iLogic automation not available: " & ex.Message)
+        End Try
+        
+        ' ─── STEP 4: Regenerate model ───
+        doc.Update()
+        Logger.Info("UpdateModel: Model regenerated successfully")
+        
+        ' ─── STEP 5: Save output IPT/IAM ───
+        Dim outputModelPath As String = Path.Combine(docDir, "output.ipt")
+        doc.SaveAs(outputModelPath, False)
+        Logger.Info("UpdateModel: Saved regenerated model to " & outputModelPath)
+        
+        ' ─── STEP 5: Open Inventor Drawing and export DWG ───
+        Dim idwPath As String = Path.Combine(docDir, "input.idw")
+        If File.Exists(idwPath) Then
+            Logger.Info("UpdateModel: Found drawing at " & idwPath)
+            
+            Try
+                ' Open the Inventor Drawing
+                Dim drawingDoc As DrawingDocument = ThisApplication.Documents.Open(idwPath, False)
+                Logger.Info("UpdateModel: Opened drawing " & drawingDoc.DisplayName)
+                
+                ' Update the drawing (picks up IPT geometry changes)
+                drawingDoc.Update()
+                Logger.Info("UpdateModel: Drawing updated with new geometry")
+                
+                ' Export as DWG
+                Dim outputDwgPath As String = Path.Combine(docDir, "output.dwg")
+                ExportDrawingAsDWG(drawingDoc, outputDwgPath)
+                Logger.Info("UpdateModel: Exported DWG to " & outputDwgPath)
+                
+                ' Close the drawing
+                drawingDoc.Close(True)
+            Catch ex As Exception
+                Logger.Error("UpdateModel: Error processing drawing: " & ex.Message)
+            End Try
+        Else
+            Logger.Warn("UpdateModel: No drawing file found at " & idwPath & " — skipping DWG export")
+        End If
+        
+        Logger.Info("UpdateModel: Complete")
+        
+    Catch ex As Exception
+        Logger.Error("UpdateModel: Fatal error: " & ex.Message)
+        Logger.Error("UpdateModel: Stack trace: " & ex.StackTrace)
+    End Try
+End Sub
+
+' =====================================================
+' Export an Inventor Drawing to DWG format
+' =====================================================
+Sub ExportDrawingAsDWG(drawingDoc As DrawingDocument, outputPath As String)
+    ' Find the DWG translator add-in
+    Dim translator As TranslatorAddIn = Nothing
+    For Each addIn As ApplicationAddIn In ThisApplication.ApplicationAddIns
+        If TypeOf addIn Is TranslatorAddIn Then
+            Dim t As TranslatorAddIn = addIn
+            If t.DisplayName.Contains("DWG") OrElse t.DisplayName.Contains("AutoCAD") Then
+                translator = t
+                Exit For
+            End If
+        End If
+    Next
+    
+    If translator Is Nothing Then
+        ' Fall back: try by add-in ID for Inventor's built-in DWG Export
+        Try
+            translator = ThisApplication.ApplicationAddIns.ItemById("{C24E3AC2-122E-11D5-8E91-0010B541CD80}")
+        Catch
+            Logger.Error("UpdateModel: DWG translator add-in not found")
+            Return
+        End Try
+    End If
+    
+    If translator Is Nothing Then
+        Logger.Error("UpdateModel: Could not locate DWG translator")
+        Return
+    End If
+    
+    ' Set up translation context
+    Dim context As TranslationContext = ThisApplication.TransientObjects.CreateTranslationContext()
+    context.Type = IOMechanismEnum.kFileBrowseIOMechanism
+    
+    ' Set up output data medium
+    Dim dataMedium As DataMedium = ThisApplication.TransientObjects.CreateDataMedium()
+    dataMedium.FileName = outputPath
+    
+    ' Get default options and set DWG version
+    Dim options As NameValueMap = ThisApplication.TransientObjects.CreateNameValueMap()
+    
+    If translator.HasSaveCopyAsOptions(drawingDoc, context, options) Then
+        ' Use defaults from the translator
+    End If
+    
+    ' Execute the translation
+    translator.SaveCopyAs(drawingDoc, context, options, dataMedium)
+    Logger.Info("UpdateModel: DWG export completed via translator")
+End Sub
+
+' =====================================================
+' Parse a flat JSON object into Dictionary(Of String, String)
+' Simple parser — handles { "key": value, ... } without nesting
+' =====================================================
+Function ParseJsonParams(json As String) As Dictionary(Of String, String)
+    Dim result As New Dictionary(Of String, String)
+    
+    ' Strip outer braces
+    json = json.Trim()
+    If json.StartsWith("{") Then json = json.Substring(1)
+    If json.EndsWith("}") Then json = json.Substring(0, json.Length - 1)
+    
+    ' Split by commas (outside of quotes)
+    Dim inQuotes As Boolean = False
+    Dim current As New StringBuilder()
+    Dim pairs As New List(Of String)
+    
+    For Each c As Char In json
+        If c = """"c AndAlso (current.Length = 0 OrElse current.ToString().Last() <> "\"c) Then
+            inQuotes = Not inQuotes
+        End If
+        
+        If c = ","c AndAlso Not inQuotes Then
+            pairs.Add(current.ToString().Trim())
+            current.Clear()
+        Else
+            current.Append(c)
+        End If
+    Next
+    
+    If current.Length > 0 Then
+        pairs.Add(current.ToString().Trim())
+    End If
+    
+    ' Parse each "key": value pair
+    For Each pair As String In pairs
+        Dim colonIdx As Integer = pair.IndexOf(":"c)
+        If colonIdx > 0 Then
+            Dim key As String = pair.Substring(0, colonIdx).Trim().Trim(""""c)
+            Dim val As String = pair.Substring(colonIdx + 1).Trim()
+            
+            ' Remove surrounding quotes from string values
+            If val.StartsWith("""") AndAlso val.EndsWith("""") Then
+                val = val.Substring(1, val.Length - 2)
+            End If
+            
+            ' Skip null values
+            If val <> "null" Then
+                result(key) = val
+            End If
+        End If
+    Next
+    
+    Return result
+End Function

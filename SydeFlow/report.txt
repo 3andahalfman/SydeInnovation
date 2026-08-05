@@ -1,0 +1,52 @@
+[01/24/2026 23:02:27] Job information:
+{
+  "CommandLine": [
+    "$(engine.path)\\InventorCoreConsole.exe /i \"$(args[inputFile].path)\" /al \"$(appbundles[ExtractParamsBundle].path)\""
+  ],
+  "Settings": {
+    "dasOpenNetwork": {
+      "value": "true",
+      "isEnvironmentVariable": true
+    }
+  },
+  "Id": "0aba90e3395446de8db528ba2d90fe92",
+  "ActivityId": "AUQ0ELZK6MYcB4vMTJ5NZ7XRgyKEB0ZfbrKDUEIIumArtUhQ.ExtractParamsActivity+dev",
+  "EngineId": "Autodesk.Inventor_2025!44",
+  "Apps": [
+    "AUQ0ELZK6MYcB4vMTJ5NZ7XRgyKEB0ZfbrKDUEIIumArtUhQ.ExtractParamsBundle!1"
+  ],
+  "BoundArguments": {
+    "inputFile": {
+      "localName": "$(inputFile)",
+      "url": "https://cdn.us.oss.api.autodesk.com/Masked:Md/B5gpQtzVTo3f/zIrlH0DBzjg=",
+      "verb": "get"
+    },
+    "outputJson": {
+      "localName": "parameters.json",
+      "url": "https://cdn.us.oss.api.autodesk.com/Masked:YFfEvJ5jZ5ItBt+GWsbMmeoCsW4=",
+      "verb": "put"
+    }
+  },
+  "Quotas": {
+    "limitProcessingTimeSec": 900,
+    "limitTotalUncompressedAppsSizeInMB": 500
+  }
+}
+[01/24/2026 23:02:27] Starting work item 0aba90e3395446de8db528ba2d90fe92
+[01/24/2026 23:02:27] Start download phase.
+[01/24/2026 23:02:27] Start downloading input: verb - 'Get', url - 'https://cdn.us.oss.api.autodesk.com/oss/v2/signedresources/6083ec73-9853-4f28-bacc-2a6a200440a4?region=US'
+[01/24/2026 23:02:27] Error: Failed to prepare app package(s). The process cannot access the file 'PackageContents.xml' because it is being used by another process.
+[01/24/2026 23:02:27] Error: Unable to download file from https://cdn.us.oss.api.autodesk.com/oss/v2/signedresources/6083ec73-9853-4f28-bacc-2a6a200440a4?region=US: The operation was canceled..
+[01/24/2026 23:02:28] Error: An unexpected error happened during phase Downloading of job.
+[01/24/2026 23:02:28] Job finished with result FailedDownload
+[01/24/2026 23:02:28] Job Status:
+{
+  "status": "failedDownload",
+  "reportUrl": "https://dasprod-store.s3.us-east-1.amazonaws.com/workItem/AUQ0ELZK6MYcB4vMTJ5NZ7XRgyKEB0ZfbrKDUEIIumArtUhQ/0aba90e3395446de8db528ba2d90fe92/report?X-Amz-Expires=90000&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEE8aCXVzLWVhc3QtMSJIMEYCIQDB4UEvDDQLIYrmNvue5ZlzZQ001I%2BmwHNUQk%2Fl61nLlAIhALaKzw04kN1hbWP57e%2B6Fz5YoUas3xE8ejHgC3%2FhGEdBKoADCBgQBBoMMjIwNDczMTUyMzEwIgxk8I3tcwslIVaBkVMq3QKD9HMK7uVoMtrm%2BdfZ0z8jhiG1HdJWr7qAySDWnxeHg7SCUTkLZRbxKOaOuAcrJYWs2PQpUT%2BNSbZj7A4Dx1KyVceuBUDirhRGKnanY81dEQ6osh4svUM4h01bO1TDtirIMbL8T4CMhHCgKH%2BmKKMIS4ftKSaj7KrpcuJCxovDwEi%2By3wU3pTvlaXyn0LJXfRrYiP8CWjRngcVCWu%2FR8N0trDKJIbmnp2CvUrPKL9gFydJS7St%2FXyEg8Ji8QywvZO5Alx1dTUxwsdJuDeuQB3ZBVsar3EY4vNM5KOced3wwnDJ37D4lqKGgJ2DqVjN5wEq3pHUMbI96vC%2BjU2z2Jn0EB5PHYYto3FtfOQ5C2f58%2FjurMCsYYDAtMH18d3mq7TOHWxNhtLXFg1NQhfFQnQ9tcygZSjapt7GE8dEv%2FNx2i3wTMJt%2F2RhsPMNoUnWSR1Mf4%2BvvCnPgk7M7rXDMNCV1csGOp0BPaPijHyQ3OeigOj11Tz6jHeF6Wpmb3Np8o%2B5qc1DvxPHPJULcYsRfHA5M%2FJ7VEQYrYTVJPaiXMD0iEu5VkI3rAxIxwa%2BhHuIzd585YU6i0i19MH7AJ82k43fK1iovsnsOcI%2Faw%2Fcge3GjmKY75OvXRHYfQoouHwvLwjR1HpOI6uRxmNvCXVH7hZzzMCnhV2oyr5id3J%2FXxz9feeG6g%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIATGVJZKM3O3VVZLEH%2F20260124%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260124T230227Z&X-Amz-SignedHeaders=host&X-Amz-Signature=5403147e6f1c4b6bbf2e5f3f320bf6de81b28957ac61717f33de575ef485f92e",
+  "activityId": "AUQ0ELZK6MYcB4vMTJ5NZ7XRgyKEB0ZfbrKDUEIIumArtUhQ.ExtractParamsActivity+dev",
+  "stats": {
+    "timeQueued": "2026-01-24T23:02:27.3698188Z",
+    "timeDownloadStarted": "2026-01-24T23:02:27.4648458Z"
+  },
+  "id": "0aba90e3395446de8db528ba2d90fe92"
+}

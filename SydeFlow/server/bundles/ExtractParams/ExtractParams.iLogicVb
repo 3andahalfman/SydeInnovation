@@ -1,0 +1,214 @@
+' =====================================================
+' PARAMETER EXTRACTION iLogic Rule
+' For use with Design Automation for Inventor
+' =====================================================
+' Extracts all user parameters from an Inventor file
+' (IPT or IAM) and outputs them as JSON for SydeFlow
+' =====================================================
+' Uses StringBuilder - no external JSON library needed
+' =====================================================
+
+Imports System.IO
+Imports System.Text
+Imports System.Globalization
+
+Sub Main()
+    ' Get the active document
+    Dim doc As Document = ThisApplication.ActiveDocument
+    
+    ' Get parameters based on document type
+    Dim userParams As UserParameters = Nothing
+    Dim fileType As String = "Unknown"
+    
+    If TypeOf doc Is PartDocument Then
+        Dim partDoc As PartDocument = doc
+        userParams = partDoc.ComponentDefinition.Parameters.UserParameters
+        fileType = "IPT"
+    ElseIf TypeOf doc Is AssemblyDocument Then
+        Dim assyDoc As AssemblyDocument = doc
+        userParams = assyDoc.ComponentDefinition.Parameters.UserParameters
+        fileType = "IAM"
+    End If
+    
+    ' Build JSON using StringBuilder (no external dependencies)
+    Dim sb As New StringBuilder()
+    sb.AppendLine("{")
+    sb.AppendLine("  ""fileName"": """ & EscapeJson(doc.DisplayName) & """,")
+    sb.AppendLine("  ""fileType"": """ & fileType & """,")
+    sb.AppendLine("  ""extractedAt"": """ & DateTime.Now.ToString("o") & """,")
+    
+    ' Count parameters
+    Dim paramCount As Integer = 0
+    If userParams IsNot Nothing Then
+        paramCount = userParams.Count
+    End If
+    sb.AppendLine("  ""parameterCount"": " & paramCount.ToString() & ",")
+    sb.AppendLine("  ""parameters"": [")
+    
+    ' Extract each user parameter
+    If userParams IsNot Nothing AndAlso userParams.Count > 0 Then
+        Dim first As Boolean = True
+        
+        For Each p As UserParameter In userParams
+            If Not first Then
+                sb.AppendLine(",")
+            End If
+            first = False
+            
+            ' Get parameter details
+            Dim paramName As String = p.Name
+            Dim paramExpr As String = p.Expression
+            Dim paramValue As Double = 0
+            Dim paramUnit As String = GetUnitString(p)
+            Dim paramType As String = "number"
+            Dim defaultValue As String = ""
+            
+            ' Determine type and value
+            If p.ParameterType = ParameterTypeEnum.kTextParameter Then
+                paramType = "text"
+                defaultValue = """" & EscapeJson(p.Expression) & """"
+            ElseIf p.ParameterType = ParameterTypeEnum.kBooleanParameter Then
+                paramType = "boolean"
+                defaultValue = If(p.Value, "true", "false")
+            Else
+                paramType = "number"
+                paramValue = p.Value
+                defaultValue = paramValue.ToString(CultureInfo.InvariantCulture)
+            End If
+            
+            ' Build parameter object
+            sb.Append("    {")
+            sb.Append("""name"": """ & EscapeJson(paramName) & """, ")
+            sb.Append("""displayName"": """ & EscapeJson(FormatDisplayName(paramName)) & """, ")
+            sb.Append("""expression"": """ & EscapeJson(paramExpr) & """, ")
+            sb.Append("""unit"": """ & paramUnit & """, ")
+            sb.Append("""type"": """ & paramType & """, ")
+            sb.Append("""defaultValue"": " & defaultValue & ", ")
+            sb.Append("""group"": """ & DetectGroup(paramName, paramUnit) & """, ")
+            sb.Append("""exportable"": true")
+            
+            ' Add limits if available (for numeric parameters)
+            If paramType = "number" Then
+                Try
+                    If p.HasLimits Then
+                        sb.Append(", ""min"": " & p.LowerBound.ToString(CultureInfo.InvariantCulture))
+                        sb.Append(", ""max"": " & p.UpperBound.ToString(CultureInfo.InvariantCulture))
+                    End If
+                Catch
+                    ' Limits not available
+                End Try
+            End If
+            
+            sb.Append("}")
+        Next
+    End If
+    
+    sb.AppendLine()
+    sb.AppendLine("  ]")
+    sb.AppendLine("}")
+    
+    ' Write output to parameters.json in same folder as input file
+    Dim outputPath As String = Path.Combine(Path.GetDirectoryName(doc.FullFileName), "parameters.json")
+    File.WriteAllText(outputPath, sb.ToString())
+    
+    ' Log for debugging
+    Logger.Info("ExtractParams: Extracted " & paramCount.ToString() & " user parameters")
+    Logger.Info("ExtractParams: Output written to " & outputPath)
+End Sub
+
+' Escape special characters for JSON
+Function EscapeJson(s As String) As String
+    If s Is Nothing Then Return ""
+    Return s.Replace("\", "\\").Replace("""", "\""").Replace(vbCr, "\r").Replace(vbLf, "\n").Replace(vbTab, "\t")
+End Function
+
+' Format parameter name for display
+Function FormatDisplayName(name As String) As String
+    Dim result As String = name
+    
+    ' Handle d0, d1, d2 style parameters
+    If System.Text.RegularExpressions.Regex.IsMatch(name, "^d\d+$") Then
+        Return "Parameter " & name
+    End If
+    
+    ' Replace underscores with spaces
+    result = result.Replace("_", " ")
+    
+    ' Add spaces before capitals (camelCase/PascalCase)
+    result = System.Text.RegularExpressions.Regex.Replace(result, "([a-z])([A-Z])", "$1 $2")
+    
+    ' Capitalize first letter
+    If result.Length > 0 Then
+        result = Char.ToUpper(result(0)) & result.Substring(1)
+    End If
+    
+    Return result.Trim()
+End Function
+
+' Get unit string from parameter
+Function GetUnitString(p As UserParameter) As String
+    Try
+        Select Case p.Units
+            Case UnitsTypeEnum.kMillimeterLengthUnits
+                Return "mm"
+            Case UnitsTypeEnum.kCentimeterLengthUnits
+                Return "cm"
+            Case UnitsTypeEnum.kMeterLengthUnits
+                Return "m"
+            Case UnitsTypeEnum.kInchLengthUnits
+                Return "in"
+            Case UnitsTypeEnum.kFootLengthUnits
+                Return "ft"
+            Case UnitsTypeEnum.kDegreeAngleUnits
+                Return "deg"
+            Case UnitsTypeEnum.kRadianAngleUnits
+                Return "rad"
+            Case UnitsTypeEnum.kKilogramMassUnits
+                Return "kg"
+            Case UnitsTypeEnum.kGramMassUnits
+                Return "g"
+            Case UnitsTypeEnum.kPoundMassUnits
+                Return "lb"
+            Case Else
+                Return ""
+        End Select
+    Catch
+        Return ""
+    End Try
+End Function
+
+' Detect parameter group from name/unit patterns
+Function DetectGroup(name As String, unit As String) As String
+    Dim nameLower As String = name.ToLower()
+    
+    ' Check name patterns
+    If nameLower.Contains("width") Or nameLower.Contains("depth") Or _
+       nameLower.Contains("height") Or nameLower.Contains("length") Or _
+       nameLower.Contains("size") Or nameLower.Contains("thick") Then
+        Return "Dimensions"
+    End If
+    
+    If nameLower.Contains("material") Or nameLower.Contains("finish") Or _
+       nameLower.Contains("color") Or nameLower.Contains("texture") Then
+        Return "Material"
+    End If
+    
+    If nameLower.Contains("angle") Or nameLower.Contains("rotation") Then
+        Return "Angles"
+    End If
+    
+    If nameLower.Contains("count") Or nameLower.Contains("qty") Or _
+       nameLower.Contains("number") Or nameLower.Contains("quantity") Then
+        Return "Quantity"
+    End If
+    
+    ' Check unit type
+    If unit = "mm" Or unit = "cm" Or unit = "m" Or unit = "in" Or unit = "ft" Then
+        Return "Dimensions"
+    End If
+    
+    If unit = "deg" Or unit = "rad" Then
+        Return "Angles"
+    End If
+    
+    Return "General"

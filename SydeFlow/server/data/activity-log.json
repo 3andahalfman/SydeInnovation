@@ -1,0 +1,1286 @@
+{
+  "activities": [
+    {
+      "id": "act_1774297441893_68irqsamr",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-23T20:24:01.893Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for Ring.ipt",
+      "details": {
+        "iptWorkItemId": "4d26697f32c741bebe17de39320c705d",
+        "dwgWorkItemId": null,
+        "outputKey": "Ring_Config1774297440761.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1774297089166_xksbcev1l",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-23T20:18:09.166Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for Ring.ipt",
+      "details": {
+        "iptWorkItemId": "21bea11cfc8d47f48264ded08a9c4714",
+        "dwgWorkItemId": null,
+        "outputKey": "Ring_Config1774297088104.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1774296902123_0n13wlx1k",
+      "type": "setup:activity:created",
+      "category": "System",
+      "timestamp": "2026-03-23T20:15:02.123Z",
+      "title": "UpdateModel Activity Created",
+      "message": "Created UpdateModelActivity for combined IPT regen + DWG export",
+      "details": {
+        "activityId": "AUQ0ELZK6MYcB4vMTJ5NZ7XRgyKEB0ZfbrKDUEIIumArtUhQ.UpdateModelActivity+dev",
+        "engine": "Autodesk.Inventor+2024"
+      }
+    },
+    {
+      "id": "act_1774296894380_s7kla863z",
+      "type": "setup:bundle:created",
+      "category": "System",
+      "timestamp": "2026-03-23T20:14:54.380Z",
+      "title": "UpdateModel Bundle Registered",
+      "message": "Registered UpdateModelBundle version 2",
+      "details": {
+        "bundleId": "AUQ0ELZK6MYcB4vMTJ5NZ7XRgyKEB0ZfbrKDUEIIumArtUhQ.UpdateModelBundle+dev",
+        "version": 2
+      }
+    },
+    {
+      "id": "act_1774295007410_l3vblmtwo",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-23T19:43:27.410Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for Ring.ipt",
+      "details": {
+        "iptWorkItemId": "d2bf3ce271ea4333aa05b899be5e5344",
+        "dwgWorkItemId": null,
+        "outputKey": "Ring_Config1774295006157.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1774294934061_b6lqybhau",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-23T19:42:14.061Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for Ring.ipt",
+      "details": {
+        "iptWorkItemId": "a6a61992127641bf9ce2510aed6a03f4",
+        "dwgWorkItemId": null,
+        "outputKey": "Ring_Config1774294933004.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1774294911192_qcuimoetc",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-23T19:41:51.192Z",
+      "title": "Layout Saved",
+      "message": "Configurator layout saved for \"Ring\"",
+      "details": {
+        "productId": "product-1774294749665"
+      }
+    },
+    {
+      "id": "act_1774294880482_p18w6t38g",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-23T19:41:20.482Z",
+      "title": "Layout Saved",
+      "message": "Configurator layout saved for \"Ring\"",
+      "details": {
+        "productId": "product-1774294749665"
+      }
+    },
+    {
+      "id": "act_1774294840411_c2ufiszva",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-23T19:40:40.411Z",
+      "title": "Product Updated",
+      "message": "Product \"Ring\" updated successfully",
+      "details": {
+        "productId": "product-1774294749665",
+        "productName": "Ring"
+      }
+    },
+    {
+      "id": "act_1774294839549_wy9qkxjc1",
+      "type": "da:workitem:completed",
+      "category": "Design Automation",
+      "timestamp": "2026-03-23T19:40:39.549Z",
+      "title": "WorkItem Completed",
+      "message": "Design Automation workitem completed successfully",
+      "details": {
+        "workItemId": "146db0817e6a4324bcd66d2f02eb2807",
+        "outputFile": "20260323194021_output_Ring.ipt",
+        "bucket": "auq0elzk6mycb4vmtj5nz7xrgykeb0zfbrkdueiiumartuhq-designautomation"
+      }
+    },
+    {
+      "id": "act_1774294823269_rkehvh5ut",
+      "type": "da:workitem:started",
+      "category": "Design Automation",
+      "timestamp": "2026-03-23T19:40:23.269Z",
+      "title": "WorkItem Started",
+      "message": "Design Automation workitem started",
+      "details": {
+        "workItemId": "146db0817e6a4324bcd66d2f02eb2807",
+        "activityName": "AUQ0ELZK6MYcB4vMTJ5NZ7XRgyKEB0ZfbrKDUEIIumArtUhQ.UpdateIPTParamActivity+dev",
+        "inputFile": "ring/Ring.ipt",
+        "outputFile": "auq0elzk6mycb4vmtj5nz7xrgykeb0zfbrkdueiiumartuhq-designautomation/20260323194021_output_Ring.ipt"
+      }
+    },
+    {
+      "id": "act_1774294779941_t4m61o0qk",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-23T19:39:39.941Z",
+      "title": "Product Updated",
+      "message": "Product \"Ring\" updated successfully",
+      "details": {
+        "productId": "product-1774294749665",
+        "productName": "Ring",
+        "status": "draft"
+      }
+    },
+    {
+      "id": "act_1774294772218_ahvwucqx1",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-23T19:39:32.218Z",
+      "title": "Product Updated",
+      "message": "Product \"Ring\" updated successfully",
+      "details": {
+        "productId": "product-1774294749665",
+        "productName": "Ring",
+        "status": "draft"
+      }
+    },
+    {
+      "id": "act_1774294760392_rip805ke2",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-23T19:39:20.392Z",
+      "title": "Product Updated",
+      "message": "Product \"Ring\" updated successfully",
+      "details": {
+        "productId": "product-1774294749665",
+        "productName": "Ring",
+        "status": "draft"
+      }
+    },
+    {
+      "id": "act_1774294756616_wn2k87xvk",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-23T19:39:16.616Z",
+      "title": "Product Updated",
+      "message": "Product \"Ring\" updated successfully",
+      "details": {
+        "productId": "product-1774294749665",
+        "productName": "Ring",
+        "status": "draft"
+      }
+    },
+    {
+      "id": "act_1774294749914_ga7518e2t",
+      "type": "product:created",
+      "category": "Products",
+      "timestamp": "2026-03-23T19:39:09.915Z",
+      "title": "Product Created",
+      "message": "New product \"Ring\" created successfully",
+      "details": {
+        "productId": "product-1774294749665",
+        "productName": "Ring",
+        "category": "metal"
+      }
+    },
+    {
+      "id": "act_1774294708244_f9493ymk9",
+      "type": "oss:object:uploaded",
+      "category": "Object Storage",
+      "timestamp": "2026-03-23T19:38:28.244Z",
+      "title": "File Uploaded",
+      "message": "Uploaded \"Ring.dwg\" to ring",
+      "details": {
+        "bucketKey": "ring",
+        "objectKey": "Ring.dwg",
+        "size": 443798
+      }
+    },
+    {
+      "id": "act_1774294691386_rlatgppox",
+      "type": "oss:object:uploaded",
+      "category": "Object Storage",
+      "timestamp": "2026-03-23T19:38:11.386Z",
+      "title": "File Uploaded",
+      "message": "Uploaded \"Ring.ipt\" to ring",
+      "details": {
+        "bucketKey": "ring",
+        "objectKey": "Ring.ipt",
+        "size": 127488
+      }
+    },
+    {
+      "id": "act_1774294529162_l4tof8qt3",
+      "type": "oss:bucket:created",
+      "category": "Object Storage",
+      "timestamp": "2026-03-23T19:35:29.163Z",
+      "title": "Bucket Created",
+      "message": "Created OSS bucket \"ring\"",
+      "details": {
+        "bucketKey": "ring",
+        "policyKey": "temporary"
+      }
+    },
+    {
+      "id": "act_1774293128668_yp5mrnrfw",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-23T19:12:08.668Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "97def849eff14163941ca9acd182d08a",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1774293126685.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1774293071438_wh013z6pe",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-23T19:11:11.439Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "4c1ce8eeeb444b05b3e320ce960b0612",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1774293069168.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1774287867336_7w6b1v1k0",
+      "type": "workflow:extract:started",
+      "category": "System",
+      "timestamp": "2026-03-23T17:44:27.336Z",
+      "title": "Parameter Extraction Started",
+      "message": "Started extraction for inventor_sample_file.ipt",
+      "details": {
+        "workItemId": "a91f181740154bde846e431976b2c915",
+        "activityId": "AUQ0ELZK6MYcB4vMTJ5NZ7XRgyKEB0ZfbrKDUEIIumArtUhQ.ExtractParamsActivity+dev"
+      }
+    },
+    {
+      "id": "act_1774284182169_sphn1zl4l",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-23T16:43:02.169Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "0d653ecae8294b5ebb650edafe9a09ff",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1774284181041.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773578817892_sz3e3faia",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-15T12:46:57.892Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for test.ipt",
+      "details": {
+        "iptWorkItemId": "0a60de0028274f76af8c926950fb0a6d",
+        "dwgWorkItemId": null,
+        "outputKey": "test_Config1773578815977.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773525778437_jspcvtg4p",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-14T22:02:58.438Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "006d7ebcfc934867a9e033a4e9576dd1",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1773525777209.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773525723691_m4yhvapjs",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-14T22:02:03.691Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "af02806a7c7b4d9cb559b6aab69ea05d",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1773525721926.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773525410019_kzabm7rse",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-14T21:56:50.019Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "e39952c82396439da2a436c6c4a96430",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1773525408827.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773525196234_zzcolodm8",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-14T21:53:16.234Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "ac5fc34534df48fa8a5bbab170bdf852",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1773525194534.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773523435803_wwe20qnkc",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-14T21:23:55.803Z",
+      "title": "Dual Regeneration Started (IPT + DWG)",
+      "message": "Started regeneration for inventor_sample_file.ipt + DWG (parallel)",
+      "details": {
+        "iptWorkItemId": "d6c7305efd384c0ab7bb9dba759ea02b",
+        "dwgWorkItemId": "f6572ff6c3644d01a64e238ad62618ff",
+        "outputKey": "inventor_sample_file_Config1773523421776.ipt",
+        "outputDwgKey": "inventor_sample_file_Config1773523431535.dwg",
+        "hasDwg": "inventor_sample_file-01.dwg"
+      }
+    },
+    {
+      "id": "act_1773522898759_4fs2ec41k",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-14T21:14:58.759Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "60f178569ff047dc9acb24448af9fed7",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1773522896350.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773519357609_y9s821jic",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-14T20:15:57.609Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "728335117ff347fa9063b9e2c2f99213",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1773519355938.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773396332245_dxil4h8nj",
+      "type": "oss:object:deleted",
+      "category": "Object Storage",
+      "timestamp": "2026-03-13T10:05:32.245Z",
+      "title": "File Deleted",
+      "message": "Deleted \"params-input-1773386637112.json\" from syde-sample",
+      "details": {
+        "bucketKey": "syde-sample",
+        "objectKey": "params-input-1773386637112.json"
+      }
+    },
+    {
+      "id": "act_1773396324437_gkfto1ro6",
+      "type": "oss:object:deleted",
+      "category": "Object Storage",
+      "timestamp": "2026-03-13T10:05:24.437Z",
+      "title": "File Deleted",
+      "message": "Deleted \"params-input-1773380844941.json\" from syde-sample",
+      "details": {
+        "bucketKey": "syde-sample",
+        "objectKey": "params-input-1773380844941.json"
+      }
+    },
+    {
+      "id": "act_1773396315437_6kz8cyhtb",
+      "type": "oss:object:deleted",
+      "category": "Object Storage",
+      "timestamp": "2026-03-13T10:05:15.437Z",
+      "title": "File Deleted",
+      "message": "Deleted \"params-input-1773384325545.json\" from syde-sample",
+      "details": {
+        "bucketKey": "syde-sample",
+        "objectKey": "params-input-1773384325545.json"
+      }
+    },
+    {
+      "id": "act_1773396308353_gn06ux14r",
+      "type": "oss:object:deleted",
+      "category": "Object Storage",
+      "timestamp": "2026-03-13T10:05:08.353Z",
+      "title": "File Deleted",
+      "message": "Deleted \"params-input-1773378742435.json\" from syde-sample",
+      "details": {
+        "bucketKey": "syde-sample",
+        "objectKey": "params-input-1773378742435.json"
+      }
+    },
+    {
+      "id": "act_1773396300070_l485r3gio",
+      "type": "oss:object:deleted",
+      "category": "Object Storage",
+      "timestamp": "2026-03-13T10:05:00.071Z",
+      "title": "File Deleted",
+      "message": "Deleted \"params-input-1773380232740.json\" from syde-sample",
+      "details": {
+        "bucketKey": "syde-sample",
+        "objectKey": "params-input-1773380232740.json"
+      }
+    },
+    {
+      "id": "act_1773396295720_i2o7glq6a",
+      "type": "oss:object:deleted",
+      "category": "Object Storage",
+      "timestamp": "2026-03-13T10:04:55.720Z",
+      "title": "File Deleted",
+      "message": "Deleted \"params-input-1773386551229.json\" from syde-sample",
+      "details": {
+        "bucketKey": "syde-sample",
+        "objectKey": "params-input-1773386551229.json"
+      }
+    },
+    {
+      "id": "act_1773396288738_met30gjen",
+      "type": "oss:object:deleted",
+      "category": "Object Storage",
+      "timestamp": "2026-03-13T10:04:48.738Z",
+      "title": "File Deleted",
+      "message": "Deleted \"params-input-1773378861281.json\" from syde-sample",
+      "details": {
+        "bucketKey": "syde-sample",
+        "objectKey": "params-input-1773378861281.json"
+      }
+    },
+    {
+      "id": "act_1773396279680_un8dzqjj4",
+      "type": "oss:object:deleted",
+      "category": "Object Storage",
+      "timestamp": "2026-03-13T10:04:39.681Z",
+      "title": "File Deleted",
+      "message": "Deleted \"params-input-1773389800119.json\" from syde-sample",
+      "details": {
+        "bucketKey": "syde-sample",
+        "objectKey": "params-input-1773389800119.json"
+      }
+    },
+    {
+      "id": "act_1773389803294_kzr5hs7g9",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-13T08:16:43.294Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "be46508303a842eda398c581b55931bc",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1773389802131.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773386640226_s6345koki",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-13T07:24:00.226Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "0078444e138a40a5975afb24d7554cff",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1773386639160.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773386554206_3saxxew60",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-13T07:22:34.207Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "6f7564f7ea8a47699b8f4bdbc22771f7",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1773386553000.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773384328478_zxcjz1kva",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-13T06:45:28.478Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "c9f09c725f8046c68a5975d9196ef501",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1773384327394.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773381600187_52sqe9vuz",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-13T06:00:00.187Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "e59cb7bfc830406f9ff1d74a7a1049f7",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1773381598784.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773380847634_3b5ppd6va",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-13T05:47:27.634Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "090f34b5bdf94b14a3c81a2c669df744",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1773380846683.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773380236132_uaznylb7a",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-13T05:37:16.132Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "d2d23fef685647d1b4545cf2ef5d2fa5",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1773380234970.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773378988784_6d2ndbj9h",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-13T05:16:28.784Z",
+      "title": "Layout Saved",
+      "message": "Configurator layout saved for \"Test Box\"",
+      "details": {
+        "productId": "product-1773378456003"
+      }
+    },
+    {
+      "id": "act_1773378987081_agjah1z14",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-13T05:16:27.081Z",
+      "title": "Product Updated",
+      "message": "Product \"Test Box\" updated successfully",
+      "details": {
+        "productId": "product-1773378456003",
+        "productName": "Test Box"
+      }
+    },
+    {
+      "id": "act_1773378984930_rqounx4s7",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-13T05:16:24.930Z",
+      "title": "Product Updated",
+      "message": "Product \"Test Box\" updated successfully",
+      "details": {
+        "productId": "product-1773378456003",
+        "productName": "Test Box"
+      }
+    },
+    {
+      "id": "act_1773378942495_wmkpd033x",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-13T05:15:42.495Z",
+      "title": "Pricing Updated",
+      "message": "Pricing configured for \"Test Box\"",
+      "details": {
+        "productId": "product-1773378456003",
+        "basePrice": 0,
+        "currency": "USD"
+      }
+    },
+    {
+      "id": "act_1773378918533_fg2r0f4ns",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-13T05:15:18.533Z",
+      "title": "Layout Saved",
+      "message": "Configurator layout saved for \"Test Box\"",
+      "details": {
+        "productId": "product-1773378456003"
+      }
+    },
+    {
+      "id": "act_1773378864683_rmdp8y6te",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-13T05:14:24.683Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "1e59ca46299947e2a5c3d3dde2bbb557",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1773378863713.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773378745818_arwjhldlm",
+      "type": "workflow:regenerate:started",
+      "category": "System",
+      "timestamp": "2026-03-13T05:12:25.818Z",
+      "title": "Model Regeneration Started",
+      "message": "Started regeneration for inventor_sample_file.ipt",
+      "details": {
+        "iptWorkItemId": "56f9371807dd4aa286d156122b6b415a",
+        "dwgWorkItemId": null,
+        "outputKey": "inventor_sample_file_Config1773378744572.ipt",
+        "outputDwgKey": null
+      }
+    },
+    {
+      "id": "act_1773378712229_4y2e6r66v",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-13T05:11:52.229Z",
+      "title": "Product Updated",
+      "message": "Product \"Test Box\" updated successfully",
+      "details": {
+        "productId": "product-1773378456003",
+        "productName": "Test Box"
+      }
+    },
+    {
+      "id": "act_1773378711758_1krqm6yfq",
+      "type": "da:workitem:completed",
+      "category": "Design Automation",
+      "timestamp": "2026-03-13T05:11:51.758Z",
+      "title": "WorkItem Completed",
+      "message": "Design Automation workitem completed successfully",
+      "details": {
+        "workItemId": "6ba9d2d7b54841319a988439795dd20b",
+        "outputFile": "20260313051140_output_inventor_sample_file.ipt",
+        "bucket": "auq0elzk6mycb4vmtj5nz7xrgykeb0zfbrkdueiiumartuhq-designautomation"
+      }
+    },
+    {
+      "id": "act_1773378702089_o4kdygs5q",
+      "type": "da:workitem:started",
+      "category": "Design Automation",
+      "timestamp": "2026-03-13T05:11:42.089Z",
+      "title": "WorkItem Started",
+      "message": "Design Automation workitem started",
+      "details": {
+        "workItemId": "6ba9d2d7b54841319a988439795dd20b",
+        "activityName": "AUQ0ELZK6MYcB4vMTJ5NZ7XRgyKEB0ZfbrKDUEIIumArtUhQ.UpdateIPTParamActivity+dev",
+        "inputFile": "syde-sample/inventor_sample_file.ipt",
+        "outputFile": "auq0elzk6mycb4vmtj5nz7xrgykeb0zfbrkdueiiumartuhq-designautomation/20260313051140_output_inventor_sample_file.ipt"
+      }
+    },
+    {
+      "id": "act_1773378684424_jey1n3pan",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-13T05:11:24.424Z",
+      "title": "Product Updated",
+      "message": "Product \"Test Box\" updated successfully",
+      "details": {
+        "productId": "product-1773378456003",
+        "productName": "Test Box",
+        "status": "draft"
+      }
+    },
+    {
+      "id": "act_1773378677346_mb4dm1qj0",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-13T05:11:17.346Z",
+      "title": "Product Updated",
+      "message": "Product \"Test Box\" updated successfully",
+      "details": {
+        "productId": "product-1773378456003",
+        "productName": "Test Box",
+        "status": "draft"
+      }
+    },
+    {
+      "id": "act_1773378670959_sds8a7fxp",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-13T05:11:10.959Z",
+      "title": "Product Updated",
+      "message": "Product \"Test Box\" updated successfully",
+      "details": {
+        "productId": "product-1773378456003",
+        "productName": "Test Box",
+        "status": "draft"
+      }
+    },
+    {
+      "id": "act_1773378667035_0abwmeo60",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-13T05:11:07.035Z",
+      "title": "Product Updated",
+      "message": "Product \"Test Box\" updated successfully",
+      "details": {
+        "productId": "product-1773378456003",
+        "productName": "Test Box",
+        "status": "draft"
+      }
+    },
+    {
+      "id": "act_1773378655039_cwjvqieeg",
+      "type": "oss:object:uploaded",
+      "category": "Object Storage",
+      "timestamp": "2026-03-13T05:10:55.039Z",
+      "title": "File Uploaded",
+      "message": "Uploaded \"inventor_sample_file-01.dwg\" to syde-sample",
+      "details": {
+        "bucketKey": "syde-sample",
+        "objectKey": "inventor_sample_file-01.dwg",
+        "size": 2355949
+      }
+    },
+    {
+      "id": "act_1773378485965_ra5z8849i",
+      "type": "oss:object:uploaded",
+      "category": "Object Storage",
+      "timestamp": "2026-03-13T05:08:05.965Z",
+      "title": "File Uploaded",
+      "message": "Uploaded \"inventor_sample_file.ipt\" to syde-sample",
+      "details": {
+        "bucketKey": "syde-sample",
+        "objectKey": "inventor_sample_file.ipt",
+        "size": 265216
+      }
+    },
+    {
+      "id": "act_1773378456181_yn364kpe3",
+      "type": "product:created",
+      "category": "Products",
+      "timestamp": "2026-03-13T05:07:36.181Z",
+      "title": "Product Created",
+      "message": "New product \"Test Box\" created successfully",
+      "details": {
+        "productId": "product-1773378456003",
+        "productName": "Test Box",
+        "category": "enclosures"
+      }
+    },
+    {
+      "id": "act_1773378438283_w170j7mf3",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-13T05:07:18.283Z",
+      "title": "Product Deleted",
+      "message": "Product \"config\" has been deleted",
+      "details": {
+        "productId": "product-1772223118670",
+        "productName": "config"
+      }
+    },
+    {
+      "id": "act_1773378436207_1543i54d6",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-13T05:07:16.207Z",
+      "title": "Product Deleted",
+      "message": "Product \"Johns Product 2\" has been deleted",
+      "details": {
+        "productId": "product-1772143893501",
+        "productName": "Johns Product 2"
+      }
+    },
+    {
+      "id": "act_1773378433404_jhhgj85gl",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-13T05:07:13.404Z",
+      "title": "Product Deleted",
+      "message": "Product \"qwreyuhk.\" has been deleted",
+      "details": {
+        "productId": "product-1772142616703",
+        "productName": "qwreyuhk."
+      }
+    },
+    {
+      "id": "act_1773378431662_jf20g49j9",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-13T05:07:11.662Z",
+      "title": "Product Deleted",
+      "message": "Product \"smaple\" has been deleted",
+      "details": {
+        "productId": "product-1772222844512",
+        "productName": "smaple"
+      }
+    },
+    {
+      "id": "act_1773185809200_klidtt2nm",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-10T23:36:49.200Z",
+      "title": "Product Deleted",
+      "message": "Product \"Testing Visibility\" has been deleted",
+      "details": {
+        "productId": "product-1772150002305",
+        "productName": "Testing Visibility"
+      }
+    },
+    {
+      "id": "act_1773185804260_uzkrwigda",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-10T23:36:44.260Z",
+      "title": "Product Deleted",
+      "message": "Product \"johntest\" has been deleted",
+      "details": {
+        "productId": "product-1772144347565",
+        "productName": "johntest"
+      }
+    },
+    {
+      "id": "act_1773185791236_z5z01s077",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-10T23:36:31.236Z",
+      "title": "Product Deleted",
+      "message": "Product \"zgsfg\" has been deleted",
+      "details": {
+        "productId": "product-1773160978021",
+        "productName": "zgsfg"
+      }
+    },
+    {
+      "id": "act_1773185446501_27zfdaqrh",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-10T23:30:46.501Z",
+      "title": "Product Deleted",
+      "message": "Product \"xcvb\" has been deleted",
+      "details": {
+        "productId": "product-1772142309936",
+        "productName": "xcvb"
+      }
+    },
+    {
+      "id": "act_1773185442144_9372rpbwc",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-10T23:30:42.144Z",
+      "title": "Product Deleted",
+      "message": "Product \"Test Notification 3\" has been deleted",
+      "details": {
+        "productId": "product-1772148817747",
+        "productName": "Test Notification 3"
+      }
+    },
+    {
+      "id": "act_1773185439315_1inqekih4",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-10T23:30:39.315Z",
+      "title": "Product Deleted",
+      "message": "Product \"vbc\" has been deleted",
+      "details": {
+        "productId": "product-1772226399078",
+        "productName": "vbc"
+      }
+    },
+    {
+      "id": "act_1773185436639_7mntrcvk0",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-10T23:30:36.640Z",
+      "title": "Product Deleted",
+      "message": "Product \"Test Notification\" has been deleted",
+      "details": {
+        "productId": "product-1772148725386",
+        "productName": "Test Notification"
+      }
+    },
+    {
+      "id": "act_1773185421641_pigklpkiw",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-10T23:30:21.641Z",
+      "title": "Product Deleted",
+      "message": "Product \"Test Leak Product\" has been deleted",
+      "details": {
+        "productId": "product-1772142862785",
+        "productName": "Test Leak Product"
+      }
+    },
+    {
+      "id": "act_1773185419084_wd9n89x6o",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-10T23:30:19.084Z",
+      "title": "Product Deleted",
+      "message": "Product \"sample\" has been deleted",
+      "details": {
+        "productId": "product-1773157716459",
+        "productName": "sample"
+      }
+    },
+    {
+      "id": "act_1773185416097_0abbztd2m",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-10T23:30:16.097Z",
+      "title": "Product Deleted",
+      "message": "Product \"sadfgh\" has been deleted",
+      "details": {
+        "productId": "product-1772149316106",
+        "productName": "sadfgh"
+      }
+    },
+    {
+      "id": "act_1773185411602_heav6ue0t",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-10T23:30:11.602Z",
+      "title": "Product Deleted",
+      "message": "Product \"Owner Test Product\" has been deleted",
+      "details": {
+        "productId": "product-1772143829105",
+        "productName": "Owner Test Product"
+      }
+    },
+    {
+      "id": "act_1773185408272_xqpmckugo",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-10T23:30:08.272Z",
+      "title": "Product Deleted",
+      "message": "Product \"Fetch Test Product\" has been deleted",
+      "details": {
+        "productId": "product-1772143945294",
+        "productName": "Fetch Test Product"
+      }
+    },
+    {
+      "id": "act_1773185406493_40t3k42ir",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-10T23:30:06.493Z",
+      "title": "Product Deleted",
+      "message": "Product \"fddgfh\" has been deleted",
+      "details": {
+        "productId": "product-1772149380876",
+        "productName": "fddgfh"
+      }
+    },
+    {
+      "id": "act_1773185404785_5vwsoybf3",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-10T23:30:04.785Z",
+      "title": "Product Deleted",
+      "message": "Product \"egdhsg\" has been deleted",
+      "details": {
+        "productId": "product-1772143741769",
+        "productName": "egdhsg"
+      }
+    },
+    {
+      "id": "act_1773185402733_9ll6h8q7o",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-10T23:30:02.733Z",
+      "title": "Product Deleted",
+      "message": "Product \"dsbzgxmn\" has been deleted",
+      "details": {
+        "productId": "product-1772143754742",
+        "productName": "dsbzgxmn"
+      }
+    },
+    {
+      "id": "act_1773185400948_rcvs0crtq",
+      "type": "product:deleted",
+      "category": "Products",
+      "timestamp": "2026-03-10T23:30:00.948Z",
+      "title": "Product Deleted",
+      "message": "Product \"dfbnghbm\" has been deleted",
+      "details": {
+        "productId": "product-1772144256429",
+        "productName": "dfbnghbm"
+      }
+    },
+    {
+      "id": "act_1773161122772_3wshoekfy",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-10T16:45:22.772Z",
+      "title": "Layout Saved",
+      "message": "Configurator layout saved for \"zgsfg\"",
+      "details": {
+        "productId": "product-1773160978021"
+      }
+    },
+    {
+      "id": "act_1773161076244_8o38tdplo",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-10T16:44:36.244Z",
+      "title": "Product Updated",
+      "message": "Product \"zgsfg\" updated successfully",
+      "details": {
+        "productId": "product-1773160978021",
+        "productName": "zgsfg"
+      }
+    },
+    {
+      "id": "act_1773161074325_9gwyfhsx0",
+      "type": "da:workitem:completed",
+      "category": "Design Automation",
+      "timestamp": "2026-03-10T16:44:34.325Z",
+      "title": "WorkItem Completed",
+      "message": "Design Automation workitem completed successfully",
+      "details": {
+        "workItemId": "1c672b359d404375ac8dbeff50919160",
+        "outputFile": "20260310164418_output_test.ipt",
+        "bucket": "auq0elzk6mycb4vmtj5nz7xrgykeb0zfbrkdueiiumartuhq-designautomation"
+      }
+    },
+    {
+      "id": "act_1773161059536_dc39xj3ur",
+      "type": "da:workitem:started",
+      "category": "Design Automation",
+      "timestamp": "2026-03-10T16:44:19.536Z",
+      "title": "WorkItem Started",
+      "message": "Design Automation workitem started",
+      "details": {
+        "workItemId": "1c672b359d404375ac8dbeff50919160",
+        "activityName": "AUQ0ELZK6MYcB4vMTJ5NZ7XRgyKEB0ZfbrKDUEIIumArtUhQ.UpdateIPTParamActivity+dev",
+        "inputFile": "syde-sample2/test.ipt",
+        "outputFile": "auq0elzk6mycb4vmtj5nz7xrgykeb0zfbrkdueiiumartuhq-designautomation/20260310164418_output_test.ipt"
+      }
+    },
+    {
+      "id": "act_1773161054069_lffmkvzjh",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-10T16:44:14.069Z",
+      "title": "Product Updated",
+      "message": "Product \"zgsfg\" updated successfully",
+      "details": {
+        "productId": "product-1773160978021",
+        "productName": "zgsfg",
+        "status": "draft"
+      }
+    },
+    {
+      "id": "act_1773161030439_4bdr2ygcq",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-10T16:43:50.440Z",
+      "title": "Product Updated",
+      "message": "Product \"zgsfg\" updated successfully",
+      "details": {
+        "productId": "product-1773160978021",
+        "productName": "zgsfg"
+      }
+    },
+    {
+      "id": "act_1773161029867_9q9bdlwfu",
+      "type": "da:workitem:completed",
+      "category": "Design Automation",
+      "timestamp": "2026-03-10T16:43:49.867Z",
+      "title": "WorkItem Completed",
+      "message": "Design Automation workitem completed successfully",
+      "details": {
+        "workItemId": "e748a293e4aa42a0a1ab037e8a80911d",
+        "outputFile": "20260310164324_output_test.ipt",
+        "bucket": "auq0elzk6mycb4vmtj5nz7xrgykeb0zfbrkdueiiumartuhq-designautomation"
+      }
+    },
+    {
+      "id": "act_1773161006252_m28gkiklw",
+      "type": "da:workitem:started",
+      "category": "Design Automation",
+      "timestamp": "2026-03-10T16:43:26.252Z",
+      "title": "WorkItem Started",
+      "message": "Design Automation workitem started",
+      "details": {
+        "workItemId": "e748a293e4aa42a0a1ab037e8a80911d",
+        "activityName": "AUQ0ELZK6MYcB4vMTJ5NZ7XRgyKEB0ZfbrKDUEIIumArtUhQ.UpdateIPTParamActivity+dev",
+        "inputFile": "syde-sample2/test.ipt",
+        "outputFile": "auq0elzk6mycb4vmtj5nz7xrgykeb0zfbrkdueiiumartuhq-designautomation/20260310164324_output_test.ipt"
+      }
+    },
+    {
+      "id": "act_1773160999081_4kzj7xgkj",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-10T16:43:19.081Z",
+      "title": "Product Updated",
+      "message": "Product \"zgsfg\" updated successfully",
+      "details": {
+        "productId": "product-1773160978021",
+        "productName": "zgsfg",
+        "status": "draft"
+      }
+    },
+    {
+      "id": "act_1773160993497_oeh30tkmk",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-10T16:43:13.497Z",
+      "title": "Product Updated",
+      "message": "Product \"zgsfg\" updated successfully",
+      "details": {
+        "productId": "product-1773160978021",
+        "productName": "zgsfg",
+        "status": "draft"
+      }
+    },
+    {
+      "id": "act_1773160990427_s4rzyhoh2",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-10T16:43:10.427Z",
+      "title": "Product Updated",
+      "message": "Product \"zgsfg\" updated successfully",
+      "details": {
+        "productId": "product-1773160978021",
+        "productName": "zgsfg",
+        "status": "draft"
+      }
+    },
+    {
+      "id": "act_1773160987472_syk5m4lk9",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-10T16:43:07.472Z",
+      "title": "Product Updated",
+      "message": "Product \"zgsfg\" updated successfully",
+      "details": {
+        "productId": "product-1773160978021",
+        "productName": "zgsfg",
+        "status": "draft"
+      }
+    },
+    {
+      "id": "act_1773160984098_s11q2w5rz",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-10T16:43:04.098Z",
+      "title": "Product Updated",
+      "message": "Product \"zgsfg\" updated successfully",
+      "details": {
+        "productId": "product-1773160978021",
+        "productName": "zgsfg",
+        "status": "draft"
+      }
+    },
+    {
+      "id": "act_1773160978208_f1icaph4j",
+      "type": "product:created",
+      "category": "Products",
+      "timestamp": "2026-03-10T16:42:58.208Z",
+      "title": "Product Created",
+      "message": "New product \"zgsfg\" created successfully",
+      "details": {
+        "productId": "product-1773160978021",
+        "productName": "zgsfg",
+        "category": ""
+      }
+    },
+    {
+      "id": "act_1773157791311_1qweyq7zh",
+      "type": "product:updated",
+      "category": "Products",
+      "timestamp": "2026-03-10T15:49:51.311Z",
+      "title": "Product Updated",
+      "message": "Product \"sample\" updated successfully",
+      "details": {
+        "productId": "product-1773157716459",
+        "productName": "sample"
+      }
+    },
+    {
+      "id": "act_1773157790731_ons4b1qie",
+      "type": "da:workitem:completed",
+      "category": "Design Automation",
+      "timestamp": "2026-03-10T15:49:50.731Z",
+      "title": "WorkItem Completed",
+      "message": "Design Automation workitem completed successfully",
+      "details": {
+        "workItemId": "d6b2f14c3d3442d693fe4b750b258232",
+        "outputFile": "20260310154939_output_test.ipt",
+        "bucket": "auq0elzk6mycb4vmtj5nz7xrgykeb0zfbrkdueiiumartuhq-designautomation"
+      }
+    },
+    {
+      "id": "act_1773157781017_pxwxgnfhw",
+      "type": "da:workitem:started",
+      "category": "Design Automation",
+      "timestamp": "2026-03-10T15:49:41.017Z",
+      "title": "WorkItem Started",
+      "message": "Design Automation workitem started",
+      "details": {
+        "workItemId": "d6b2f14c3d3442d693fe4b750b258232",
+        "activityName": "AUQ0ELZK6MYcB4vMTJ5NZ7XRgyKEB0ZfbrKDUEIIumArtUhQ.UpdateIPTParamActivity+dev",
+        "inputFile": "syde-sample2/test.ipt",
+        "outputFile": "auq0elzk6mycb4vmtj5nz7xrgykeb0zfbrkdueiiumartuhq-designautomation/20260310154939_output_test.ipt"
+      }
+    }
+  ],
+  "lastUpdated": "2026-03-23T20:24:01.894Z"
+}

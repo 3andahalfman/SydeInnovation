@@ -1,0 +1,814 @@
+{
+  "products": [
+    {
+      "id": "product-1771620710150",
+      "name": "Chair",
+      "description": "This is a Chair",
+      "category": "chair",
+      "status": "draft",
+      "owner": "Admin",
+      "source": "oss",
+      "sourceFile": {
+        "bucketKey": "syde-sample2",
+        "objectKey": "test.ipt",
+        "fileName": "test.ipt"
+      },
+      "ossBucket": "syde-sample2",
+      "ossObjectKey": "test.ipt",
+      "activityId": "UpdateIPTParamActivity+dev",
+      "parameters": [
+        {
+          "name": "length",
+          "displayName": "length",
+          "type": "number",
+          "defaultValue": 24,
+          "unit": "in"
+        },
+        {
+          "name": "width",
+          "displayName": "width",
+          "type": "number",
+          "defaultValue": 36,
+          "unit": "in"
+        },
+        {
+          "name": "height",
+          "displayName": "height",
+          "type": "number",
+          "defaultValue": 12,
+          "unit": "in"
+        },
+        {
+          "name": "thickness",
+          "displayName": "thickness",
+          "type": "number",
+          "defaultValue": 0.5,
+          "unit": "in"
+        },
+        {
+          "name": "Color",
+          "displayName": "Color",
+          "type": "text",
+          "defaultValue": "\"Blue\""
+        },
+        {
+          "name": "Holes",
+          "displayName": "Holes",
+          "type": "boolean",
+          "defaultValue": false
+        }
+      ],
+      "createdAt": "2026-02-20T20:51:50.150Z",
+      "updatedAt": "2026-02-20T21:11:13.637Z",
+      "lastOutputUrn": "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6YXVxMGVsems2bXljYjR2bXRqNW56N3hyZ3lrZWIwemZicmtkdWVpaXVtYXJ0dWhxLWRlc2lnbmF1dG9tYXRpb24vMjAyNjAyMjAyMTA1Mzhfb3V0cHV0X3Rlc3QuaXB0",
+      "drawingFile": {
+        "bucketKey": "syde-sample2",
+        "objectKey": "test.dwg",
+        "fileName": "test.dwg",
+        "urn": "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6c3lkZS1zYW1wbGUyL3Rlc3QuZHdn"
+      },
+      "automation": {},
+      "pricing": {
+        "basePrice": 0,
+        "currency": "USD",
+        "showPrice": true,
+        "parameterRules": {},
+        "setupFee": 0,
+        "rushFee": 0
+      },
+      "configuratorLayout": {
+        "version": 2,
+        "children": [
+          {
+            "id": "param-length",
+            "type": "parameter",
+            "order": 0,
+            "parameterName": "length"
+          },
+          {
+            "id": "param-width",
+            "type": "parameter",
+            "order": 1,
+            "parameterName": "width"
+          },
+          {
+            "id": "param-height",
+            "type": "parameter",
+            "order": 2,
+            "parameterName": "height"
+          },
+          {
+            "id": "param-thickness",
+            "type": "parameter",
+            "order": 3,
+            "parameterName": "thickness"
+          },
+          {
+            "id": "param-Color",
+            "type": "parameter",
+            "order": 4,
+            "parameterName": "Color"
+          },
+          {
+            "id": "param-Holes",
+            "type": "parameter",
+            "order": 5,
+            "parameterName": "Holes"
+          }
+        ],
+        "sections": [],
+        "controls": {
+          "length": {
+            "controlType": "slider-input",
+            "showLabel": true,
+            "showUnit": true,
+            "showDescription": false,
+            "showMinMax": true,
+            "width": "full"
+          },
+          "width": {
+            "controlType": "slider-input",
+            "showLabel": true,
+            "showUnit": true,
+            "showDescription": false,
+            "showMinMax": true,
+            "width": "full"
+          },
+          "height": {
+            "controlType": "slider-input",
+            "showLabel": true,
+            "showUnit": true,
+            "showDescription": false,
+            "showMinMax": true,
+            "width": "full"
+          },
+          "thickness": {
+            "controlType": "slider-input",
+            "showLabel": true,
+            "showUnit": true,
+            "showDescription": false,
+            "showMinMax": true,
+            "width": "full"
+          },
+          "Color": {
+            "controlType": "slider-input",
+            "showLabel": true,
+            "showUnit": true,
+            "showDescription": false,
+            "showMinMax": true,
+            "width": "full"
+          },
+          "Holes": {
+            "controlType": "toggle",
+            "showLabel": true,
+            "showUnit": true,
+            "showDescription": false,
+            "showMinMax": true,
+            "width": "full"
+          }
+        },
+        "styling": {
+          "theme": "dark",
+          "accentColor": "#f97316",
+          "panelPosition": "right",
+          "panelWidth": "narrow",
+          "sectionStyle": "flat",
+          "controlSize": "normal"
+        },
+        "actions": {
+          "primaryButton": {
+            "label": "Get Quote",
+            "action": "quote",
+            "style": "primary"
+          },
+          "showResetButton": true
+        },
+        "unassignedParameters": []
+      }
+    },
+    {
+      "id": "product-1772142309936",
+      "name": "xcvb",
+      "description": "cvnbm",
+      "category": "enclosures",
+      "status": "draft",
+      "owner": "Admin",
+      "source": null,
+      "sourceFile": null,
+      "ossBucket": null,
+      "ossObjectKey": null,
+      "activityId": null,
+      "parameters": [],
+      "createdAt": "2026-02-26T21:45:09.936Z",
+      "updatedAt": "2026-02-26T21:45:09.936Z"
+    },
+    {
+      "id": "product-1772142616703",
+      "name": "qwreyuhk.",
+      "description": "wraetjsrykdfguj",
+      "category": "chair",
+      "status": "draft",
+      "owner": "Admin",
+      "source": null,
+      "sourceFile": null,
+      "ossBucket": null,
+      "ossObjectKey": null,
+      "activityId": null,
+      "parameters": [],
+      "createdAt": "2026-02-26T21:50:16.703Z",
+      "updatedAt": "2026-02-26T21:50:16.703Z"
+    },
+    {
+      "id": "product-1772142862785",
+      "name": "Test Leak Product",
+      "description": "",
+      "category": "",
+      "status": "draft",
+      "owner": "Admin",
+      "source": null,
+      "sourceFile": null,
+      "ossBucket": null,
+      "ossObjectKey": null,
+      "activityId": null,
+      "parameters": [],
+      "createdAt": "2026-02-26T21:54:22.785Z",
+      "updatedAt": "2026-02-26T21:54:22.785Z"
+    },
+    {
+      "id": "product-1772143741769",
+      "name": "egdhsg",
+      "description": "zdZBZF",
+      "category": "chair",
+      "status": "draft",
+      "owner": "Admin",
+      "ownerId": "Admin",
+      "source": null,
+      "sourceFile": null,
+      "ossBucket": null,
+      "ossObjectKey": null,
+      "activityId": null,
+      "parameters": [],
+      "createdAt": "2026-02-26T22:09:01.769Z",
+      "updatedAt": "2026-02-26T22:09:01.769Z"
+    },
+    {
+      "id": "product-1772143754742",
+      "name": "dsbzgxmn",
+      "description": "dgmx",
+      "category": "enclosures",
+      "status": "draft",
+      "owner": "Admin",
+      "ownerId": "Admin",
+      "source": null,
+      "sourceFile": null,
+      "ossBucket": null,
+      "ossObjectKey": null,
+      "activityId": null,
+      "parameters": [],
+      "createdAt": "2026-02-26T22:09:14.742Z",
+      "updatedAt": "2026-02-26T22:09:14.742Z"
+    },
+    {
+      "id": "product-1772143829105",
+      "name": "Owner Test Product",
+      "description": "Testing if owner is set to John instead of Admin.",
+      "category": "",
+      "status": "draft",
+      "owner": "Admin",
+      "ownerId": "Admin",
+      "source": null,
+      "sourceFile": null,
+      "ossBucket": null,
+      "ossObjectKey": null,
+      "activityId": null,
+      "parameters": [],
+      "createdAt": "2026-02-26T22:10:29.105Z",
+      "updatedAt": "2026-02-26T22:10:29.105Z"
+    },
+    {
+      "id": "product-1772143893501",
+      "name": "Johns Product 2",
+      "description": "Created by John.",
+      "category": "",
+      "status": "draft",
+      "owner": "Admin",
+      "ownerId": "Admin",
+      "source": null,
+      "sourceFile": null,
+      "ossBucket": null,
+      "ossObjectKey": null,
+      "activityId": null,
+      "parameters": [],
+      "createdAt": "2026-02-26T22:11:33.501Z",
+      "updatedAt": "2026-02-26T22:11:33.501Z"
+    },
+    {
+      "id": "product-1772143945294",
+      "name": "Fetch Test Product",
+      "description": "Test from console",
+      "category": "test",
+      "status": "draft",
+      "owner": "John",
+      "ownerId": "1e45a982-d588-4dd2-b436-fcd2c1949c77",
+      "source": null,
+      "sourceFile": null,
+      "ossBucket": null,
+      "ossObjectKey": null,
+      "activityId": null,
+      "parameters": [],
+      "createdAt": "2026-02-26T22:12:25.294Z",
+      "updatedAt": "2026-02-26T22:12:25.294Z"
+    },
+    {
+      "id": "product-1772144256429",
+      "name": "dfbnghbm",
+      "description": "hsztdxj",
+      "category": "enclosures",
+      "status": "draft",
+      "owner": "Admin",
+      "ownerId": "Admin",
+      "source": null,
+      "sourceFile": null,
+      "ossBucket": null,
+      "ossObjectKey": null,
+      "activityId": null,
+      "parameters": [],
+      "createdAt": "2026-02-26T22:17:36.429Z",
+      "updatedAt": "2026-02-26T22:17:36.429Z"
+    },
+    {
+      "id": "product-1772144347565",
+      "name": "johntest",
+      "description": "SFADSBFN",
+      "category": "",
+      "status": "draft",
+      "owner": "Admin",
+      "ownerId": "Admin",
+      "source": null,
+      "sourceFile": null,
+      "ossBucket": null,
+      "ossObjectKey": null,
+      "activityId": null,
+      "parameters": [],
+      "createdAt": "2026-02-26T22:19:07.565Z",
+      "updatedAt": "2026-02-26T22:19:07.565Z"
+    },
+    {
+      "id": "product-1772148725386",
+      "name": "Test Notification",
+      "description": "Test description for notification verification.",
+      "category": "",
+      "status": "draft",
+      "owner": "Admin",
+      "ownerId": "Admin",
+      "source": null,
+      "sourceFile": null,
+      "ossBucket": null,
+      "ossObjectKey": null,
+      "activityId": null,
+      "parameters": [],
+      "createdAt": "2026-02-26T23:32:05.386Z",
+      "updatedAt": "2026-02-26T23:32:05.386Z"
+    },
+    {
+      "id": "product-1772148817747",
+      "name": "Test Notification 3",
+      "description": "",
+      "category": "",
+      "status": "draft",
+      "owner": "Admin",
+      "ownerId": "Admin",
+      "source": null,
+      "sourceFile": null,
+      "ossBucket": null,
+      "ossObjectKey": null,
+      "activityId": null,
+      "parameters": [],
+      "createdAt": "2026-02-26T23:33:37.747Z",
+      "updatedAt": "2026-02-26T23:33:37.747Z"
+    },
+    {
+      "id": "product-1772149316106",
+      "name": "sadfgh",
+      "description": "sgrgtk",
+      "category": "gjhjm",
+      "status": "draft",
+      "owner": "Admin",
+      "ownerId": "Admin",
+      "source": null,
+      "sourceFile": null,
+      "ossBucket": null,
+      "ossObjectKey": null,
+      "activityId": null,
+      "parameters": [],
+      "createdAt": "2026-02-26T23:41:56.105Z",
+      "updatedAt": "2026-02-26T23:41:56.105Z"
+    },
+    {
+      "id": "product-1772149380876",
+      "name": "fddgfh",
+      "description": "hvjbk",
+      "category": "brackets",
+      "status": "draft",
+      "owner": "Admin",
+      "ownerId": "Admin",
+      "source": null,
+      "sourceFile": null,
+      "ossBucket": null,
+      "ossObjectKey": null,
+      "activityId": null,
+      "parameters": [],
+      "createdAt": "2026-02-26T23:43:00.876Z",
+      "updatedAt": "2026-02-26T23:43:00.876Z"
+    },
+    {
+      "id": "product-1772150002305",
+      "name": "Testing Visibility",
+      "description": "Testing visibility task",
+      "category": "",
+      "status": "testing",
+      "owner": "John",
+      "ownerId": "25d7d799-a90d-412e-a4a0-5d478f570097",
+      "source": "oss",
+      "sourceFile": {
+        "bucketKey": "syde-sample2",
+        "objectKey": "test.ipt",
+        "fileName": "test.ipt"
+      },
+      "ossBucket": "syde-sample2",
+      "ossObjectKey": "test.ipt",
+      "activityId": "UpdateIPTParamActivity+dev",
+      "parameters": [
+        {
+          "name": "length",
+          "displayName": "length",
+          "type": "number",
+          "defaultValue": 24,
+          "unit": "in"
+        },
+        {
+          "name": "width",
+          "displayName": "width",
+          "type": "number",
+          "defaultValue": 36,
+          "unit": "in"
+        },
+        {
+          "name": "height",
+          "displayName": "height",
+          "type": "number",
+          "defaultValue": 12,
+          "unit": "in"
+        },
+        {
+          "name": "thickness",
+          "displayName": "thickness",
+          "type": "number",
+          "defaultValue": 0.5,
+          "unit": "in"
+        },
+        {
+          "name": "Color",
+          "displayName": "Color",
+          "type": "text",
+          "defaultValue": "\"Blue\""
+        },
+        {
+          "name": "Holes",
+          "displayName": "Holes",
+          "type": "boolean",
+          "defaultValue": false
+        }
+      ],
+      "createdAt": "2026-02-26T23:53:22.305Z",
+      "updatedAt": "2026-02-27T21:36:33.182Z",
+      "lastOutputUrn": "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6YXVxMGVsems2bXljYjR2bXRqNW56N3hyZ3lrZWIwemZicmtkdWVpaXVtYXJ0dWhxLWRlc2lnbmF1dG9tYXRpb24vMjAyNjAyMjcyMTM2MTZfb3V0cHV0X3Rlc3QuaXB0",
+      "drawingFile": {
+        "bucketKey": "syde-sample2",
+        "objectKey": "test.dwg",
+        "fileName": "test.dwg",
+        "urn": "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6c3lkZS1zYW1wbGUyL3Rlc3QuZHdn"
+      },
+      "automation": {},
+      "pricing": {
+        "basePrice": 0,
+        "currency": "USD",
+        "showPrice": true,
+        "parameterRules": {},
+        "setupFee": 0,
+        "rushFee": 0
+      },
+      "configuratorLayout": {
+        "version": 2,
+        "children": [
+          {
+            "id": "param-length",
+            "type": "parameter",
+            "order": 0,
+            "parameterName": "length"
+          },
+          {
+            "id": "param-width",
+            "type": "parameter",
+            "order": 1,
+            "parameterName": "width"
+          },
+          {
+            "id": "param-height",
+            "type": "parameter",
+            "order": 2,
+            "parameterName": "height"
+          },
+          {
+            "id": "param-thickness",
+            "type": "parameter",
+            "order": 3,
+            "parameterName": "thickness"
+          },
+          {
+            "id": "param-Color",
+            "type": "parameter",
+            "order": 4,
+            "parameterName": "Color"
+          },
+          {
+            "id": "param-Holes",
+            "type": "parameter",
+            "order": 5,
+            "parameterName": "Holes"
+          }
+        ],
+        "sections": [],
+        "controls": {
+          "length": {
+            "controlType": "slider-input",
+            "showLabel": true,
+            "showUnit": true,
+            "showDescription": false,
+            "showMinMax": true,
+            "width": "full"
+          },
+          "width": {
+            "controlType": "slider-input",
+            "showLabel": true,
+            "showUnit": true,
+            "showDescription": false,
+            "showMinMax": true,
+            "width": "full"
+          },
+          "height": {
+            "controlType": "slider-input",
+            "showLabel": true,
+            "showUnit": true,
+            "showDescription": false,
+            "showMinMax": true,
+            "width": "full"
+          },
+          "thickness": {
+            "controlType": "slider-input",
+            "showLabel": true,
+            "showUnit": true,
+            "showDescription": false,
+            "showMinMax": true,
+            "width": "full"
+          },
+          "Color": {
+            "controlType": "slider-input",
+            "showLabel": true,
+            "showUnit": true,
+            "showDescription": false,
+            "showMinMax": true,
+            "width": "full"
+          },
+          "Holes": {
+            "controlType": "toggle",
+            "showLabel": true,
+            "showUnit": true,
+            "showDescription": false,
+            "showMinMax": true,
+            "width": "full"
+          }
+        },
+        "styling": {
+          "theme": "light",
+          "accentColor": "#3b82f6",
+          "panelPosition": "left",
+          "panelWidth": "narrow",
+          "sectionStyle": "flat",
+          "controlSize": "normal"
+        },
+        "actions": {
+          "primaryButton": {
+            "label": "Request Quote",
+            "action": "quote",
+            "style": "primary"
+          },
+          "showResetButton": true
+        },
+        "unassignedParameters": []
+      }
+    },
+    {
+      "id": "product-1772222844512",
+      "name": "smaple",
+      "description": "des of smaple",
+      "category": "Enclosures",
+      "status": "testing",
+      "owner": "John",
+      "ownerId": "25d7d799-a90d-412e-a4a0-5d478f570097",
+      "source": "oss",
+      "sourceFile": {
+        "bucketKey": "syde-sample2",
+        "objectKey": "test.ipt",
+        "fileName": "test.ipt"
+      },
+      "ossBucket": "syde-sample2",
+      "ossObjectKey": "test.ipt",
+      "activityId": "UpdateIPTParamActivity+dev",
+      "parameters": [
+        {
+          "name": "length",
+          "displayName": "length",
+          "type": "number",
+          "defaultValue": 24,
+          "unit": "in"
+        },
+        {
+          "name": "width",
+          "displayName": "width",
+          "type": "number",
+          "defaultValue": 36,
+          "unit": "in"
+        },
+        {
+          "name": "height",
+          "displayName": "height",
+          "type": "number",
+          "defaultValue": 12,
+          "unit": "in"
+        },
+        {
+          "name": "thickness",
+          "displayName": "thickness",
+          "type": "number",
+          "defaultValue": 0.5,
+          "unit": "in"
+        },
+        {
+          "name": "Color",
+          "displayName": "Color",
+          "type": "text",
+          "defaultValue": "\"Blue\""
+        },
+        {
+          "name": "Holes",
+          "displayName": "Holes",
+          "type": "boolean",
+          "defaultValue": false
+        }
+      ],
+      "createdAt": "2026-02-27T20:07:24.512Z",
+      "updatedAt": "2026-02-27T22:12:09.999Z",
+      "lastOutputUrn": "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6YXVxMGVsems2bXljYjR2bXRqNW56N3hyZ3lrZWIwemZicmtkdWVpaXVtYXJ0dWhxLWRlc2lnbmF1dG9tYXRpb24vMjAyNjAyMjcyMTU1MDRfb3V0cHV0X3Rlc3QuaXB0",
+      "drawingFile": {
+        "bucketKey": "syde-sample2",
+        "objectKey": "test.dwg",
+        "fileName": "test.dwg",
+        "urn": "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6c3lkZS1zYW1wbGUyL3Rlc3QuZHdn"
+      },
+      "automation": {},
+      "pricing": null,
+      "properties": {
+        "physicalProperties": {},
+        "iProperties": {
+          "File Subtype": "Sheet Metal",
+          "Design State": "WorkInProgress",
+          "Designer": "Emerald"
+        }
+      }
+    },
+    {
+      "id": "product-1772223118670",
+      "name": "config",
+      "description": "des of config",
+      "category": "table",
+      "status": "testing",
+      "owner": "System Administrator",
+      "ownerId": "2e157b0c-a5cd-48fb-b7f4-0f4bdb15848e",
+      "source": "oss",
+      "sourceFile": {
+        "bucketKey": "syde-sample2",
+        "objectKey": "test.ipt",
+        "fileName": "test.ipt"
+      },
+      "ossBucket": "syde-sample2",
+      "ossObjectKey": "test.ipt",
+      "activityId": "UpdateIPTParamActivity+dev",
+      "parameters": [],
+      "createdAt": "2026-02-27T20:11:58.670Z",
+      "updatedAt": "2026-02-27T22:21:05.461Z",
+      "lastOutputUrn": "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6YXVxMGVsems2bXljYjR2bXRqNW56N3hyZ3lrZWIwemZicmtkdWVpaXVtYXJ0dWhxLWRlc2lnbmF1dG9tYXRpb24vMjAyNjAyMjcyMTM2MTZfb3V0cHV0X3Rlc3QuaXB0",
+      "pricing": null,
+      "drawingFile": {
+        "bucketKey": "syde-sample2",
+        "objectKey": "test.dwg",
+        "fileName": "test.dwg",
+        "urn": "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6c3lkZS1zYW1wbGUyL3Rlc3QuZHdn"
+      },
+      "automation": {},
+      "configuratorLayout": {
+        "version": 2,
+        "children": [],
+        "sections": [],
+        "controls": {},
+        "styling": {
+          "theme": "light",
+          "accentColor": "#3b82f6",
+          "panelPosition": "left",
+          "panelWidth": "narrow",
+          "sectionStyle": "flat",
+          "controlSize": "normal"
+        },
+        "actions": {
+          "primaryButton": {
+            "label": "Request Quote",
+            "action": "quote",
+            "style": "primary"
+          },
+          "showResetButton": true
+        },
+        "unassignedParameters": []
+      },
+      "properties": {
+        "physicalProperties": {},
+        "iProperties": {
+          "File Subtype": "Sheet Metal",
+          "Design State": "WorkInProgress",
+          "Designer": "Emerald"
+        }
+      }
+    },
+    {
+      "id": "product-1772226399078",
+      "name": "vbc",
+      "description": "xncnnc",
+      "category": "enclosures",
+      "status": "draft",
+      "owner": "System Administrator",
+      "ownerId": "2e157b0c-a5cd-48fb-b7f4-0f4bdb15848e",
+      "source": "oss",
+      "sourceFile": {
+        "bucketKey": "syde-sample2",
+        "objectKey": "test.ipt",
+        "fileName": "test.ipt"
+      },
+      "ossBucket": "syde-sample2",
+      "ossObjectKey": "test.ipt",
+      "activityId": "UpdateIPTParamActivity+dev",
+      "parameters": [],
+      "createdAt": "2026-02-27T21:06:39.078Z",
+      "updatedAt": "2026-02-27T21:07:51.042Z",
+      "lastOutputUrn": "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6YXVxMGVsems2bXljYjR2bXRqNW56N3hyZ3lrZWIwemZicmtkdWVpaXVtYXJ0dWhxLWRlc2lnbmF1dG9tYXRpb24vMjAyNjAyMjcyMTA3MDBfb3V0cHV0X3Rlc3QuaXB0",
+      "pricing": null,
+      "drawingFile": {
+        "bucketKey": "syde-sample2",
+        "objectKey": "test.dwg",
+        "fileName": "test.dwg",
+        "urn": "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6c3lkZS1zYW1wbGUyL3Rlc3QuZHdn"
+      },
+      "automation": {}
+    }
+  ],
+  "categories": [
+    {
+      "id": "wardrobes",
+      "name": "Wardrobes",
+      "icon": "Box"
+    },
+    {
+      "id": "cabinets",
+      "name": "Cabinets",
+      "icon": "Box"
+    },
+    {
+      "id": "tables",
+      "name": "Tables",
+      "icon": "Table2"
+    },
+    {
+      "id": "shelving",
+      "name": "Shelving",
+      "icon": "Grid3x3"
+    },
+    {
+      "id": "furniture",
+      "name": "Furniture",
+      "icon": "Armchair"
+    },
+    {
+      "id": "other",
+      "name": "Other",
+      "icon": "Box"
+    }
+  ]
+}
