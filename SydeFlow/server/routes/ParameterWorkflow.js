@@ -315,6 +315,50 @@ router.get('/parameters/:bucketKey/:objectKey', async (req, res) => {
  *   }
  * }
  */
+/**
+ * POST /api/workflow/run
+ * Configurator builder test-run alias. Accepts { productId, parameters },
+ * resolves OSS source from the Products store, then regenerates.
+ */
+router.post('/run', async (req, res) => {
+    try {
+        const { productId, parameters = {} } = req.body || {};
+        if (!productId) {
+            return res.status(400).json({ success: false, error: 'productId is required' });
+        }
+
+        const { ProductsStore } = require('../db');
+        const product = await ProductsStore.getById(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, error: 'Product not found' });
+        }
+
+        const source = product.sourceFile
+            || (product.ossBucket
+                ? { bucketKey: product.ossBucket, objectKey: product.ossObjectKey }
+                : null);
+
+        if (!source?.bucketKey || !source?.objectKey) {
+            return res.status(400).json({
+                success: false,
+                error: 'Product has no source file configured'
+            });
+        }
+
+        req.body = {
+            bucketKey: source.bucketKey,
+            objectKey: source.objectKey,
+            parameters,
+            drawingFile: product.drawingFile || undefined
+        };
+        req.url = '/regenerate';
+        return router.handle(req, res);
+    } catch (error) {
+        console.error('Error in workflow/run:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 router.post('/regenerate', async (req, res) => {
     try {
         const { bucketKey, objectKey, parameters, outputFileName, drawingFile } = req.body;

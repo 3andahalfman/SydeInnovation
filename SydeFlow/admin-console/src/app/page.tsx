@@ -303,11 +303,11 @@ export default function AdminConsole() {
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
         {/* Top Bar */}
-        <header className="sticky top-0 z-40 h-[73px] bg-slate-900/80 backdrop-blur-lg border-b border-slate-700/50">
-          <div className="h-full px-6 flex items-center justify-between">
-            <div className="flex flex-col justify-center">
-              <div className="flex items-center gap-4">
-                <h1 className="text-xl font-bold text-white capitalize">
+        <header className="sticky top-0 z-40 h-14 bg-slate-900/80 backdrop-blur-lg border-b border-slate-700/50">
+          <div className="h-full px-4 flex items-center justify-between gap-3">
+            <div className="flex flex-col justify-center min-w-0">
+              <div className="flex items-center gap-2">
+                <h1 className="text-base font-semibold text-white capitalize truncate">
                   {activeView === "workspace"
                     ? "Product Manager"
                     : activeView === "pipeline"
@@ -325,12 +325,12 @@ export default function AdminConsole() {
                                 : activeView}
                 </h1>
                 {lastChecked && (
-                  <span className="text-xs text-gray-500">
+                  <span className="text-[10px] text-gray-500 hidden xl:inline">
                     Last checked: {lastChecked.toLocaleTimeString()}
                   </span>
                 )}
               </div>
-              <p className="text-gray-400 text-xs mt-0.5">
+              <p className="text-gray-400 text-[11px] mt-0.5 truncate">
                 {activeView === "configurator"
                   ? "Configure and preview your products in 3D"
                   : activeView === "quotes"
@@ -358,39 +358,39 @@ export default function AdminConsole() {
                                         : ""}
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 shrink-0">
               {/* Autodesk Account Status */}
               {autodeskAuth.checking ? (
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-slate-700/50 text-gray-400">
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-700/50 text-gray-400">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   Checking...
                 </div>
               ) : autodeskAuth.authenticated ? (
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-cyan-500/20 text-cyan-400">
-                  <User className="w-4 h-4" />
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-cyan-500/20 text-cyan-400">
+                  <User className="w-3.5 h-3.5" />
                   Autodesk Connected
                 </div>
               ) : (
                 <button
                   onClick={handleAutodeskLogin}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 transition-colors"
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 transition-colors"
                 >
-                  <LogIn className="w-4 h-4" />
+                  <LogIn className="w-3.5 h-3.5" />
                   Sign in to Autodesk
                 </button>
               )}
 
               <button
                 onClick={checkServerStatus}
-                className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors"
+                className="p-1.5 hover:bg-slate-700/50 rounded-lg transition-colors"
                 title="Refresh status"
               >
                 <RefreshCw
-                  className={`w-5 h-5 text-gray-400 ${serverStatus === "checking" ? "animate-spin" : ""}`}
+                  className={`w-4 h-4 text-gray-400 ${serverStatus === "checking" ? "animate-spin" : ""}`}
                 />
               </button>
               <div
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium ${
                   serverStatus === "online"
                     ? "bg-green-500/20 text-green-400"
                     : serverStatus === "offline"
@@ -399,7 +399,7 @@ export default function AdminConsole() {
                 }`}
               >
                 <div
-                  className={`w-2 h-2 rounded-full ${
+                  className={`w-1.5 h-1.5 rounded-full ${
                     serverStatus === "online"
                       ? "bg-green-400"
                       : serverStatus === "offline"
@@ -407,8 +407,8 @@ export default function AdminConsole() {
                         : "bg-yellow-400 animate-pulse"
                   }`}
                 />
-                APS Server:{" "}
-                {serverStatus === "checking" ? "Checking..." : serverStatus}
+                APS:{" "}
+                {serverStatus === "checking" ? "..." : serverStatus}
               </div>
 
               {/* Notification Bell */}
@@ -419,13 +419,13 @@ export default function AdminConsole() {
               >
                 <button
                   onClick={() => setNotificationsOpen(!notificationsOpen)}
-                  className="relative p-2 hover:bg-slate-700/50 rounded-lg transition-colors"
+                  className="relative p-1.5 hover:bg-slate-700/50 rounded-lg transition-colors"
                   title="Notifications"
                   aria-label="Notifications"
                 >
-                  <Bell className="w-5 h-5 text-gray-400" />
+                  <Bell className="w-4 h-4 text-gray-400" />
                   {getTotalCount() > 0 && (
-                    <span className="absolute top-1 right-1.5 min-w-[14px] h-[14px] bg-red-500 rounded-full border-2 border-slate-900" />
+                    <span className="absolute top-0.5 right-0.5 min-w-[10px] h-[10px] bg-red-500 rounded-full border-2 border-slate-900" />
                   )}
                 </button>
 
@@ -503,27 +503,27 @@ export default function AdminConsole() {
 
               {/* User Account */}
               <div
-                className="relative flex items-center gap-3 pl-3 border-l border-slate-700"
+                className="relative flex items-center gap-2 pl-2 border-l border-slate-700"
                 onMouseEnter={() => setUserMenuOpen(true)}
                 onMouseLeave={() => setUserMenuOpen(false)}
               >
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-3 hover:bg-slate-700/50 px-2 py-1 rounded-lg transition-colors"
+                  className="flex items-center gap-2 hover:bg-slate-700/50 px-1.5 py-1 rounded-lg transition-colors"
                 >
-                  <div className="w-9 h-9 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
+                  <div className="w-7 h-7 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center">
+                    <User className="w-3.5 h-3.5 text-white" />
                   </div>
-                  <div className="hidden lg:block">
-                    <p className="text-white font-medium text-sm">
+                  <div className="hidden lg:block text-left">
+                    <p className="text-white font-medium text-xs leading-tight">
                       {user?.fullName || "User"}
                     </p>
-                    <p className="text-gray-500 text-xs capitalize">
+                    <p className="text-gray-500 text-[10px] capitalize leading-tight">
                       {user?.role}
                     </p>
                   </div>
                   <ChevronDown
-                    className={`w-4 h-4 text-gray-400 transition-transform ${userMenuOpen ? "rotate-180" : ""}`}
+                    className={`w-3.5 h-3.5 text-gray-400 transition-transform ${userMenuOpen ? "rotate-180" : ""}`}
                   />
                 </button>
 
@@ -553,7 +553,7 @@ export default function AdminConsole() {
         </header>
 
         {/* Content */}
-        <div className="p-6 h-[calc(100vh-73px)] flex flex-col">
+        <div className="p-4 h-[calc(100vh-3.5rem)] flex flex-col">
           {renderView()}
         </div>
       </main>

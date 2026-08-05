@@ -391,6 +391,129 @@ router.put("/:id/layout", async (req, res) => {
   }
 });
 
+// ─── DELETE /api/products/:id/layout ─────────────────────────────────────────
+// Clears the saved configurator layout. The product itself is kept.
+router.delete("/:id/layout", async (req, res) => {
+  try {
+    const product = await ProductsStore.getById(req.params.id);
+    if (!product) return res.status(404).json({ success: false, error: "Product not found" });
+
+    if (!product.configuratorLayout) {
+      return res.json({ success: true, message: "No custom layout to delete" });
+    }
+
+    product.configuratorLayout = null;
+    product.updatedAt = new Date().toISOString();
+    await ProductsStore.save(product);
+
+    try {
+      const ActivityLog = require("./ActivityLog");
+      ActivityLog.logActivity("product:updated", {
+        title: "Layout Deleted",
+        message: `Configurator layout deleted for "${product.name}"`,
+        details: { productId: req.params.id },
+      });
+    } catch (_) { /* silently ignore */ }
+
+    res.json({ success: true, message: "Layout deleted" });
+  } catch (error) {
+    console.error("Error deleting layout:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ─── PATCH /api/products/:id/status ──────────────────────────────────────────
+// Must be defined on Products (Supabase store). Without this, the request falls
+// through to DesignAutomation's separate JSON product store and returns 404.
+router.patch("/:id/status", async (req, res) => {
+  try {
+    const { status } = req.body || {};
+    if (!["draft", "testing", "live", "published", "archived"].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        diagnostic: "Invalid status. Must be draft, testing, live, published, or archived",
+      });
+    }
+
+    const product = await ProductsStore.getById(req.params.id);
+    if (!product) return res.status(404).json({ success: false, error: "Product not found" });
+
+    product.status = status;
+    product.updatedAt = new Date().toISOString();
+    await ProductsStore.save(product);
+
+    try {
+      const ActivityLog = require("./ActivityLog");
+      ActivityLog.logActivity("product:updated", {
+        title: "Status Updated",
+        message: `Product "${product.name}" status set to ${status}`,
+        details: { productId: req.params.id, status },
+      });
+    } catch (_) { /* silently ignore */ }
+
+    res.json({ success: true, product: transformProduct(product) });
+  } catch (error) {
+    console.error("Error updating product status:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ─── POST /api/products/:id/test ─────────────────────────────────────────────
+// Runs Design Automation against the product's source file (Products store).
+router.post("/:id/test", async (req, res) => {
+  try {
+    const product = await ProductsStore.getById(req.params.id);
+    if (!product) return res.status(404).json({ success: false, diagnostic: "Product not found" });
+
+    const source = product.sourceFile
+      || (product.ossBucket
+        ? { bucketKey: product.ossBucket, objectKey: product.ossObjectKey }
+        : null);
+    const activityId = product.activityId || product.automation?.activityId;
+    if (!source?.bucketKey || !source?.objectKey || !activityId) {
+      return res.status(400).json({
+        success: false,
+        diagnostic: "Product not fully configured (missing source file or activity)",
+      });
+    }
+
+    const port = process.env.APS_PORT || process.env.PORT || 8080;
+    const response = await fetch(
+      `http://localhost:${port}/api/aps/designautomation/workitems/from-oss`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bucketKey: source.bucketKey,
+          objectKey: source.objectKey,
+          activityName: activityId,
+          parameters: req.body?.parameterValues || req.body?.parameters || {},
+          browserConnectionId: req.body?.browserConnectionId,
+        }),
+      },
+    );
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      return res.status(response.status).json({
+        success: false,
+        diagnostic: data.diagnostic || data.error || "Failed to start test workitem",
+      });
+    }
+
+    res.json({
+      success: true,
+      workItemId: data.workItemId,
+      status: data.status || "pending",
+      outputFileName: data.outputFile,
+      bucket: data.bucket,
+    });
+  } catch (error) {
+    console.error("Error testing product:", error);
+    res.status(500).json({ success: false, diagnostic: error.message });
+  }
+});
+
 // ─── GET /api/products/:id/download ──────────────────────────────────────────
 // Returns a short-lived signed OSS download URL for the product's last output.
 router.get("/:id/download", async (req, res) => {
@@ -431,6 +554,13 @@ router.get("/:id/download", async (req, res) => {
     res.json({ success: true, url: signedUrl, fileName: objectKey.split("/").pop() || "output.ipt", bucketKey, objectKey });
   } catch (error) {
     console.error("Error generating download URL:", error);
+    const status = error?.response?.status || error?.statusCode;
+    if (status === 404) {
+      return res.status(404).json({
+        success: false,
+        error: "Output file no longer available (OSS objects may expire). Run the configurator again to regenerate.",
+      });
+    }
     res.status(500).json({ success: false, error: error.message });
   }
 });

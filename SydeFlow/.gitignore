@@ -18,6 +18,7 @@ build/
 
 # Sensitive data files
 server/data/settings.json
+server/data/local-users.json
 
 # Debug logs
 npm-debug.log*
@@ -50,3 +51,6 @@ uploads/*
 
 *storybook.log
 storybook-static
+local-users.json
+
+server/.railway/

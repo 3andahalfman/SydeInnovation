@@ -75,10 +75,10 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
         <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-8 shadow-2xl">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-transparent bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text mb-2">
+            <h1 className="text-2xl font-bold text-transparent bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text mb-1.5">
               SydeFlow
             </h1>
-            <p className="text-slate-400 text-sm">
+            <p className="text-slate-400 text-xs">
               {isLogin ? 'Welcome back' : 'Create your account'}
             </p>
           </div>
@@ -96,7 +96,7 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
             {/* Full Name (signup only) */}
             {!isLogin && (
               <div>
-                <label className="block text-sm font-medium text-slate-200 mb-2">
+                <label className="block text-xs font-medium text-slate-200 mb-1.5">
                   Full Name
                 </label>
                 <div className="relative">
@@ -116,7 +116,7 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-slate-200 mb-2">
+              <label className="block text-xs font-medium text-slate-200 mb-1.5">
                 Email Address
               </label>
               <div className="relative">
@@ -135,7 +135,7 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-slate-200 mb-2">
+              <label className="block text-xs font-medium text-slate-200 mb-1.5">
                 Password
               </label>
               <div className="relative">
@@ -164,7 +164,7 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-orange-600 disabled:to-orange-700 disabled:opacity-50 text-white font-semibold py-2.5 rounded-lg transition flex items-center justify-center gap-2"
+              className="w-full mt-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-orange-600 disabled:to-orange-700 disabled:opacity-50 text-white text-sm font-semibold py-2 rounded-lg transition flex items-center justify-center gap-2"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               {isLogin ? 'Sign In' : 'Create Account'}
@@ -179,7 +179,7 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
           </div>
 
           {/* Toggle */}
-          <p className="text-center text-slate-400 text-sm">
+          <p className="text-center text-slate-400 text-xs">
             {isLogin ? "Don't have an account? " : 'Already have an account? '}
             <button
               type="button"

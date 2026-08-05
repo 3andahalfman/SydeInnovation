@@ -1,5 +1,42 @@
 {
+  "redirects": [
+    {
+      "source": "/admin",
+      "destination": "/sydeflow",
+      "permanent": false
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "/sydeflow/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/configure",
+      "destination": "/sydeflow/configure",
+      "permanent": false
+    },
+    {
+      "source": "/configurator",
+      "destination": "/sydeflow/configurator",
+      "permanent": false
+    }
+  ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/api/:path*",
+      "destination": "https://sydeflow-production.up.railway.app/api/:path*"
+    },
+    {
+      "source": "/sydeflow",
+      "destination": "https://sydeflow.vercel.app/sydeflow"
+    },
+    {
+      "source": "/sydeflow/:path*",
+      "destination": "https://sydeflow.vercel.app/sydeflow/:path*"
+    },
+    {
+      "source": "/((?!api/|sydeflow(?:/|$)).*)",
+      "destination": "/index.html"
+    }
   ]
 }

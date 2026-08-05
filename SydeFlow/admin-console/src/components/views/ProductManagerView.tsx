@@ -37,7 +37,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { io, Socket } from "socket.io-client";
-import { SERVER_URL } from '@/lib/config';
+import { SERVER_URL, appPath } from '@/lib/config';
 import EmptyState from "../ui/EmptyState";
 import { useToast } from "@/contexts/ToastContext";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
@@ -869,7 +869,7 @@ export default function ProductManagerView() {
                                 <Play className="w-4 h-4" />
                               </button>
                               <a
-                                href={`/configure?id=${product.id}`}
+                                href={appPath(`/configure?id=${product.id}`)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}

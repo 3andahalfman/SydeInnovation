@@ -108,6 +108,7 @@ app.use('/api/settings', settingsLimiter);
 app.use('/api/quotes', quoteLimiter);
 // Apply workflow rate limit only to mutation endpoints, not polling
 app.use('/api/workflow/regenerate', workflowLimiter);
+app.use('/api/workflow/run', workflowLimiter);
 app.use('/api/workflow/extract', workflowLimiter);
 
 // API status endpoint

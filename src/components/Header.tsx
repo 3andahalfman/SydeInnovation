@@ -10,7 +10,7 @@ const servicesDropdown = [
 ];
 
 const productsDropdown = [
-  { label: 'SydeFlow', path: '#', comingSoon: true },
+  { label: 'SydeFlow', path: '/sydeflow', external: true },
 ];
 
 export default function Header() {
@@ -139,23 +139,27 @@ export default function Header() {
                   className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 z-50"
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
-                  {productsDropdown.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className={`block w-full text-left px-4 py-2 text-sm ${
-                        item.comingSoon 
-                          ? 'text-gray-400 cursor-not-allowed' 
-                          : 'text-gray-700 hover:bg-orange-50 hover:text-orange-500 transition-colors'
-                      }`}
-                    >
-                      <span>{item.label}</span>
-                      {item.comingSoon && (
-                        <span className="ml-2 text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">
-                          Coming Soon
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                  {productsDropdown.map((item, idx) =>
+                    item.external ? (
+                      <a
+                        key={idx}
+                        href={item.path}
+                        onClick={() => setActiveDropdown(null)}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-500 transition-colors"
+                      >
+                        {item.label}
+                      </a>
+                    ) : (
+                      <Link
+                        key={idx}
+                        to={item.path}
+                        onClick={() => setActiveDropdown(null)}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-500 transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    )
+                  )}
                 </div>
               )}
             </div>
@@ -253,23 +257,27 @@ export default function Header() {
                 </button>
                 {activeDropdown === 'mobile-products' && (
                   <div className="pl-4 mt-2 space-y-2 border-l-2 border-orange-200">
-                    {productsDropdown.map((item, idx) => (
-                      <div
-                        key={idx}
-                        className={`text-sm py-1 ${
-                          item.comingSoon 
-                            ? 'text-gray-400 cursor-not-allowed' 
-                            : 'text-gray-600 hover:text-orange-500 transition-colors'
-                        }`}
-                      >
-                        <span>{item.label}</span>
-                        {item.comingSoon && (
-                          <span className="ml-2 text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">
-                            Coming Soon
-                          </span>
-                        )}
-                      </div>
-                    ))}
+                    {productsDropdown.map((item, idx) =>
+                      item.external ? (
+                        <a
+                          key={idx}
+                          href={item.path}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block text-sm text-gray-600 hover:text-orange-500 transition-colors py-1"
+                        >
+                          {item.label}
+                        </a>
+                      ) : (
+                        <Link
+                          key={idx}
+                          to={item.path}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block text-sm text-gray-600 hover:text-orange-500 transition-colors py-1"
+                        >
+                          {item.label}
+                        </Link>
+                      )
+                    )}
                   </div>
                 )}
               </div>

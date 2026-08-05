@@ -16,6 +16,8 @@ body {
       rgb(var(--background-end-rgb))
     );
   min-height: 100vh;
+  font-size: 0.8125rem; /* 13px default body text */
+  line-height: 1.4;
 }
 
 /* Custom scrollbar */

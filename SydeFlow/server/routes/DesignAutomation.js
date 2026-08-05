@@ -116,12 +116,7 @@ const uploadMiddleware = multer({
     }
 }).single('file');
 
-router.post('/upload', (req, res, next) => {
-    uploadMiddleware(req, res, (err) => {
-        if (err) return res.status(400).json({ diagnostic: err.message });
-        next();
-    });
-}, async (req, res) => {
+async function handleOssUpload(req, res) {
     try {
         console.log('Upload endpoint called for file:', req.file ? req.file.originalname : 'no file');
         
@@ -216,7 +211,20 @@ router.post('/upload', (req, res, next) => {
         console.error('Upload error:', ex);
         res.status(500).json({ diagnostic: 'Failed to upload file: ' + ex.message });
     }
-});
+}
+
+function withUploadMiddleware(handler) {
+    return (req, res, next) => {
+        uploadMiddleware(req, res, (err) => {
+            if (err) return res.status(400).json({ diagnostic: err.message });
+            handler(req, res, next);
+        });
+    };
+}
+
+router.post('/upload', withUploadMiddleware(handleOssUpload));
+// Frontend (DesignAutomationView) calls /api/aps/upload
+router.post('/aps/upload', withUploadMiddleware(handleOssUpload));
 
 // Static instance of the DA API
 let dav3Instance = null;
@@ -244,8 +252,12 @@ class Utils {
     /// Returns the directory where bindles are stored on the local machine.
     /// </summary>
     static get LocalBundlesFolder() {
-        // Path updated for sydeflow structure: routes -> server -> sydeflow -> bundles
-        return (_path.resolve(_path.join(__dirname, '../../', 'bundles')));
+        // Prefer server/bundles (deploy root on Railway). Fall back to repo-level
+        // SydeFlow/bundles for local monorepo layouts.
+        const serverBundles = _path.resolve(_path.join(__dirname, '../bundles'));
+        const repoBundles = _path.resolve(_path.join(__dirname, '../../bundles'));
+        if (_fs.existsSync(serverBundles)) return serverBundles;
+        return repoBundles;
     }
 
     /// <summary>
@@ -380,14 +392,42 @@ class Utils {
 }
 
 /// <summary>
-/// Names of app bundles on this project
+/// Names of app bundles on this project (local zip packages and bundle folders)
 /// </summary>
 router.get('/appbundles', async /*GetLocalBundles*/(req, res) => {
-    // this folder is placed under the public folder, which may expose the bundles
-    // but it was defined this way so it be published on most hosts easily
-    let bundles = await Utils.findFiles(Utils.LocalBundlesFolder, '.zip');
-    bundles = bundles.map((fn) => _path.basename(fn, '.zip'));
-    res.json(bundles);
+    // Local packages live under SydeFlow/bundles. On some hosts the folder may be
+    // missing or only contain unpacked .bundle dirs — never 500 the admin UI.
+    try {
+        const folder = Utils.LocalBundlesFolder;
+        if (!_fs.existsSync(folder)) {
+            return res.json([]);
+        }
+
+        const entries = await Utils.findFiles(folder);
+        const names = new Set();
+
+        for (const entry of entries) {
+            if (_path.extname(entry) === '.zip') {
+                names.add(_path.basename(entry, '.zip'));
+                continue;
+            }
+            // Unpacked bundle folders (e.g. UpdateIPTParam/) are selectable too
+            const full = _path.join(folder, entry);
+            try {
+                if (_fs.statSync(full).isDirectory()) {
+                    const kids = _fs.readdirSync(full);
+                    if (kids.some((k) => k.endsWith('.bundle') || k.endsWith('.zip'))) {
+                        names.add(entry);
+                    }
+                }
+            } catch (_) { /* ignore */ }
+        }
+
+        res.json([...names].sort());
+    } catch (ex) {
+        console.error('Error listing local appbundles:', ex);
+        res.json([]);
+    }
 });
 
 /// <summary>
@@ -415,6 +455,94 @@ router.get('/aps/appbundles', async (req, res) => {
     } catch (ex) {
         console.error('Error fetching appbundles:', ex);
         res.status(500).json({ error: 'Failed to fetch app bundles' });
+    }
+});
+
+/// <summary>
+/// Alias used by BundlesView: POST /api/aps/appbundles (JSON or multipart zip upload)
+/// </summary>
+router.post('/aps/appbundles', multer({ dest: 'uploads/' }).single('zipFile'), async (req, res) => {
+    try {
+        let zipFileName = req.body.zipFileName || req.body.id;
+        const engine = req.body.engine || 'Autodesk.Inventor+2024';
+
+        if (req.file) {
+            zipFileName = (zipFileName || _path.basename(req.file.originalname, '.zip'))
+                .replace(/[^a-zA-Z0-9._-]/g, '_');
+            if (!_fs.existsSync(Utils.LocalBundlesFolder)) {
+                _fs.mkdirSync(Utils.LocalBundlesFolder, { recursive: true });
+            }
+            const dest = _path.join(Utils.LocalBundlesFolder, `${zipFileName}.zip`);
+            _fs.renameSync(req.file.path, dest);
+        }
+
+        if (!zipFileName) {
+            return res.status(400).json({ diagnostic: 'Missing zipFileName/id (and optional zipFile)' });
+        }
+
+        // Ensure a zip exists (zip unpacked bundle folders on demand)
+        const packageZipPath = _path.join(Utils.LocalBundlesFolder, zipFileName + '.zip');
+        if (!_fs.existsSync(packageZipPath)) {
+            const folderPath = _path.join(Utils.LocalBundlesFolder, zipFileName);
+            if (_fs.existsSync(folderPath) && _fs.statSync(folderPath).isDirectory()) {
+                const archiver = require('archiver');
+                await new Promise((resolve, reject) => {
+                    const output = _fs.createWriteStream(packageZipPath);
+                    const archive = archiver('zip', { zlib: { level: 9 } });
+                    output.on('close', resolve);
+                    archive.on('error', reject);
+                    archive.pipe(output);
+                    archive.directory(folderPath, false);
+                    archive.finalize();
+                });
+            } else {
+                return res.status(404).json({
+                    diagnostic: `Local bundle package not found: ${zipFileName}.zip`
+                });
+            }
+        }
+
+        req.body = { zipFileName, engine };
+        req.url = '/aps/designautomation/appbundles';
+        return router.handle(req, res);
+    } catch (ex) {
+        console.error('Alias create appbundle error:', ex);
+        if (req.file?.path && _fs.existsSync(req.file.path)) {
+            try { _fs.unlinkSync(req.file.path); } catch (_) { /* ignore */ }
+        }
+        res.status(500).json({ diagnostic: 'Failed to create app bundle: ' + ex.message });
+    }
+});
+
+/// <summary>
+/// Alias used by BundlesView: DELETE /api/aps/appbundles/:id
+/// </summary>
+router.delete('/aps/appbundles/:id', async (req, res) => {
+    try {
+        let bundleId = decodeURIComponent(req.params.id || '');
+        // Accept qualified or short names: Nickname.Foo+dev → Foo
+        if (bundleId.includes('.')) {
+            bundleId = bundleId.split('.').pop();
+        }
+        bundleId = bundleId.replace(/\+.*$/, '');
+
+        if (!bundleId) {
+            return res.status(400).json({ diagnostic: 'Missing app bundle id' });
+        }
+
+        const api = await Utils.dav3API(req.oauth_token);
+        await api.deleteAppBundle(bundleId);
+
+        logActivity('da:bundle:deleted', {
+            title: 'AppBundle Deleted',
+            message: `Deleted AppBundle "${bundleId}"`,
+            details: { appBundleId: bundleId }
+        });
+
+        res.json({ success: true, deleted: bundleId });
+    } catch (ex) {
+        console.error('Delete appbundle error:', ex);
+        res.status(500).json({ diagnostic: 'Failed to delete app bundle: ' + (ex.message || ex) });
     }
 });
 
@@ -474,8 +602,30 @@ router.post('/aps/designautomation/appbundles', async /*CreateAppBundle*/(req, r
     // standard name for this sample
     const appBundleName = zipFileName + 'AppBundle';
 
-    // check if ZIP with bundle is here
+    // check if ZIP with bundle is here (zip unpacked folders on demand)
     const packageZipPath = _path.join(Utils.LocalBundlesFolder, zipFileName + '.zip');
+    if (!_fs.existsSync(packageZipPath)) {
+        const folderPath = _path.join(Utils.LocalBundlesFolder, zipFileName);
+        if (_fs.existsSync(folderPath) && _fs.statSync(folderPath).isDirectory()) {
+            try {
+                const archiver = require('archiver');
+                await new Promise((resolve, reject) => {
+                    const output = _fs.createWriteStream(packageZipPath);
+                    const archive = archiver('zip', { zlib: { level: 9 } });
+                    output.on('close', resolve);
+                    archive.on('error', reject);
+                    archive.pipe(output);
+                    archive.directory(folderPath, false);
+                    archive.finalize();
+                });
+            } catch (zipEx) {
+                console.error('Failed to zip local bundle folder:', zipEx);
+                return res.status(500).json({
+                    diagnostic: `Bundle zip missing and failed to pack folder: ${zipFileName}`
+                });
+            }
+        }
+    }
 
     // get defined app bundles
     const api = await Utils.dav3API(req.oauth_token);
@@ -858,6 +1008,49 @@ router.post('/aps/designautomation/workitems', multer({
     res.status(200).json({
         workItemId: workItemStatus.id
     });
+});
+
+/// <summary>
+/// Alias used by DesignAutomationView: POST /api/aps/workitems
+/// Accepts { inputUrn, parameters, browerConnectionId } or from-oss fields.
+/// </summary>
+router.post('/aps/workitems', async (req, res) => {
+    try {
+        const body = req.body || {};
+        let bucketKey = body.bucketKey || body.inputFile?.bucket;
+        let objectKey = body.objectKey || body.inputFile?.object;
+
+        if ((!bucketKey || !objectKey) && body.inputUrn) {
+            const padded = body.inputUrn + '='.repeat((4 - (body.inputUrn.length % 4)) % 4);
+            const decoded = Buffer.from(padded, 'base64').toString('utf8');
+            const match = decoded.match(/^urn:adsk\.objects:os\.object:([^/]+)\/(.+)$/);
+            if (!match) {
+                return res.status(400).json({ diagnostic: 'Invalid inputUrn' });
+            }
+            bucketKey = match[1];
+            objectKey = match[2];
+        }
+
+        if (!bucketKey || !objectKey) {
+            return res.status(400).json({
+                diagnostic: 'Must provide inputUrn, or bucketKey + objectKey'
+            });
+        }
+
+        req.body = {
+            ...body,
+            bucketKey,
+            objectKey,
+            activityName: body.activityName || body.activityId || 'UpdateIPTParamActivity+dev',
+            browserConnectionId: body.browserConnectionId || body.browerConnectionId || body.socketId,
+            parameters: body.parameters || {}
+        };
+        req.url = '/aps/designautomation/workitems/from-oss';
+        return router.handle(req, res);
+    } catch (ex) {
+        console.error('Alias workitems error:', ex);
+        res.status(500).json({ diagnostic: 'Failed to create workitem: ' + ex.message });
+    }
 });
 
 /// <summary>
