@@ -58,6 +58,7 @@ import { useNotifications } from "@/contexts/NotificationContext";
 import type { ViewType } from "@/app/page";
 import FormDesigner from "./FormDesigner";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { appPath } from '@/lib/config';
 
 // ============================================================================
 // TYPES
@@ -2439,7 +2440,7 @@ export default function ProductWorkspace({
                                 </button>
                               )}
                               <a
-                                href={`/configure?id=${product.id}`}
+                                href={appPath(`/configure?id=${product.id}`)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
@@ -2585,7 +2586,7 @@ export default function ProductWorkspace({
         <div className="flex items-center gap-3">
           {selectedProduct && (
             <a
-              href={`/configure?id=${selectedProduct.id}`}
+              href={appPath(`/configure?id=${selectedProduct.id}`)}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 px-3 py-1.5 bg-green-600/20 hover:bg-green-600/30 border border-green-500/30 text-green-400 hover:text-green-300 text-sm rounded-lg transition-colors"
@@ -3174,7 +3175,7 @@ export default function ProductWorkspace({
                 )}
               </button>
               <a
-                href={`/configure?id=${selectedProduct.id}`}
+                href={appPath(`/configure?id=${selectedProduct.id}`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 px-3 py-2 bg-green-600/20 hover:bg-green-600/30 border border-green-500/30 text-green-400 hover:text-green-300 text-sm rounded-lg transition-colors flex-shrink-0"
