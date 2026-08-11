@@ -1,219 +1,291 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
+const { supabase } = require('../supabase');
 const { Users } = require('./Users');
-const { generateToken, authenticate, verifyToken } = require('../middleware/auth');
+const { authenticate, resolveProfile } = require('../middleware/auth');
+const {
+  validatePassword,
+  normalizeEmail,
+  isValidEmail,
+  INVALID_CREDENTIALS,
+  ACCOUNT_LOCKED,
+  ACCOUNT_INACTIVE,
+} = require('../lib/passwordPolicy');
+const {
+  recordAttempt,
+  clearFailures,
+  registerFailure,
+  isLocked,
+  clientIp,
+} = require('../lib/loginSecurity');
+
+const SIGNUP_ENABLED = process.env.ALLOW_PUBLIC_SIGNUP === 'true';
+
+function publicUser(profile) {
+  return {
+    id: profile.id,
+    email: profile.email,
+    fullName: profile.fullName || profile.full_name,
+    role: profile.role,
+  };
+}
 
 /**
  * POST /api/auth/signup
- * Create a new user account
+ * Disabled by default — set ALLOW_PUBLIC_SIGNUP=true to enable.
  */
 router.post('/signup', async (req, res) => {
-  try {
-    const { email, password, fullName } = req.body;
+  if (!SIGNUP_ENABLED) {
+    return res.status(403).json({
+      success: false,
+      error: 'Public signup is disabled. Contact an administrator.',
+    });
+  }
 
-    // Validate input
+  try {
+    const email = normalizeEmail(req.body.email);
+    const { password, fullName } = req.body;
+
     if (!email || !password || !fullName) {
       return res.status(400).json({
         success: false,
-        error: 'Email, password, and full name are required'
+        error: 'Email, password, and full name are required',
       });
     }
-
-    if (password.length < 6) {
-      return res.status(400).json({
-        success: false,
-        error: 'Password must be at least 6 characters'
-      });
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ success: false, error: 'Invalid email address' });
     }
 
-    // Check if user already exists
-    const { data: existingUser, error: checkError } = await Users.getByEmail(email);
-    if (existingUser) {
-      return res.status(409).json({
-        success: false,
-        error: 'Email already registered'
-      });
+    const policy = validatePassword(password);
+    if (!policy.ok) {
+      return res.status(400).json({ success: false, error: policy.error });
     }
 
-    // Hash password
-    const passwordHash = await bcrypt.hash(password, 10);
+    const { data: existing } = await Users.getByEmail(email);
+    if (existing) {
+      // Avoid confirming whether email exists
+      return res.status(400).json({ success: false, error: 'Unable to create account' });
+    }
 
-    // Create user
-    const { data: user, error } = await Users.create(
+    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email,
-      passwordHash,
+      password,
+      email_confirm: true,
+      user_metadata: { full_name: fullName },
+      app_metadata: { role: 'user' },
+    });
+    if (authError || !authData?.user) {
+      return res.status(400).json({ success: false, error: 'Unable to create account' });
+    }
+
+    await Users.upsertProfile({
+      id: authData.user.id,
+      email,
       fullName,
-      'user' // Default role is 'user'
-    );
+      role: 'user',
+    });
 
-    if (error) throw error;
-
-    // Generate token
-    const token = generateToken(user.id, user.email, user.role);
+    const { data: sessionData, error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (signInError || !sessionData?.session) {
+      return res.status(201).json({
+        success: true,
+        message: 'Account created. Please sign in.',
+      });
+    }
 
     res.status(201).json({
       success: true,
       message: 'Account created successfully',
-      user: {
-        id: user.id,
-        email: user.email,
-        fullName: user.full_name,
-        role: user.role
-      },
-      token
+      user: { id: authData.user.id, email, fullName, role: 'user' },
+      token: sessionData.session.access_token,
+      refreshToken: sessionData.session.refresh_token,
+      expiresAt: sessionData.session.expires_at,
     });
   } catch (error) {
-    console.error('Signup error:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to create account'
-    });
+    console.error('Signup error:', error.message);
+    res.status(500).json({ success: false, error: 'Failed to create account' });
   }
 });
 
 /**
  * POST /api/auth/login
- * Authenticate user and return JWT token
+ * Unified Supabase Auth login used by SydeFlow and portfolio /admin.
  */
 router.post('/login', async (req, res) => {
+  const ip = clientIp(req);
   try {
-    const { email, password } = req.body;
+    const email = normalizeEmail(req.body.email);
+    const { password } = req.body;
 
-    // Validate input
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        error: 'Email and password are required'
-      });
+    if (!email || !password || !isValidEmail(email)) {
+      return res.status(400).json({ success: false, error: 'Email and password are required' });
     }
 
-    // Get user by email
-    const { data: user, error } = await Users.getByEmail(email);
-    if (error || !user) {
-      return res.status(401).json({
-        success: false,
-        error: 'Invalid email or password'
-      });
+    const { data: profile } = await Users.getByEmail(email);
+    if (profile && isLocked(profile)) {
+      await recordAttempt({ email, ip, success: false });
+      return res.status(429).json({ success: false, error: ACCOUNT_LOCKED });
     }
 
-    // Check if user is active
-    if (!user.is_active) {
-      return res.status(403).json({
-        success: false,
-        error: 'Account is inactive'
-      });
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (authError || !authData?.session || !authData?.user) {
+      if (profile) {
+        const fail = await registerFailure(profile);
+        await recordAttempt({ email, ip, success: false });
+        if (fail.locked) {
+          return res.status(429).json({ success: false, error: ACCOUNT_LOCKED });
+        }
+      } else {
+        await recordAttempt({ email, ip, success: false });
+      }
+      // Constant-ish delay to slow brute force / enumeration
+      await new Promise((r) => setTimeout(r, 300 + Math.floor(Math.random() * 200)));
+      return res.status(401).json({ success: false, error: INVALID_CREDENTIALS });
     }
 
-    // Verify password
-    const passwordValid = await bcrypt.compare(password, user.password_hash);
-    if (!passwordValid) {
-      return res.status(401).json({
-        success: false,
-        error: 'Invalid email or password'
+    let resolved = await resolveProfile(authData.user);
+    if (!resolved) {
+      // First login: create profile as non-admin by default
+      await Users.upsertProfile({
+        id: authData.user.id,
+        email,
+        fullName: authData.user.user_metadata?.full_name || email.split('@')[0],
+        role: authData.user.app_metadata?.role || 'user',
       });
+      resolved = await resolveProfile(authData.user);
     }
 
-    // Update last login
-    await Users.updateLastLogin(user.id);
+    if (!resolved || resolved.is_active === false) {
+      await recordAttempt({ email, ip, success: false });
+      return res.status(403).json({ success: false, error: ACCOUNT_INACTIVE });
+    }
 
-    // Generate token
-    const token = generateToken(user.id, user.email, user.role);
+    if (profile?.id) {
+      await clearFailures(profile.id);
+    } else if (resolved.id) {
+      await clearFailures(resolved.id);
+    }
+    await recordAttempt({ email, ip, success: true });
 
     res.json({
       success: true,
       message: 'Login successful',
-      user: {
-        id: user.id,
-        email: user.email,
-        fullName: user.full_name,
-        role: user.role
-      },
-      token
+      user: publicUser(resolved),
+      token: authData.session.access_token,
+      refreshToken: authData.session.refresh_token,
+      expiresAt: authData.session.expires_at,
     });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Login failed'
-    });
+    console.error('Login error:', error.message);
+    res.status(500).json({ success: false, error: 'Login failed' });
   }
 });
 
 /**
  * GET /api/auth/me
- * Get current user info (protected route)
  */
 router.get('/me', authenticate, async (req, res) => {
   try {
-    const { data: user, error } = await Users.getById(req.user.id);
-    if (error || !user) {
-      return res.status(404).json({
-        success: false,
-        error: 'User not found'
-      });
-    }
-
     res.json({
       success: true,
       user: {
-        id: user.id,
-        email: user.email,
-        fullName: user.full_name,
-        role: user.role
-      }
+        id: req.user.id,
+        email: req.user.email,
+        fullName: req.user.fullName,
+        role: req.user.role,
+      },
     });
   } catch (error) {
-    console.error('Error getting user:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    res.status(500).json({ success: false, error: 'Failed to load user' });
   }
 });
 
 /**
  * POST /api/auth/logout
- * Logout user (client-side token deletion)
  */
-router.post('/logout', authenticate, (req, res) => {
-  res.json({
-    success: true,
-    message: 'Logout successful'
-  });
+router.post('/logout', authenticate, async (req, res) => {
+  try {
+    if (req.authToken) {
+      await supabase.auth.admin.signOut(req.authToken).catch(() => {});
+    }
+  } catch (_) {
+    /* ignore */
+  }
+  res.json({ success: true, message: 'Logout successful' });
 });
 
 /**
  * POST /api/auth/verify-token
- * Verify if a token is valid
  */
-router.post('/verify-token', (req, res) => {
+router.post('/verify-token', async (req, res) => {
   try {
     const { token } = req.body;
     if (!token) {
-      return res.status(400).json({
-        success: false,
-        error: 'Token required'
-      });
+      return res.status(400).json({ success: false, error: 'Token required' });
     }
 
-    const decoded = verifyToken(token);
-    if (!decoded) {
-      return res.status(401).json({
-        success: false,
-        error: 'Invalid or expired token'
-      });
+    const { data: authData, error } = await supabase.auth.getUser(token);
+    if (error || !authData?.user) {
+      return res.status(401).json({ success: false, error: 'Invalid or expired token' });
+    }
+
+    const profile = await resolveProfile(authData.user);
+    if (!profile || profile.is_active === false) {
+      return res.status(401).json({ success: false, error: 'Invalid or expired token' });
     }
 
     res.json({
       success: true,
-      user: decoded
+      user: publicUser(profile),
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
+    res.status(500).json({ success: false, error: 'Verification failed' });
+  }
+});
+
+/**
+ * POST /api/auth/change-password
+ * Authenticated password change with policy enforcement.
+ */
+router.post('/change-password', authenticate, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body || {};
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ success: false, error: 'Current and new password are required' });
+    }
+    const policy = validatePassword(newPassword);
+    if (!policy.ok) {
+      return res.status(400).json({ success: false, error: policy.error });
+    }
+
+    const email = req.user.email;
+    const { error: checkError } = await supabase.auth.signInWithPassword({
+      email,
+      password: currentPassword,
     });
+    if (checkError) {
+      return res.status(401).json({ success: false, error: INVALID_CREDENTIALS });
+    }
+
+    const authUserId = req.user.authUserId || req.user.id;
+    const { error: updateError } = await supabase.auth.admin.updateUserById(authUserId, {
+      password: newPassword,
+    });
+    if (updateError) {
+      return res.status(400).json({ success: false, error: 'Unable to update password' });
+    }
+
+    res.json({ success: true, message: 'Password updated' });
+  } catch (error) {
+    console.error('Change password error:', error.message);
+    res.status(500).json({ success: false, error: 'Unable to update password' });
   }
 });
 

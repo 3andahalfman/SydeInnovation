@@ -1,17 +1,42 @@
 const jwt = require('jsonwebtoken');
+const { supabase } = require('../supabase');
+const { Users } = require('../routes/Users');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
 if (!JWT_SECRET) {
-  console.warn('⚠️  JWT_SECRET not set in .env. Authentication will not work until it is set.');
+  console.warn('⚠️  JWT_SECRET not set in .env. Legacy JWT auth will not work until it is set.');
+}
+
+async function resolveProfile(authUser) {
+  if (!authUser?.email) return null;
+
+  let { data: profile } = await Users.getByAuthUserId(authUser.id);
+  if (!profile) {
+    ({ data: profile } = await Users.getByEmail(authUser.email.toLowerCase()));
+  }
+
+  const metaRole = authUser.app_metadata?.role || authUser.user_metadata?.role;
+  const role = profile?.role || metaRole || 'user';
+
+  return {
+    id: profile?.id || authUser.id,
+    email: authUser.email.toLowerCase(),
+    role,
+    fullName:
+      profile?.full_name ||
+      authUser.user_metadata?.full_name ||
+      authUser.email.split('@')[0],
+    is_active: profile ? profile.is_active !== false : true,
+    authUserId: authUser.id,
+  };
 }
 
 /**
- * Middleware to verify JWT token from Authorization header or cookies
+ * Middleware to verify Bearer token (Supabase Auth JWT or legacy app JWT)
  */
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
   try {
-    // Get token from Authorization header or cookies
     const authHeader = req.headers.authorization;
     let token = null;
 
@@ -25,56 +50,95 @@ const authenticate = (req, res, next) => {
       return res.status(401).json({ success: false, error: 'No token provided' });
     }
 
-    // Verify token
+    // Prefer Supabase Auth verification (unified login)
+    const { data: authData, error: authError } = await supabase.auth.getUser(token);
+    if (!authError && authData?.user) {
+      const profile = await resolveProfile(authData.user);
+      if (!profile || profile.is_active === false) {
+        return res.status(403).json({ success: false, error: 'Account is inactive' });
+      }
+      req.user = {
+        id: profile.id,
+        email: profile.email,
+        role: profile.role,
+        fullName: profile.fullName,
+        authUserId: profile.authUserId,
+      };
+      req.authToken = token;
+      return next();
+    }
+
+    // Legacy HS256 JWT fallback (transition)
+    if (!JWT_SECRET) {
+      return res.status(401).json({ success: false, error: 'Invalid or expired token' });
+    }
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
-    next();
+    req.authToken = token;
+    return next();
   } catch (error) {
-    res.status(401).json({ success: false, error: 'Invalid or expired token' });
+    return res.status(401).json({ success: false, error: 'Invalid or expired token' });
   }
 };
 
-/**
- * Middleware to check if user is admin
- */
 const requireAdmin = (req, res, next) => {
   if (!req.user) {
     return res.status(401).json({ success: false, error: 'Authentication required' });
   }
-
   if (req.user.role !== 'admin') {
     return res.status(403).json({ success: false, error: 'Admin access required' });
   }
-
-  next();
+  return next();
 };
 
-/**
- * Generate JWT token
- */
+/** Short-lived app token (legacy clients). Prefer Supabase access tokens. */
 const generateToken = (userId, email, role) => {
   return jwt.sign(
     { id: userId, email, role },
     JWT_SECRET,
-    { expiresIn: '24h' }
+    { expiresIn: '8h' }
   );
 };
 
-/**
- * Verify JWT token
- */
 const verifyToken = (token) => {
   try {
+    if (!token) return null;
+    // Sync verify for legacy only — async Supabase path is in authenticate/verify endpoint
     return jwt.verify(token, JWT_SECRET);
   } catch (error) {
     return null;
   }
 };
 
+/** Resolve Bearer token to app user (Supabase Auth or legacy JWT). */
+async function resolveBearerUser(token) {
+  if (!token) return null;
+  try {
+    const { data: authData, error } = await supabase.auth.getUser(token);
+    if (!error && authData?.user) {
+      const profile = await resolveProfile(authData.user);
+      if (!profile || profile.is_active === false) return null;
+      return {
+        id: profile.id,
+        email: profile.email,
+        role: profile.role,
+        fullName: profile.fullName,
+        authUserId: profile.authUserId,
+      };
+    }
+  } catch (_) {
+    /* fall through */
+  }
+  const decoded = verifyToken(token);
+  return decoded || null;
+}
+
 module.exports = {
   authenticate,
   requireAdmin,
   generateToken,
   verifyToken,
-  JWT_SECRET
+  resolveProfile,
+  resolveBearerUser,
+  JWT_SECRET,
 };
