@@ -12,48 +12,114 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      setError(error.message);
-    } else {
+    try {
+      // Unified login endpoint (rate limit + lockout + Supabase Auth)
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        setError(data.error || 'Authentication failed');
+        setLoading(false);
+        return;
+      }
+      if (data.user?.role !== 'admin') {
+        setError('Admin access required');
+        setLoading(false);
+        return;
+      }
+      if (!data.token || !data.refreshToken) {
+        setError('Authentication failed');
+        setLoading(false);
+        return;
+      }
+
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token: data.token,
+        refresh_token: data.refreshToken,
+      });
+      if (sessionError) {
+        setError('Unable to establish session');
+        setLoading(false);
+        return;
+      }
       onLogin();
+    } catch {
+      setError('Unable to reach the server. Please try again.');
     }
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900">
-      <form onSubmit={handleSubmit} className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 w-full max-w-md space-y-6">
-        <h1 className="text-3xl font-bold text-white text-center">Admin Login</h1>
-        {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 px-4">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 w-full max-w-md space-y-6 border border-white/10"
+        autoComplete="on"
+      >
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl font-bold text-white">Admin Login</h1>
+          <p className="text-sm text-gray-400">SydeInnovation portfolio admin</p>
+        </div>
+        {error && (
+          <p className="text-red-400 text-sm text-center" role="alert">
+            {error}
+          </p>
+        )}
         <div>
-          <label className="block text-gray-300 text-sm mb-1">Email</label>
+          <label htmlFor="admin-email" className="block text-gray-300 text-sm mb-1">
+            Email
+          </label>
           <input
+            id="admin-email"
             type="email"
+            name="email"
+            autoComplete="username"
+            inputMode="email"
+            spellCheck={false}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            title="Email address"
-            placeholder="you@example.com"
+            placeholder="admin@sydeinovation.com"
             className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
         </div>
         <div>
-          <label className="block text-gray-300 text-sm mb-1">Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            title="Password"
-            placeholder="Enter password"
-            className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
-          />
+          <label htmlFor="admin-password" className="block text-gray-300 text-sm mb-1">
+            Password
+          </label>
+          <div className="relative">
+            <input
+              id="admin-password"
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={12}
+              placeholder="Enter password"
+              className="w-full px-4 py-3 pr-16 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-300 hover:text-white"
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
         </div>
         <button
           type="submit"
@@ -62,6 +128,9 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
         >
           {loading ? 'Signing in...' : 'Sign In'}
         </button>
+        <p className="text-center text-xs text-gray-500">
+          Same credentials as SydeFlow. Public signup is disabled.
+        </p>
       </form>
     </div>
   );
@@ -88,11 +157,38 @@ export default function AdminPage() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(!!data.session);
-    });
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(!!session);
+    const ensureAdminSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      const accessToken = data.session?.access_token;
+      if (!accessToken) {
+        setSession(false);
+        return;
+      }
+      try {
+        const res = await fetch('/api/auth/verify-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: accessToken }),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (res.ok && body.success && body.user?.role === 'admin') {
+          setSession(true);
+        } else {
+          await supabase.auth.signOut();
+          setSession(false);
+        }
+      } catch {
+        setSession(false);
+      }
+    };
+
+    ensureAdminSession();
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, next) => {
+      if (!next) {
+        setSession(false);
+        return;
+      }
+      ensureAdminSession();
     });
     return () => listener.subscription.unsubscribe();
   }, []);

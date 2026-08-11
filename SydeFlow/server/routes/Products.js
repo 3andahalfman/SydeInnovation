@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { verifyToken } = require("../middleware/auth");
+const { resolveBearerUser } = require("../middleware/auth");
 const { Users } = require("./Users");
 const { ProductsStore } = require("../db");
 
@@ -38,7 +38,7 @@ router.get("/", async (req, res) => {
     const authHeader = req.headers.authorization;
     if (authHeader?.startsWith("Bearer ")) {
       try {
-        const decoded = verifyToken(authHeader.substring(7));
+        const decoded = await resolveBearerUser(authHeader.substring(7));
         if (decoded) {
           if (decoded.role) userRole = decoded.role;
           if (decoded.id) userId = decoded.id;

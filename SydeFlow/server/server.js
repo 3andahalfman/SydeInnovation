@@ -99,7 +99,13 @@ app.use(express.json({ limit: '50mb' }));
 const generalLimiter = rateLimit({ windowMs: 60_000, max: 300, standardHeaders: true, legacyHeaders: false, message: { success: false, error: 'Too many requests. Please wait a minute.' } });
 const quoteLimiter  = rateLimit({ windowMs: 60_000, max: 5,   message: { success: false, error: 'Too many quote requests. Please wait a minute.' } });
 const workflowLimiter = rateLimit({ windowMs: 60_000, max: 6,  message: { success: false, error: 'Too many automation requests. Please wait a minute.' } });
-const authLimiter = rateLimit({ windowMs: 15 * 60_000, max: 10, message: { success: false, error: 'Too many login attempts. Please wait 15 minutes.' } });
+const authLimiter = rateLimit({
+    windowMs: 15 * 60_000,
+    max: 5,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, error: 'Too many login attempts. Please wait 15 minutes.' },
+});
 const settingsLimiter = rateLimit({ windowMs: 60_000, max: 5, message: { success: false, error: 'Too many settings requests. Please wait a minute.' } });
 app.use('/api/', generalLimiter);
 app.use('/api/auth/login', authLimiter);
